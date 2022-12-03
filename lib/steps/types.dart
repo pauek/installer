@@ -1,6 +1,6 @@
 class Value<T> {
-  T? value;
-  Value([this.value]);
+  T value;
+  Value(this.value);
 
   bool get isNull => value == null;
   bool get isNotNull => value != null;

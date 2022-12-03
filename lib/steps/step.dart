@@ -1,8 +1,7 @@
 import 'package:console/console.dart';
-import 'package:installer2/steps/types.dart';
 
 abstract class Step<T> {
-  Future<Value<T>> run();
+  Future<T> run();
   late CursorPosition _pos;
 
   int get numPriorSteps => 0;
@@ -24,7 +23,7 @@ abstract class SinglePriorStep<T, P> extends Step<T> {
   @override
   int get numPriorSteps => 1;
 
-  Future<Value<P>> get input => priorStep.run();
+  Future<P> get input => priorStep.run();
 
   @override
   set pos(CursorPosition p) {
@@ -40,7 +39,7 @@ abstract class MultiPriorStep<T> extends Step<T> {
   @override
   int get numPriorSteps => priorSteps.length;
 
-  Future<List<Value>> get inputs {
+  Future<List> get inputs {
     return Future.wait(
       priorSteps.map((step) => step.run()),
     );

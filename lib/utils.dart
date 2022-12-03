@@ -25,3 +25,8 @@ Future<void> decompressFile(String file, String targetDir) async {
   final cmd = ctx.getBinary("7z");
   await Process.run(cmd, ["x", file], workingDirectory: targetDir);
 }
+
+Future<bool> isGitInstalled() async {
+  final result = await Process.run("git", []);
+  return result.exitCode == 0;
+}

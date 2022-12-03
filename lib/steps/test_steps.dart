@@ -6,13 +6,13 @@ import 'package:installer2/steps/types.dart';
 
 class LogSomething extends Step {
   @override
-  Future<Value> run() {
-    log.print("Something");
-    return Future.value(Value());
+  Future<void> run() async {
+    await log.print("Something");
+    return Future.value();
   }
 }
 
-class GiveInteger extends Step<int> {
+class GiveInteger extends Step<Value<int>> {
   int n;
   GiveInteger(this.n);
 
@@ -30,13 +30,12 @@ class ShowResult extends SinglePriorStep<void, int> {
   ShowResult(super.priorStep);
 
   @override
-  Future<Value> run() async {
+  Future<void> run() async {
     show("Waiting for result...");
     final x = await input;
     await Future.delayed(Duration(seconds: 1));
-    log.print("Value is ${x.value}");
-    show("Result is ${x.value}!!           ");
-    return Future.value(Value());
+    await log.print("Value is $x");
+    show("Result is $x!!           ");
   }
 }
 
@@ -44,12 +43,12 @@ class ShowManyResults extends MultiPriorStep<List> {
   ShowManyResults(super.priorSteps);
 
   @override
-  Future<Value<List>> run() async {
+  Future<List> run() async {
     show("Waiting for results...");
     final results = await inputs;
     await Future.delayed(Duration(seconds: 1));
     final values = results.map((r) => r.value).toList();
     show("All results = $values");
-    return Value(values);
+    return values;
   }
 }

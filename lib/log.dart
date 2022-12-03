@@ -9,8 +9,13 @@ class Log {
     sink = file.openWrite();
   }
 
-  void print(String text) {
-    sink.write(text);
+  close() {
+    sink.close();
+  }
+
+  Future<void> print(String text) async {
+    sink.write("$text\n");
+    await sink.flush();
   }
 
   static Log? _instance;

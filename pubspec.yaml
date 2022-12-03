@@ -14,5 +14,6 @@ dev_dependencies:
   test: ^1.16.0
 dependencies:
   console: ^4.1.0
+  html: ^0.15.1
   http: ^0.13.5
   path: ^1.8.2
