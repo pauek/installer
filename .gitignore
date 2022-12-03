@@ -4,3 +4,6 @@
 
 # Conventional directory for build output.
 build/
+
+# Log generated when debugging
+flutter-installer.log
