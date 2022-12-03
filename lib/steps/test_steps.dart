@@ -7,7 +7,7 @@ import 'package:installer2/steps/types.dart';
 class LogSomething extends Step {
   @override
   Future<void> run() async {
-    await log.print("Something");
+    log.print("Something");
     return Future.value();
   }
 }
@@ -34,7 +34,7 @@ class ShowResult extends SinglePriorStep<void, int> {
     show("Waiting for result...");
     final x = await input;
     await Future.delayed(Duration(seconds: 1));
-    await log.print("Value is $x");
+    log.print("Value is $x");
     show("Result is $x!!           ");
   }
 }

@@ -15,9 +15,9 @@ class Decompress extends SinglePriorStep<Dirname, Filename> {
     final absPath = (await input).value;
     show("Decompressing '$absPath'... ");
     final absDir = join(ctx.targetDir, subDir);
-    await log.print("Decompressing '$absPath' into '$absDir'");
+    log.print("Decompressing '$absPath' into '$absDir'");
     await decompressFile(absPath, absDir);
-    await log.print("Decompression ok");
+    log.print("Decompression ok");
     show("Done${' ' * (30 + absPath.length)}");
     return Dirname(absDir);
   }

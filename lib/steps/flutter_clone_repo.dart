@@ -16,11 +16,11 @@ class FlutterCloneRepo extends SinglePriorStep<void, Dirname> {
     show("Cloning Flutter git repository");
     Filename gitExe = Filename("git");
     if (!(await isGitInstalled())) {
-      await log.print("Git was not found installed, installing.");
+      log.print("Git was not found installed, installing.");
       final dirname = await input;
       gitExe = Filename(join(dirname.value, "cmd", "git.exe"));
       ctx.addBinary("git", join(dirname.value, "cmd"), "git.exe");
     }
-    await log.print("Git executable at '${gitExe.value}'");
+    log.print("Git executable at '${gitExe.value}'");
   }
 }
