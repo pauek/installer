@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:installer2/context.dart';
@@ -26,7 +27,15 @@ Future<void> decompressFile(String file, String targetDir) async {
   await Process.run(cmd, ["x", file], workingDirectory: targetDir);
 }
 
-Future<bool> isGitInstalled() async {
-  final result = await Process.run("git", []);
-  return result.exitCode == 0;
+final gitVersionRegex = RegExp(r"^git version (.*)$");
+
+Future<String?> getInstalledGitVersion() async {
+  final result = await Process.run(
+    "git",
+    ["--version"],
+    runInShell: true,
+    stdoutEncoding: Encoding.getByName("utf-8"),
+  );
+  final match = gitVersionRegex.firstMatch(result.stdout.trim());
+  return match?.group(1);
 }

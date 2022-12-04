@@ -13,7 +13,7 @@ class GitGetDownloadURL extends Step<URL> {
     // if (Platform.isMacOS || Platform.isLinux) {
     //   throw "MacOS and Linux download of Git not implemented yet";
     // }
-    log.print("Git Windows version URL at: '$gitForWindowsURL'");
+    log.print("Git: Windows version URL at '$gitForWindowsURL'");
     return Future.value(URL(gitForWindowsURL));
   }
 }

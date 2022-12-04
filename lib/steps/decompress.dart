@@ -5,20 +5,20 @@ import 'package:installer2/steps/types.dart';
 import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
-class Decompress extends SinglePriorStep<Dirname, Filename> {
+class Decompress extends SinglePriorStep {
   String subDir;
-  Decompress(this.subDir, Step<Filename> input) : super(input);
+  Decompress({required String into}) : subDir = into;
 
   @override
   Future<Dirname> run() async {
     show("Waiting to decompress...");
-    final absPath = (await input).value;
-    show("Decompressing '$absPath'... ");
+    final absFile = (await input as Filename).value;
+    show("Decompressing '$absFile'... ");
     final absDir = join(ctx.targetDir, subDir);
-    log.print("Decompressing '$absPath' into '$absDir'");
-    await decompressFile(absPath, absDir);
+    log.print("Decompressing '$absFile' into '$absDir'");
+    await decompressFile(absFile, absDir);
     log.print("Decompression ok");
-    show("Done${' ' * (30 + absPath.length)}");
+    show("Done${' ' * (30 + absFile.length)}");
     return Dirname(absDir);
   }
 }

@@ -46,14 +46,13 @@ Future<SemVer> getLatestLTSVersion() async {
     if (isSemVer(name)) {
       final version = SemVer.fromName(name);
       if (isRecentLTS(version) && isSemVerGreaterThan(version, latest)) {
-        log.print("Found newer version: $version");
         latest = version;
       }
     }
   }
   if (latest.major == 0) {
-    log.print("No node versions found");
-    throw "No node versions found";
+    log.print("Node: no node versions found");
+    throw "Node: no versions found";
   }
   return latest;
 }
@@ -62,9 +61,9 @@ class NodeGetDownloadURL extends Step<URL> {
   @override
   Future<URL> run() async {
     show("Determining Node Download URL");
-    log.print("Determining Node latest LTS version");
+    log.print("Node: Determining latest LTS version");
     final version = await getLatestLTSVersion();
-    log.print("Found version $version");
+    log.print("Node: found version $version");
 
     // if (Platform.isMacOS || Platform.isLinux) {
     //   throw "MacOS and Linux download of Git not implemented yet";
@@ -73,7 +72,7 @@ class NodeGetDownloadURL extends Step<URL> {
 
     final nodeZipFile = "node-$version-win-x64.zip";
     final nodeDownloadURL = "https://nodejs.org/dist/$version/$nodeZipFile";
-    log.print("Node download URL is: $nodeDownloadURL");
+    log.print("Node: Download URL is '$nodeDownloadURL'");
     show("Done${' ' * 60}");
     return Future.value(URL(nodeDownloadURL));
   }

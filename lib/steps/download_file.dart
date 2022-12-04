@@ -7,7 +7,7 @@ import 'package:path/path.dart';
 
 class DownloadFile extends SinglePriorStep<Filename, URL> {
   String? forcedFilename;
-  DownloadFile(super.priorStep, [this.forcedFilename]);
+  DownloadFile([this.forcedFilename]);
 
   @override
   Future<Filename> run() async {
