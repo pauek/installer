@@ -22,6 +22,8 @@ class InstallerContext {
   List<EnvVar> get variables =>
       _variables.entries.map((e) => EnvVar(e.key, e.value)).toList();
 
+  Map<String, String> get binaries => _binaries;
+
   void addBinary(String cmd, String dir, String filename) =>
       _binaries[cmd] = join(dir, filename);
 

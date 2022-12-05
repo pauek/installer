@@ -20,6 +20,21 @@ Future<void> initPlatformVariables() async {
   ctx.addVariable("arch", arch);
 }
 
+Future<void> logEnv() async {
+  if (ctx.path.isNotEmpty) {
+    log.print("Path:");
+    for (final entry in ctx.path) {
+      log.print("  $entry");
+    }
+  }
+  for (final entry in ctx.variables) {
+    log.print("${entry.variable} = ${entry.value}");
+  }
+  for (final entry in ctx.binaries.entries) {
+    log.print("${entry.key} = ${entry.value}");
+  }
+}
+
 Future<void> runInstaller(Step installer) async {
   Console.init();
   final homeDir = getHomeDir();
@@ -37,6 +52,7 @@ Future<void> runInstaller(Step installer) async {
   final lastPos = installer.setPos(CursorPosition(1, 1));
   Console.moveCursor(column: 1, row: 1);
   await installer.run();
+  await logEnv();
   await log.close();
   Console.moveCursor(column: lastPos.column, row: lastPos.row);
   Console.write("[Press any key or close the terminal]\n");
