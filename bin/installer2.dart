@@ -41,7 +41,7 @@ final installFlutter = Chain("Flutter", [
     Binary("flutter", "bin/futter"),
     Binary("dart", "bin/dart"),
   ]),
-  RunCommand(["dart", "pub", "global", "activate", "flutterfire_cli"]),
+  RunCommand("dart", ["pub", "global", "activate", "flutterfire_cli"]),
 ]);
 
 final installNode = Chain("Node", [
@@ -59,7 +59,7 @@ final installNode = Chain("Node", [
 
 final installFirebaseCLI = Chain("FirebaseCLI", [
   installNode,
-  RunCommand(["node", "install", "-g", "firebase-tools"]),
+  RunCommand("node", ["install", "-g", "firebase-tools"]),
 ]);
 
 final installVSCode = Chain("VSCode", [
@@ -93,13 +93,15 @@ final installAndroidSDK = Chain("Android SDK", [
   GetAndroidCmdlineToolsURL(),
   DownloadFile(),
   Decompress(into: "android-sdk/cmdline-tools"),
-  Rename("cmdline-tools", "latest"),
-  AddBinaries("android-sdk", []),
-  RunCommand([
-    "sdkmanager",
+  Rename(from: "cmdline-tools", to: "latest"),
+  AddBinaries("android-sdk", [
+    Binary("sdkmanager", "cmdline-tools/latest/bin/sdkmanager"),
+    Binary("avdmanager", "cmdline-tools/latest/bin/avdmanager"),
+  ]),
+  RunCommand("sdkmanager", [
     "platforms;android-33",
     "build-tools;33.0.1",
-    "platform-tools"
+    "platform-tools",
   ]),
 ]);
 
