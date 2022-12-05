@@ -124,25 +124,26 @@ final installAndroidSDK = Chain(
   ],
 );
 
-final installNushell = Chain(name: "Nushell", steps: [
-  GetNushellDownloadURL(),
-  DownloadFile(),
-  Decompress(into: "nu"),
-]);
+final installNushell = Chain(
+  name: "Nushell",
+  steps: [
+    GetNushellDownloadURL(),
+    DownloadFile(),
+    Decompress(into: "nu"),
+  ],
+);
 
 void main(List<String> arguments) {
   runInstaller(
-    Chain(
-      steps: [
-        Parallel([
-          installFlutter,
-          installVSCode,
-          installFirebaseCLI,
-          installAndroidSDK,
-          installNushell,
-        ]),
-        ConfigureNushell(),
-      ],
-    ),
+    Chain(steps: [
+      Parallel([
+        installFlutter,
+        installVSCode,
+        installFirebaseCLI,
+        installAndroidSDK,
+        installNushell,
+      ]),
+      ConfigureNushell(),
+    ]),
   );
 }
