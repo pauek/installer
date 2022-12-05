@@ -11,6 +11,7 @@ import 'package:installer2/steps/java/java_get_download_url.dart';
 import 'package:installer2/steps/node/node_get_download_url.dart';
 import 'package:installer2/steps/not_null.dart';
 import 'package:installer2/steps/nushell/nushell_download_url.dart';
+import 'package:installer2/steps/rename.dart';
 import 'package:installer2/steps/run_command.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/version_installed.dart';
@@ -40,7 +41,7 @@ final installFlutter = Chain("Flutter", [
     Binary("flutter", "bin/futter"),
     Binary("dart", "bin/dart"),
   ]),
-  RunCommand("dart pub global activate flutterfire_cli"),
+  RunCommand(["dart", "pub", "global", "activate", "flutterfire_cli"]),
 ]);
 
 final installNode = Chain("Node", [
@@ -58,7 +59,7 @@ final installNode = Chain("Node", [
 
 final installFirebaseCLI = Chain("FirebaseCLI", [
   installNode,
-  RunCommand("node install -g firebase-tools"),
+  RunCommand(["node", "install", "-g", "firebase-tools"]),
 ]);
 
 final installVSCode = Chain("VSCode", [
@@ -93,6 +94,13 @@ final installAndroidSDK = Chain("Android SDK", [
   DownloadFile(),
   Decompress(into: "android-sdk/cmdline-tools"),
   Rename("cmdline-tools", "latest"),
+  AddBinaries("android-sdk", []),
+  RunCommand([
+    "sdkmanager",
+    "platforms;android-33",
+    "build-tools;33.0.1",
+    "platform-tools"
+  ]),
 ]);
 
 final installNushell = Chain("Nushell", [
