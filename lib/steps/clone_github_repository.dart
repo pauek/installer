@@ -7,7 +7,7 @@ import 'package:installer2/steps/types.dart';
 import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
-const flutterGithubRepo = "https://github.com/flutter/flutter.git";
+const flutterRepo = "https://github.com/flutter/flutter.git";
 
 class CloneGithubRepository extends Step<Dirname?> {
   final String dir, repoUrl;
@@ -34,7 +34,7 @@ class CloneGithubRepository extends Step<Dirname?> {
       git,
       [
         "clone",
-        flutterGithubRepo,
+        flutterRepo,
         dir,
         if (branch != null) ...["-b", branch!],
       ],

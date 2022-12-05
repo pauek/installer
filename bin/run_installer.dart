@@ -10,7 +10,7 @@ import 'package:path/path.dart';
 Future<void> initPlatformVariables() async {
   String os = (await getCommandOutput("uname", [])).toLowerCase();
   String arch = await getCommandOutput("uname", ["-m"]);
-  if (os.startsWith("mingw")) {
+  if (os.startsWith("mingw") || os.startsWith("cygwin")) {
     os = "win";
   }
   if (arch == "x86_64") {
@@ -39,7 +39,7 @@ Future<void> runInstaller(Step installer) async {
   Console.init();
   final homeDir = getHomeDir();
   await InstallerContext.init(
-    targetDir: join(homeDir, "MobileDevelopment"),
+    targetDir: join(homeDir, "MobileDevelopment2"),
     downloadDir: join(homeDir, "Downloads"),
   );
   Log.init(filename: "flutter-installer.log");

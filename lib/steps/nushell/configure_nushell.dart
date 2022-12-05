@@ -79,8 +79,8 @@ class ConfigureNushell extends SinglePriorStep {
 
     await addLinesToFile(file['env']!, [
       "let-env $vpath = (\$env.$vpath | prepend '${dartPubDir()}')",
-      for (final dir in ctx.path)
-        "let-env $vpath = (\$env.$vpath | prepend '$dir')",
+      for (final path in ctx.binaries.values)
+        "let-env $vpath = (\$env.$vpath | prepend '${dirname(path)}')",
     ]);
 
     await addLinesToFile(file['config']!, [
