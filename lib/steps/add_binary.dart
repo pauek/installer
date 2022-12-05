@@ -28,8 +28,9 @@ class AddBinaries extends SinglePriorStep<bool, Dirname?> {
     for (final b in binaries) {
       late String file, subDir;
       if (b.relativePath is Map<String, String>) {
-        file = basename(b.relativePath[os]);
-        subDir = dirname(b.relativePath[os]);
+        final relPath = b.relativePath[os] ?? b.relativePath["default"];
+        file = basename(relPath);
+        subDir = dirname(relPath);
       } else if (b.relativePath is String) {
         file = basename(b.relativePath);
         subDir = dirname(b.relativePath);

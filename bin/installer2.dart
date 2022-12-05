@@ -9,6 +9,7 @@ import 'package:installer2/steps/if.dart';
 import 'package:installer2/steps/java_get_download_url.dart';
 import 'package:installer2/steps/node_get_download_url.dart';
 import 'package:installer2/steps/not_null.dart';
+import 'package:installer2/steps/nushell_download_url.dart';
 import 'package:installer2/steps/run_command.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/version_installed.dart';
@@ -63,6 +64,12 @@ final installVSCode = Chain("VSCode", [
   GiveURL(vscodeDownloadURL),
   DownloadFile("vscode.zip"),
   Decompress(into: "vscode"),
+  AddBinaries("vscode", [
+    Binary("code", {
+      "win": "bin/code.cmd",
+      "default": "code",
+    })
+  ])
 ]);
 
 final rJavaVersion = RegExp(r"^java (.*)$");
@@ -79,13 +86,20 @@ final installJava = If(
   ]),
 );
 
+final installNushell = Chain("Nushell", [
+  GetNushellDownloadURL(),
+  DownloadFile(),
+  Decompress(into: "nu"),
+]);
+
 void main(List<String> arguments) {
   runInstaller(
     Parallel([
       // installFlutter,
       // installVSCode,
-      installFirebaseCLI,
-      // installJava,
+      // installFirebaseCLI,
+      installJava,
+      // installNushell,
     ]),
   );
 }
