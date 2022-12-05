@@ -32,19 +32,7 @@ Future<void> decompressFile(String file, String targetDir) async {
   await Process.run(cmd, ["x", file], workingDirectory: targetDir);
 }
 
-final _gitVersionRegex = RegExp(r"^git version (.*)$");
-Future<String?> getInstalledGitVersion() async {
-  final result = await Process.run(
-    "git",
-    ["--version"],
-    runInShell: true,
-    stdoutEncoding: Encoding.getByName("utf-8"),
-  );
-  final match = _gitVersionRegex.firstMatch(result.stdout.trim());
-  return match?.group(1);
-}
-
-final _gitOriginRegex = RegExp(r"^origin	(\w+) \(fetch\)");
+final _gitOriginRegex = RegExp(r"^origin\s+(.+)\s+\(fetch\)");
 Future<String?> getGitRemote(String repoDir) async {
   if (!(await isDirectory(repoDir))) {
     return null;

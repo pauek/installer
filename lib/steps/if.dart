@@ -20,10 +20,12 @@ class If extends Step {
   Future run() async {
     show("");
     if (!(await cond.run())) {
-      await then.run();
+      return await then.run();
     } else {
       if (orelse != null) {
-        await orelse!.run();
+        return await orelse!.run();
+      } else {
+        return null;
       }
     }
   }

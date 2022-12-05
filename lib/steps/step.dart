@@ -26,7 +26,7 @@ abstract class Step<T> {
 }
 
 abstract class SinglePriorStep<T, P> extends Step<T> {
-  SinglePriorStep();
+  SinglePriorStep([super.steps]);
 
   @override
   int get numInputSteps => 1;
@@ -63,7 +63,7 @@ class Parallel extends Step {
   }
 }
 
-class Chain<T, P> extends Step<T> {
+class Chain<T> extends Step<T> {
   final String name;
   Chain(this.name, List<Step> inputSteps) : super(inputSteps) {
     if (steps.isEmpty) {

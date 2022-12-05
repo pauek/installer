@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:installer2/log.dart';
 import 'package:path/path.dart';
 
 class EnvVar {
@@ -24,12 +25,13 @@ class InstallerContext {
   void addBinary(String cmd, String dir, String filename) =>
       _binaries[cmd] = join(dir, filename);
 
-  String getBinary(String cmd) {
-    return _binaries[cmd] ?? cmd;
+  addVariable(String variable, String value) {
+    log.print("Added variable '$variable' = '$value'");
+    _variables[variable] = value;
   }
 
-  addVariable(String variable, String value) => _variables[variable] = value;
-  getVariable(String variable) => _variables[variable];
+  String getBinary(String cmd) => _binaries[cmd] ?? cmd;
+  String? getVariable(String variable) => _variables[variable];
 
   static InstallerContext? _instance;
 

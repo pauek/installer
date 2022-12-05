@@ -1,33 +1,9 @@
 import 'package:html/parser.dart';
 import 'package:installer2/log.dart';
+import 'package:installer2/semver.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/types.dart';
 import 'package:http/http.dart' as http;
-
-final semVerRegex = RegExp(r"^v(\d+)\.(\d+)\.(\d+).*");
-
-class SemVer {
-  late int major, minor, patch;
-
-  SemVer(this.major, this.minor, this.patch);
-
-  SemVer.fromName(String name) {
-    final match = semVerRegex.firstMatch(name);
-    if (match == null) {
-      throw "Not a Semantic Version!";
-    }
-    major = int.parse(match.group(1)!);
-    minor = int.parse(match.group(2)!);
-    patch = int.parse(match.group(3)!);
-  }
-
-  @override
-  String toString() => "v$major.$minor.$patch";
-}
-
-bool isSemVer(String name) {
-  return name.startsWith("v") && name.endsWith("/");
-}
 
 bool isSemVerGreaterThan(SemVer a, SemVer b) {
   return a.major > b.major || a.minor > b.minor || a.patch > b.patch;
@@ -43,8 +19,8 @@ Future<SemVer> getLatestLTSVersion() async {
   var latest = SemVer(0, 0, 0);
   for (final link in document.querySelectorAll("a")) {
     final name = link.text;
-    if (isSemVer(name)) {
-      final version = SemVer.fromName(name);
+    if (name.startsWith("v") && name.endsWith("/")) {
+      final version = SemVer.fromName(name.substring(1, name.length - 1));
       if (isRecentLTS(version) && isSemVerGreaterThan(version, latest)) {
         latest = version;
       }
