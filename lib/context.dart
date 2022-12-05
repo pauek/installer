@@ -25,8 +25,7 @@ class InstallerContext {
       _binaries[cmd] = join(dir, filename);
 
   String getBinary(String cmd) {
-    assert(_binaries.containsKey(cmd));
-    return _binaries[cmd]!;
+    return _binaries[cmd] ?? cmd;
   }
 
   addVariable(String variable, String value) => _variables[variable] = value;

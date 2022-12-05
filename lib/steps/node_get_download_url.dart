@@ -73,7 +73,6 @@ class NodeGetDownloadURL extends Step<URL> {
     final nodeZipFile = "node-$version-win-x64.zip";
     final nodeDownloadURL = "https://nodejs.org/dist/$version/$nodeZipFile";
     log.print("Node: Download URL is '$nodeDownloadURL'");
-    show("Done${' ' * 60}");
     return Future.value(URL(nodeDownloadURL));
   }
 }

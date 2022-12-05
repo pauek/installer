@@ -19,7 +19,6 @@ class DownloadFile extends SinglePriorStep<Filename, URL> {
     final absFilename = join(ctx.downloadDir, filename);
     await downloadFile(url.value, absFilename);
     log.print("Downloaded successfully at '$absFilename'");
-    show("Done${' ' * (20 + filename.length)}");
     return Filename(absFilename);
   }
 }

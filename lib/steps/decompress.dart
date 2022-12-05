@@ -11,14 +11,12 @@ class Decompress extends SinglePriorStep {
 
   @override
   Future<Dirname> run() async {
-    show("Waiting to decompress...");
     final absFile = (await input as Filename).value;
     show("Decompressing '$absFile'... ");
     final absDir = join(ctx.targetDir, subDir);
     log.print("Decompressing '$absFile' into '$absDir'");
     await decompressFile(absFile, absDir);
     log.print("Decompression ok");
-    show("Done${' ' * (30 + absFile.length)}");
     return Dirname(absDir);
   }
 }

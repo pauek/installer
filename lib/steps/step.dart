@@ -1,21 +1,25 @@
 import 'package:console/console.dart';
 
 abstract class Step<T> {
-  List<Step> _steps;
+  final List<Step> _steps;
   CursorPosition? _pos;
   Step([List<Step>? steps]) : _steps = steps ?? [];
 
   int get numInputSteps => 0;
   List<Step> get steps => _steps;
 
-  set pos(CursorPosition p) => _pos = p;
+  CursorPosition setPos(CursorPosition p) {
+    _pos = p;
+    return CursorPosition(p.column + 2, p.row + 1);
+  }
 
   show(String msg) {
     if (_pos == null) {
       throw "Step hasn't been positioned";
     }
     Console.moveCursor(row: _pos!.row, column: _pos!.column);
-    Console.write(msg);
+    Console.write(msg + " " * (Console.columns - _pos!.column - msg.length));
+    Console.moveCursor(row: _pos!.row, column: _pos!.column);
   }
 
   Future<T> run();
@@ -33,15 +37,6 @@ abstract class SinglePriorStep<T, P> extends Step<T> {
     }
     return _steps[0].run();
   }
-
-  @override
-  set pos(CursorPosition p) {
-    super.pos = p;
-    if (_steps.isEmpty) {
-      throw "Attempted to set position of a null priorStep";
-    }
-    _steps[0].pos = CursorPosition(p.column + 2, p.row + 1);
-  }
 }
 
 class Parallel extends Step {
@@ -57,18 +52,20 @@ class Parallel extends Step {
   Future<List> run() async => await inputs;
 
   @override
-  set pos(CursorPosition p) {
-    super.pos = p;
-    int row = p.row + 1;
+  CursorPosition setPos(CursorPosition p) {
+    super.setPos(p);
+    int row = p.row;
     for (int i = 0; i < steps.length; i++) {
-      steps[i].pos = CursorPosition(p.column + 2, row);
-      row += 1 + steps[i].numInputSteps;
+      final next = steps[i].setPos(CursorPosition(p.column, row));
+      row = next.row;
     }
+    return CursorPosition(p.column, row);
   }
 }
 
 class Chain<T, P> extends Step<T> {
-  Chain(List<Step> inputSteps) : super(inputSteps) {
+  final String name;
+  Chain(this.name, List<Step> inputSteps) : super(inputSteps) {
     if (steps.isEmpty) {
       throw "Chain with no inputs";
     }
@@ -77,8 +74,8 @@ class Chain<T, P> extends Step<T> {
       if (i == 0 && step.numInputSteps != 0) {
         throw "First step in Chain must have 0 inputs";
       }
-      if (i > 0 && step.numInputSteps != 1) {
-        throw "Second to last steps in Chain must have 1 input";
+      if (i > 0 && step.numInputSteps > 1) {
+        throw "Second to last steps in Chain must have at most 1 input";
       }
     }
 
@@ -89,13 +86,19 @@ class Chain<T, P> extends Step<T> {
   }
 
   @override
-  Future<T> run() async => await steps.last.run();
+  Future<T> run() async {
+    show("$name: ");
+    final result = await steps.last.run();
+    show("$name: success.");
+    return result;
+  }
 
   @override
-  set pos(CursorPosition p) {
-    super.pos = p;
+  CursorPosition setPos(CursorPosition p) {
+    final next = super.setPos(p);
     for (int i = 0; i < steps.length; i++) {
-      steps[i].pos = p;
+      steps[i].setPos(CursorPosition(p.column + name.length + 2, p.row));
     }
+    return next;
   }
 }
