@@ -1,15 +1,16 @@
 import 'package:installer2/steps/add_binary.dart';
+import 'package:installer2/steps/android-sdk/cmdline_tools_url.dart';
 import 'package:installer2/steps/clone_github_repository.dart';
 import 'package:installer2/steps/decompress.dart';
 import 'package:installer2/steps/download_file.dart';
-import 'package:installer2/steps/git_get_download_url.dart';
-import 'package:installer2/steps/git_repository_missing.dart';
+import 'package:installer2/steps/git/git_get_download_url.dart';
+import 'package:installer2/steps/git/git_repository_missing.dart';
 import 'package:installer2/steps/give_url.dart';
 import 'package:installer2/steps/if.dart';
-import 'package:installer2/steps/java_get_download_url.dart';
-import 'package:installer2/steps/node_get_download_url.dart';
+import 'package:installer2/steps/java/java_get_download_url.dart';
+import 'package:installer2/steps/node/node_get_download_url.dart';
 import 'package:installer2/steps/not_null.dart';
-import 'package:installer2/steps/nushell_download_url.dart';
+import 'package:installer2/steps/nushell/nushell_download_url.dart';
 import 'package:installer2/steps/run_command.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/version_installed.dart';
@@ -86,6 +87,14 @@ final installJava = If(
   ]),
 );
 
+final installAndroidSDK = Chain("Android SDK", [
+  installJava,
+  GetAndroidCmdlineToolsURL(),
+  DownloadFile(),
+  Decompress(into: "android-sdk/cmdline-tools"),
+  Rename("cmdline-tools", "latest"),
+]);
+
 final installNushell = Chain("Nushell", [
   GetNushellDownloadURL(),
   DownloadFile(),
@@ -98,7 +107,7 @@ void main(List<String> arguments) {
       // installFlutter,
       // installVSCode,
       // installFirebaseCLI,
-      installJava,
+      installAndroidSDK,
       // installNushell,
     ]),
   );

@@ -37,7 +37,7 @@ class AddBinaries extends SinglePriorStep<bool, Dirname?> {
       }
       final absDir = join(baseDir, subDir);
       ctx.addBinary(b.cmd, absDir, file);
-      log.print("Added binary '${b.cmd}' in '$absDir/$file'");
+      log.print("Added binary '${b.cmd}' in '${join(absDir, file)}'");
     }
     return true;
   }
