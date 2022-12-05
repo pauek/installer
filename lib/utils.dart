@@ -21,15 +21,41 @@ Future<bool> isDirectory(String dirPath) async {
   return await Directory(dirPath).exists();
 }
 
-Future<void> downloadFile(String url, String path) async {
+Future<bool> downloadFile(String url, String path) async {
   final response = await http.get(Uri.parse(url));
-  await File(path).writeAsBytes(response.bodyBytes);
+  if (response.statusCode == 200) {
+    await File(path).writeAsBytes(response.bodyBytes);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+class DirList {
+  List<String> dirs = [], files = [];
+}
+
+Future<DirList> listDirectories(String dirPath) async {
+  final dirList = DirList();
+  await for (final file in Directory(dirPath).list()) {
+    if (await isDirectory(file.path)) {
+      dirList.dirs.add(file.path);
+    } else {
+      dirList.files.add(file.path);
+    }
+  }
+  return dirList;
 }
 
 Future<void> decompressFile(String file, String targetDir) async {
   await ensureDir(targetDir);
-  final cmd = ctx.getBinary("7z");
-  await Process.run(cmd, ["x", file], workingDirectory: targetDir);
+  if (file.endsWith(".zip")) {
+    final cmd = ctx.getBinary("7z");
+    await Process.run(cmd, ["x", file], workingDirectory: targetDir);
+  } else if (file.endsWith(".tar.gz")) {
+    final tar = ctx.getBinary("tar");
+    await Process.run(tar, ["xzf", file], workingDirectory: targetDir);
+  }
 }
 
 final _gitOriginRegex = RegExp(r"^origin\s+(.+)\s+\(fetch\)");
@@ -52,4 +78,13 @@ Future<String?> getGitRemote(String repoDir) async {
   }
   final match = _gitOriginRegex.firstMatch(result.stdout.trim());
   return match?.group(1);
+}
+
+Future<String> getCommandOutput(String cmd) async {
+  final parts = cmd.split(" ");
+  final result = await Process.run(
+    parts[0],
+    parts.sublist(1),
+  );
+  return result.stdout.toString().trim();
 }

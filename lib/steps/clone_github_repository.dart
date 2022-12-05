@@ -3,18 +3,20 @@ import 'dart:io';
 import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
 import 'package:installer2/steps/step.dart';
+import 'package:installer2/steps/types.dart';
 import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 const flutterGithubRepo = "https://github.com/flutter/flutter.git";
 
-class CloneGithubRepository extends Step<String?> {
+class CloneGithubRepository extends Step<Dirname?> {
   final String dir, repoUrl;
+  final String? branch;
 
-  CloneGithubRepository(this.dir, this.repoUrl);
+  CloneGithubRepository(this.dir, this.repoUrl, {this.branch});
 
   @override
-  Future<String?> run() async {
+  Future<Dirname?> run() async {
     show("Cloning repository '$repoUrl'");
 
     // Check if repo is already there
@@ -22,7 +24,7 @@ class CloneGithubRepository extends Step<String?> {
     final gitOrigin = await getGitRemote(targetDir);
     if (gitOrigin != null && gitOrigin == repoUrl) {
       log.print("Git repo for '$dir' already present");
-      return targetDir;
+      return Dirname(targetDir);
     }
 
     // Clone Repo
@@ -30,7 +32,12 @@ class CloneGithubRepository extends Step<String?> {
     final git = ctx.getBinary("git");
     final cloneResult = await Process.run(
       git,
-      ["clone", flutterGithubRepo, dir],
+      [
+        "clone",
+        flutterGithubRepo,
+        dir,
+        if (branch != null) ...["-b", branch!],
+      ],
       workingDirectory: ctx.targetDir,
     );
     if (cloneResult.exitCode != 0) {
@@ -43,7 +50,7 @@ class CloneGithubRepository extends Step<String?> {
       return null;
     } else {
       log.print("Repo '$repoUrl' cloned ok.");
-      return targetDir;
+      return Dirname(targetDir);
     }
   }
 }

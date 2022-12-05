@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:html/parser.dart';
+import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
 import 'package:installer2/semver.dart';
 import 'package:installer2/steps/step.dart';
@@ -21,7 +24,7 @@ Future<SemVer> getLatestLTSVersion() async {
     final name = link.text;
     if (name.startsWith("v") && name.endsWith("/")) {
       final version = SemVer.fromName(name.substring(1, name.length - 1));
-      if (isRecentLTS(version) && isSemVerGreaterThan(version, latest)) {
+      if (isRecentLTS(version) && version > latest) {
         latest = version;
       }
     }
@@ -41,14 +44,16 @@ class NodeGetDownloadURL extends Step<URL> {
     final version = await getLatestLTSVersion();
     log.print("Node: found version $version");
 
-    // if (Platform.isMacOS || Platform.isLinux) {
-    //   throw "MacOS and Linux download of Git not implemented yet";
-    // }
-    // log.print("Git Windows version URL at: '$gitForWindowsURL'");
-
-    final nodeZipFile = "node-$version-win-x64.zip";
-    final nodeDownloadURL = "https://nodejs.org/dist/$version/$nodeZipFile";
-    log.print("Node: Download URL is '$nodeDownloadURL'");
-    return Future.value(URL(nodeDownloadURL));
+    String os =
+        Platform.isMacOS ? "darwin" : (Platform.isLinux ? "linux" : "windows");
+    String arch = ctx.getVariable("arch")!;
+    if (arch == "x86_64") {
+      arch = "x64";
+    }
+    String extension = Platform.isWindows ? ".zip" : ".tar.gz";
+    final file = "node-$version-$os-$arch$extension";
+    final url = "https://nodejs.org/dist/$version/$file";
+    log.print("Node: Download URL is '$url'");
+    return Future.value(URL(url));
   }
 }

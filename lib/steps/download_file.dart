@@ -17,8 +17,12 @@ class DownloadFile extends SinglePriorStep<Filename, URL> {
     show("Downloading $filename...");
     log.print("Downloading '$filename' from '${url.value}'");
     final absFilename = join(ctx.downloadDir, filename);
-    await downloadFile(url.value, absFilename);
-    log.print("Downloaded successfully at '$absFilename'");
+    if (await downloadFile(url.value, absFilename)) {
+      log.print("Downloaded successfully at '$absFilename'");
+    } else {
+      log.print("Error downloading file '${url.value}'");
+      throw "Error downloading '${url.value}'";
+    }
     return Filename(absFilename);
   }
 }

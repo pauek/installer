@@ -7,11 +7,12 @@ import 'package:installer2/steps/add_binary.dart';
 import 'package:installer2/steps/clone_github_repository.dart';
 import 'package:installer2/steps/decompress.dart';
 import 'package:installer2/steps/download_file.dart';
-import 'package:installer2/steps/command_installed.dart';
+import 'package:installer2/steps/version_installed.dart';
 import 'package:installer2/steps/git_get_download_url.dart';
 import 'package:installer2/steps/git_repository_missing.dart';
 import 'package:installer2/steps/give_url.dart';
 import 'package:installer2/steps/if.dart';
+import 'package:installer2/steps/java_get_download_url.dart';
 import 'package:installer2/steps/node_get_download_url.dart';
 import 'package:installer2/steps/not_null.dart';
 import 'package:installer2/steps/run_command.dart';
@@ -28,6 +29,8 @@ Future<void> runInstaller(Step installer) async {
   );
   Log.init(filename: "flutter-installer.log");
   ctx.addBinary("7z", "/Users/pauek/bin", "7zz");
+  ctx.addVariable("os", (await getCommandOutput("uname")).toLowerCase());
+  ctx.addVariable("arch", await getCommandOutput("uname -m"));
   log.print("Setup: ok");
 
   // Console.hideCursor();
@@ -73,6 +76,13 @@ final installNode = Chain("Node", [
   NodeGetDownloadURL(),
   DownloadFile(),
   Decompress(into: "node"),
+  AddBinaries("node", [
+    Binary("node", {
+      "windows": "node",
+      "darwin": "bin/node",
+      "linux": "bin/node",
+    })
+  ])
 ]);
 
 final installFirebaseCLI = Chain("FirebaseCLI", [
@@ -86,7 +96,19 @@ final installVSCode = Chain("VSCode", [
   Decompress(into: "vscode"),
 ]);
 
-final installAndroidSDK = Chain("Android SDK", []);
+final rJavaVersion = RegExp(r"^java (.*)$");
+
+final installJava = If(
+  NotNull(
+    VersionInstalled("java", rJavaVersion),
+  ),
+  then: Chain("Java", [
+    JavaGetDownloadURL(),
+    DownloadFile(),
+    Decompress(into: "java"),
+    AddBinaries("java", [Binary("java", "bin/java")])
+  ]),
+);
 
 void main(List<String> arguments) {
   runInstaller(
@@ -94,6 +116,7 @@ void main(List<String> arguments) {
       installFlutter,
       installVSCode,
       installFirebaseCLI,
+      installJava,
     ]),
   );
 }

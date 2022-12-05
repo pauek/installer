@@ -9,12 +9,16 @@ class RunCommand extends SinglePriorStep {
 
   @override
   Future run() async {
-    await input;
-    show("Running '$cmdline'");
-    final parts = cmdline.split(" ");
-    await Process.run(
-      ctx.getBinary(parts[0]),
-      parts.sublist(1),
-    );
+    final result = await input;
+    if (result != null) {
+      final parts = cmdline.split(" ");
+      show("Running '${parts[0]} ${parts.sublist(1).join(" ")}'");
+      await Process.run(
+        ctx.getBinary(parts[0]),
+        parts.sublist(1),
+      );
+      return true;
+    }
+    return null;
   }
 }

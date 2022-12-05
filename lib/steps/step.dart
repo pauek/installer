@@ -10,6 +10,9 @@ abstract class Step<T> {
 
   CursorPosition setPos(CursorPosition p) {
     _pos = p;
+    for (int i = 0; i < steps.length; i++) {
+      steps[i].setPos(CursorPosition(p.column, p.row));
+    }
     return CursorPosition(p.column + 2, p.row + 1);
   }
 
@@ -30,6 +33,11 @@ abstract class SinglePriorStep<T, P> extends Step<T> {
 
   @override
   int get numInputSteps => 1;
+
+  @override
+  CursorPosition setPos(CursorPosition p) {
+    return super.setPos(p);
+  }
 
   Future get input {
     if (_steps.isEmpty) {
@@ -63,7 +71,7 @@ class Parallel extends Step {
   }
 }
 
-class Chain<T> extends Step<T> {
+class Chain extends Step {
   final String name;
   Chain(this.name, List<Step> inputSteps) : super(inputSteps) {
     if (steps.isEmpty) {
@@ -86,11 +94,18 @@ class Chain<T> extends Step<T> {
   }
 
   @override
-  Future<T> run() async {
+  Future run() async {
     show("$name: ");
-    final result = await steps.last.run();
-    show("$name: success.");
-    return result;
+    try {
+      final result = await steps.last.run();
+      if (result != null) {
+        show("$name: success.");
+      }
+      return result;
+    } catch (e) {
+      show("$name: $e");
+    }
+    return null;
   }
 
   @override
