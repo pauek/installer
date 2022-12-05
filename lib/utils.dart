@@ -17,6 +17,17 @@ Future<void> ensureDir(String dir) async {
   await Directory(dir).create(recursive: true);
 }
 
+Future<void> removeDirRecursively(String dirPath) async {
+  await Directory(dirPath).delete(recursive: true);
+}
+
+Future<void> ensureEmptyDir(String dir) async {
+  if (await Directory(dir).exists()) {
+    await removeDirRecursively(dir);
+  }
+  await ensureDir(dir);
+}
+
 Future<bool> isDirectory(String dirPath) async {
   return await Directory(dirPath).exists();
 }
@@ -47,15 +58,26 @@ Future<DirList> listDirectories(String dirPath) async {
   return dirList;
 }
 
-Future<void> decompressFile(String file, String targetDir) async {
-  await ensureDir(targetDir);
-  if (file.endsWith(".zip")) {
+Future<String?> decompressFile(String file, String targetDir) async {
+  await ensureEmptyDir(targetDir);
+  late ProcessResult? result;
+  if (file.endsWith(".7z") || file.endsWith(".zip")) {
     final cmd = ctx.getBinary("7z");
-    await Process.run(cmd, ["x", file], workingDirectory: targetDir);
+    result = await Process.run(cmd, ["x", file], workingDirectory: targetDir);
   } else if (file.endsWith(".tar.gz")) {
     final tar = ctx.getBinary("tar");
-    await Process.run(tar, ["xzf", file], workingDirectory: targetDir);
+    result = await Process.run(tar, ["xzf", file], workingDirectory: targetDir);
+  } else {
+    throw "Do not know how to decompress $file";
   }
+  if (result.exitCode != 0) {
+    final stderr = result.stderr.toString().trim();
+    for (final line in stderr.split(" ")) {
+      log.print(" >> $line");
+    }
+    throw "Decompression failed";
+  }
+  return targetDir;
 }
 
 final _gitOriginRegex = RegExp(r"^origin\s+(.+)\s+\(fetch\)");
