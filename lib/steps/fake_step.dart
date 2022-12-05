@@ -23,9 +23,12 @@ rndDuration() => Duration(milliseconds: rnd.nextInt(1800) + 1200);
 
 fakeChain(int number) {
   int steps = rnd.nextInt(6) + 1;
-  return Chain("Chain $number", [
-    for (int i = 0; i < steps; i++) FakeStep(i + 1, rndDuration()),
-  ]);
+  return Chain(
+    name: "Chain $number",
+    steps: [
+      for (int i = 0; i < steps; i++) FakeStep(i + 1, rndDuration()),
+    ],
+  );
 }
 
 final fakeInstaller = Parallel([

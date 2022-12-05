@@ -10,6 +10,7 @@ const nuVersion = "0.72.0";
 class GetNushellDownloadURL extends Step<URL> {
   @override
   Future<URL> run() async {
+    show("Get nu download URL");
     late String nuZip;
     final arch = ctx.getVariable("arch");
     if (Platform.isWindows) {

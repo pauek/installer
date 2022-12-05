@@ -17,6 +17,12 @@ class Log {
     sink.write("$text\n");
   }
 
+  void showOutput(String output) {
+    for (final line in output.split("\n")) {
+      log.print(" >> $line");
+    }
+  }
+
   static Log? _instance;
   static init({required String filename}) {
     _instance = Log(filename);

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:installer2/context.dart';
@@ -11,21 +12,28 @@ class RunCommand extends SinglePriorStep {
 
   @override
   Future run() async {
-    final result = await input;
-    if (result != null) {
-      final binary = ctx.getBinary(cmd);
-      show("Running '$binary ${args.sublist(1).join(" ")}'");
-      final result = await Process.run(binary, args);
-      if (result.exitCode != 0) {
-        log.print("ERROR: $cmd returned ${result.exitCode}:");
-        final stderr = result.stderr.toString();
-        for (final line in stderr.trim().split(" ")) {
-          log.print(" >> $line");
-        }
-        throw "$cmd returned ${result.exitCode}";
-      }
-      return true;
+    final value = await input;
+    if (value == null) {
+      return null;
     }
-    return null;
+    show("Running '$cmd ${args.join(" ")}'");
+    final process = await Process.start(ctx.getBinary(cmd), args);
+    process.stdin.write("y\n" * 50); // Accept licenses
+    List<int> bStdout = [], bStderr = [];
+    process.stdout.listen((bytes) => bStdout.addAll(bytes));
+    process.stderr.listen((bytes) => bStderr.addAll(bytes));
+    final exitCode = await process.exitCode;
+
+    final dec = Utf8Decoder();
+    // final stdout = dec.convert(bStdout);
+    final stderr = dec.convert(bStderr);
+    if (exitCode != 0) {
+      log.print("ERROR: $cmd returned $exitCode:");
+      log.showOutput(stderr);
+      throw "$cmd returned $exitCode";
+    }
+    log.print("'$cmd' execution was successful");
+    // log.showOutput(stdout);
+    return true;
   }
 }

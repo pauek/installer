@@ -72,8 +72,9 @@ class Parallel extends Step {
 }
 
 class Chain extends Step {
-  final String name;
-  Chain(this.name, List<Step> inputSteps) : super(inputSteps) {
+  final String? name;
+
+  Chain({this.name, required List<Step> steps}) : super(steps) {
     if (steps.isEmpty) {
       throw "Chain with no inputs";
     }
@@ -95,24 +96,29 @@ class Chain extends Step {
 
   @override
   Future run() async {
-    show("$name: ");
+    final prefix = name == null ? "" : "$name: ";
+    show(prefix);
     try {
       final result = await steps.last.run();
       if (result != null) {
-        show("$name: success.");
+        show("${prefix}success.");
       }
       return result;
     } catch (e) {
-      show("$name: $e");
+      show("$prefix$e");
     }
     return null;
   }
+
+  int get prefixLen => name == null ? 0 : name!.length + 2;
 
   @override
   CursorPosition setPos(CursorPosition p) {
     final next = super.setPos(p);
     for (int i = 0; i < steps.length; i++) {
-      steps[i].setPos(CursorPosition(p.column + name.length + 2, p.row));
+      steps[i].setPos(
+        CursorPosition(p.column + prefixLen, p.row),
+      );
     }
     return next;
   }

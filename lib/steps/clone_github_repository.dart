@@ -42,10 +42,7 @@ class CloneGithubRepository extends Step<Dirname?> {
     );
     if (cloneResult.exitCode != 0) {
       log.print("Git clone returned error ${cloneResult.exitCode}");
-      final output = cloneResult.stderr.toString().trim();
-      for (final line in output.split("\n")) {
-        log.print(" >> $line");
-      }
+      log.showOutput(cloneResult.stderr.toString().trim());
       show("ERROR (check .log file for details)");
       return null;
     } else {

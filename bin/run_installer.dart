@@ -8,8 +8,8 @@ import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 Future<void> initPlatformVariables() async {
-  String os = (await getCommandOutput("uname")).toLowerCase();
-  String arch = await getCommandOutput("uname -m");
+  String os = (await getCommandOutput("uname", [])).toLowerCase();
+  String arch = await getCommandOutput("uname", ["-m"]);
   if (os.startsWith("mingw")) {
     os = "win";
   }

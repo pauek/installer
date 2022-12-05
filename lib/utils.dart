@@ -32,7 +32,7 @@ Future<bool> isDirectory(String dirPath) async {
   return await Directory(dirPath).exists();
 }
 
-Future<bool> downloadFile(String url, String path) async {
+Future<bool> downloadFile({required String url, required String path}) async {
   final response = await http.get(Uri.parse(url));
   if (response.statusCode == 200) {
     await File(path).writeAsBytes(response.bodyBytes);
@@ -93,20 +93,14 @@ Future<String?> getGitRemote(String repoDir) async {
   );
   if (result.exitCode != 0) {
     log.print("Error running 'git remove -v'");
-    for (final line in result.stderr.toString().trim().split("\n")) {
-      log.print(" >> $line");
-    }
+    log.showOutput(result.stderr.toString().trim());
     return null;
   }
   final match = _gitOriginRegex.firstMatch(result.stdout.trim());
   return match?.group(1);
 }
 
-Future<String> getCommandOutput(String cmd) async {
-  final parts = cmd.split(" ");
-  final result = await Process.run(
-    parts[0],
-    parts.sublist(1),
-  );
+Future<String> getCommandOutput(String cmd, List<String> args) async {
+  final result = await Process.run(cmd, args);
   return result.stdout.toString().trim();
 }
