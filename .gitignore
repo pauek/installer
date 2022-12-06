@@ -7,3 +7,6 @@ build/
 
 # Log generated when debugging
 flutter-installer.log
+
+# Pessao
+**/.DS_Store
