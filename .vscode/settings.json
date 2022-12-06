@@ -2,5 +2,8 @@
   "files.exclude": {
     ".dart_tool": true,
     "pubspec.lock": true,
-  }
+  },
+  "terminal.explorerKind": "external",
+  "debug.terminal.clearBeforeReusing": true,
+  "dart.cliConsole": "externalTerminal"
 }

@@ -18,7 +18,7 @@ import 'package:installer2/steps/run_sdk_manager.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/version_installed.dart';
 
-import 'run_installer.dart';
+import '../lib/run_installer.dart';
 
 const vscodeDownloadURL = "https://code.visualstudio.com"
     "/sha/download?build=stable&os=win32-x64-archive";
@@ -45,8 +45,8 @@ final installFlutter = Chain(
       then: CloneGithubRepository("flutter", flutterRepo, branch: "stable"),
     ),
     AddBinaries("flutter", [
-      Binary("flutter", {"win": "bin/flutter.bat", "default": "bin/flutter"}),
-      Binary("dart", {"win": "bin/dart.bat", "default": "bin/dart"}),
+      Binary("flutter", win: "bin/flutter.bat", all: "bin/flutter"),
+      Binary("dart", win: "bin/dart.bat", all: "bin/dart"),
     ]),
     RunCommand("dart", ["pub", "global", "activate", "flutterfire_cli"]),
   ],
@@ -59,8 +59,8 @@ final installNode = Chain(
     DownloadFile(),
     Decompress(into: "node"),
     AddBinaries("node", [
-      Binary("node", {"win": "node.exe", "default": "bin/node"}),
-      Binary("npm", {"win": "npm.cmd", "default": "bin/npm"}),
+      Binary("node", win: "node.exe", all: "bin/node"),
+      Binary("npm", win: "npm.cmd", all: "bin/npm"),
     ]),
   ],
 );
@@ -80,10 +80,7 @@ final installVSCode = Chain(
     DownloadFile("vscode.zip"),
     Decompress(into: "vscode"),
     AddBinaries("vscode", [
-      Binary("code", {
-        "win": "bin/code.cmd",
-        "default": "code",
-      })
+      Binary("code", win: "bin/code.cmd", all: "code"),
     ])
   ],
 );
@@ -100,7 +97,9 @@ final installJava = If(
       JavaGetDownloadURL(),
       DownloadFile(),
       Decompress(into: "java"),
-      AddBinaries("java", [Binary("java", "bin/java")])
+      AddBinaries("java", [
+        Binary("java", all: "bin/java"),
+      ])
     ],
   ),
 );
@@ -114,14 +113,16 @@ final installAndroidSDK = Chain(
     Decompress(into: "android-sdk/cmdline-tools"),
     Rename(from: "cmdline-tools", to: "latest"),
     AddBinaries("android-sdk", [
-      Binary("sdkmanager", {
-        "win": "cmdline-tools/latest/bin/sdkmanager.bat",
-        "default": "cmdline-tools/latest/bin/sdkmanager",
-      }),
-      Binary("avdmanager", {
-        "win": "cmdline-tools/latest/bin/avdmanager.bat",
-        "default": "cmdline-tools/latest/bin/avdmanager",
-      }),
+      Binary(
+        "sdkmanager",
+        win: "cmdline-tools/latest/bin/sdkmanager.bat",
+        all: "cmdline-tools/latest/bin/sdkmanager",
+      ),
+      Binary(
+        "avdmanager",
+        win: "cmdline-tools/latest/bin/avdmanager.bat",
+        all: "cmdline-tools/latest/bin/avdmanager",
+      ),
     ]),
     RunSdkManager([
       "platforms;android-33",

@@ -1,0 +1,38 @@
+
+- Un instalador debería tener como target instalar un binario de cierta manera.
+  INPUT:  void
+  OUTPUT: (true, null) o (false, error concreto)
+
+  Installer = Lista de pasos de instalación, en secuencia (o parallelo)
+              pero que se pintan todos en una línea.
+
+- Step: paso de instalación que tiene inputs y outputs más concretos.
+  INPUTS: Any
+  OUTPUT: Una (aunque sea un tipo compuesto)
+
+  Un step necesita un entorno del que sacar:
+  - Inputs: ejecutar el código de los inputs (no siempre todo, tipo macro).
+  - Variables: donde sacar valores compartidos por toda la instalación.
+  - Log: para imprimir cosas en un fichero.
+  - Outputs: dar resultados.
+  - Posición y mensajes en pantalla.  
+
+Creamos objetos porque hay una parafernalia que no queremos
+tener que reescribir una y otra vez y la lógica de los
+instaladores queda más clara.
+- Posición para mostrar mensajes en la pantalla
+- Logging
+
+CheckBinary (al principio y al final)
+- Buscar nu
+- Si está ejecutar el comando concreto y obtener la versión.
+- Comprobar la versión con el mínimo necesario.
+
+DeterminarURL ->>> Hash:
+- Obtener de la web el *hash* de cada fichero además de la URL.
+
+Descargar:
+- Mirar si el fichero existe en los Downloads primero.
+  - Si está: comprobar su hash.
+    - Si coincide: done.
+    - Si no: descargar otra vez.

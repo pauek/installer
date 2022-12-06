@@ -1,28 +1,34 @@
 import 'package:console/console.dart';
 
 abstract class Step<T> {
+  // Necesito tener los steps aquí???
   final List<Step> _steps;
-  CursorPosition? _pos;
+
   Step([List<Step>? steps]) : _steps = steps ?? [];
 
-  int get numInputSteps => 0;
   List<Step> get steps => _steps;
+  int get numInputSteps => 0;
 
+  // Posicionado
+  CursorPosition? pos;
+  // Este método implica que puedes situar cada step de forma estática...
+  // - Lo llamas con una posición y te da la siguiente
   CursorPosition setPos(CursorPosition p) {
-    _pos = p;
-    for (int i = 0; i < steps.length; i++) {
-      steps[i].setPos(CursorPosition(p.column, p.row));
-    }
-    return CursorPosition(p.column + 2, p.row + 1);
+    pos = p;
+    return CursorPosition(p.column, p.row + 1);
   }
 
   show(String msg) {
-    if (_pos == null) {
+    if (pos == null) {
       throw "Step hasn't been positioned";
     }
-    Console.moveCursor(row: _pos!.row, column: _pos!.column);
-    Console.write(msg + " " * (Console.columns - _pos!.column - msg.length));
-    Console.moveCursor(row: _pos!.row, column: _pos!.column);
+    Console.moveCursor(row: pos!.row, column: pos!.column);
+    Console.write(msg + " " * (Console.columns - pos!.column - msg.length));
+    Console.moveCursor(row: pos!.row, column: pos!.column);
+  }
+
+  clear() {
+    show("");
   }
 
   Future<T> run();
@@ -36,7 +42,8 @@ abstract class SinglePriorStep<T, P> extends Step<T> {
 
   @override
   CursorPosition setPos(CursorPosition p) {
-    return super.setPos(p);
+    pos = p;
+    return steps[0].setPos(p);
   }
 
   Future get input {
@@ -61,13 +68,12 @@ class Parallel extends Step {
 
   @override
   CursorPosition setPos(CursorPosition p) {
-    super.setPos(p);
-    int row = p.row;
+    pos = p;
+    var next = CursorPosition(p.column, p.row);
     for (int i = 0; i < steps.length; i++) {
-      final next = steps[i].setPos(CursorPosition(p.column, row));
-      row = next.row;
+      next = steps[i].setPos(next);
     }
-    return CursorPosition(p.column, row);
+    return next;
   }
 }
 
@@ -114,11 +120,15 @@ class Chain extends Step {
 
   @override
   CursorPosition setPos(CursorPosition p) {
-    final next = super.setPos(p);
+    pos = p;
+    var next = CursorPosition(p.column, p.row);
     for (int i = 0; i < steps.length; i++) {
-      steps[i].setPos(
+      final n = steps[i].setPos(
         CursorPosition(p.column + prefixLen, p.row),
       );
+      if (n.row > next.row) {
+        next = CursorPosition(p.column, n.row);
+      }
     }
     return next;
   }

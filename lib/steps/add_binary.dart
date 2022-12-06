@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
 import 'package:installer2/steps/step.dart';
@@ -6,8 +8,8 @@ import 'package:path/path.dart';
 
 class Binary {
   String cmd;
-  dynamic relativePath;
-  Binary(this.cmd, this.relativePath);
+  String? win, mac, linux, all;
+  Binary(this.cmd, {this.win, this.mac, this.linux, this.all});
 }
 
 class AddBinaries extends SinglePriorStep<bool, Dirname?> {
@@ -24,17 +26,23 @@ class AddBinaries extends SinglePriorStep<bool, Dirname?> {
     } else {
       baseDir = result.value;
     }
-    final os = ctx.getVariable("os");
     for (final b in binaries) {
-      late String file, subDir;
-      if (b.relativePath is Map<String, String>) {
-        final relPath = b.relativePath[os] ?? b.relativePath["default"];
-        file = basename(relPath);
-        subDir = dirname(relPath);
-      } else if (b.relativePath is String) {
-        file = basename(b.relativePath);
-        subDir = dirname(b.relativePath);
+      late String? path;
+      if (Platform.isWindows) {
+        path = b.win ?? b.all;
+      } else if (Platform.isMacOS) {
+        path = b.mac ?? b.all;
+      } else if (Platform.isLinux) {
+        path = b.linux ?? b.all;
+      } else {
+        throw "Platform is not supported";
       }
+      if (path == null) {
+        final os = ctx.getVariable("os");
+        throw "Path for ${b.cmd} is not specified on platform $os";
+      }
+      final file = basename(path);
+      final subDir = dirname(path);
       final absDir = join(baseDir, subDir);
       ctx.addBinary(b.cmd, absDir, file);
       log.print("Added binary '${b.cmd}' in '${join(absDir, file)}'");
