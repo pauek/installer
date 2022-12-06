@@ -1,6 +1,6 @@
 import 'package:installer2/steps/add_binary.dart';
 import 'package:installer2/steps/android-sdk/cmdline_tools_url.dart';
-import 'package:installer2/steps/clone_github_repository.dart';
+import 'package:installer2/steps/clone_github_repo.dart';
 import 'package:installer2/steps/decompress.dart';
 import 'package:installer2/steps/download_file.dart';
 import 'package:installer2/steps/git/git_get_download_url.dart';
@@ -42,7 +42,7 @@ final installFlutter = Chain(
     ),
     If(
       GitRepositoryMissing("flutter", flutterRepo),
-      then: CloneGithubRepository("flutter", flutterRepo, branch: "stable"),
+      then: CloneGithubRepo("flutter", flutterRepo, branch: "stable"),
     ),
     AddBinaries("flutter", [
       Binary("flutter", win: "bin/flutter.bat", all: "bin/flutter"),

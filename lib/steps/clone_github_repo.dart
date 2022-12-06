@@ -9,11 +9,11 @@ import 'package:path/path.dart';
 
 const flutterRepo = "https://github.com/flutter/flutter.git";
 
-class CloneGithubRepository extends Step<Dirname?> {
+class CloneGithubRepo extends Step<Dirname?> {
   final String dir, repoUrl;
   final String? branch;
 
-  CloneGithubRepository(this.dir, this.repoUrl, {this.branch});
+  CloneGithubRepo(this.dir, this.repoUrl, {this.branch});
 
   @override
   Future<Dirname?> run() async {
