@@ -10,3 +10,5 @@ flutter-installer.log
 
 # Pessao
 **/.DS_Store
+
+**/*.exe

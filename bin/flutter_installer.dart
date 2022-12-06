@@ -1,9 +1,11 @@
 import 'package:installer2/run_installer.dart';
 import 'package:installer2/steps/add_binary.dart';
+import 'package:installer2/steps/android-sdk/accept_android_licenses.dart';
 import 'package:installer2/steps/android-sdk/cmdline_tools_url.dart';
 import 'package:installer2/steps/clone_github_repo.dart';
 import 'package:installer2/steps/decompress.dart';
 import 'package:installer2/steps/download_file.dart';
+import 'package:installer2/steps/flutter/flutter_config_android_sdk.dart';
 import 'package:installer2/steps/git/git_get_download_url.dart';
 import 'package:installer2/steps/git/git_repository_missing.dart';
 import 'package:installer2/steps/give_url.dart';
@@ -73,6 +75,7 @@ final rJavaVersion = RegExp(r"^java (.*)$");
 
 final installJava = If(
   NotNull(
+    // FIXME: Buscar la versión mínima para Android SDK
     VersionInstalled("java", rJavaVersion),
   ),
   then: Chain("Java", [
@@ -108,6 +111,7 @@ final installAndroidSDK = Chain("Android SDK", [
     "build-tools;33.0.1",
     "platform-tools",
   ]),
+  AcceptAndroidLicenses(),
 ]);
 
 final installNushell = Chain("Nushell", [
@@ -129,8 +133,9 @@ void main(List<String> arguments) {
         installAndroidSDK,
         installNushell,
       ]),
-      Chain("Setup Path", [
+      Chain("Final Setup", [
         ConfigureNushell(),
+        FlutterConfigAndroidSDK(),
       ]),
     ]),
   );

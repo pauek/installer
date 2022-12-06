@@ -1,7 +1,8 @@
 import 'package:console/console.dart';
 import 'package:installer2/log.dart';
 
-const frames = r"⢿⣻⣽⣾⣷⣯⣟⡿";
+const brailleFrames = r"⢿⣻⣽⣾⣷⣯⣟⡿";
+const frames = r"|/-\";
 
 abstract class Step<T> {
   // Necesito tener los steps aquí???
@@ -55,8 +56,8 @@ abstract class Step<T> {
     future.whenComplete(() => waiting = false);
     int i = 0;
     while (waiting) {
-      show(" ${frames[i]} ", clear: false);
-      i = (i + 1) % frames.length;
+      show(" ${brailleFrames[i]} ", clear: false);
+      i = (i + 1) % brailleFrames.length;
       await Future.delayed(Duration(milliseconds: 100));
     }
   }

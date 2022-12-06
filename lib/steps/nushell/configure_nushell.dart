@@ -76,7 +76,9 @@ class ConfigureNushell extends SinglePriorStep {
           final path = (await getNuPath(which)).trim();
           await ensureDir(dirname(path));
           await downloadFile(
-              url: "$github${route}default_$which.nu", path: path);
+            url: "$github${route}default_$which.nu",
+            path: path,
+          );
           file[which] = path;
         }
 
@@ -84,6 +86,8 @@ class ConfigureNushell extends SinglePriorStep {
           "let-env $vpath = (\$env.$vpath | prepend '${dartPubDir()}')",
           for (final path in ctx.binaries.values)
             "let-env $vpath = (\$env.$vpath | prepend '${dirname(path)}')",
+          for (final entry in ctx.variables)
+            "let-env ${entry.variable} = '${entry.value}'",
         ]);
 
         await addLinesToFile(file['config']!, [
