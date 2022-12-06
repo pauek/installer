@@ -32,6 +32,10 @@ Future<bool> isDirectory(String dirPath) async {
   return await Directory(dirPath).exists();
 }
 
+Future<void> writeFile(String path, String contents) async {
+  await File(path).writeAsString(contents, flush: true);
+}
+
 Future<bool> downloadFile({required String url, required String path}) async {
   final response = await http.get(Uri.parse(url));
   if (response.statusCode == 200) {

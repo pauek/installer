@@ -1,4 +1,3 @@
-import 'dart:cli';
 import 'dart:io';
 
 import 'package:installer2/context.dart';
@@ -8,7 +7,7 @@ class AcceptAndroidLicenses extends Step {
   @override
   Future run() async {
     await waitForInput();
-    withMessage("Accepting Android Licenses", () async {
+    return await withMessage("Accepting Android Licenses", () async {
       final process = await Process.start(
         ctx.getBinary("sdkmanager"),
         ["--licenses"],

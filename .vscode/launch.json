@@ -5,14 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "installer2",
+      "name": "Flutter Installer",
       "request": "launch",
       "type": "dart",
       "console": "externalTerminal",
       "program": "bin/flutter_installer.dart"
     },
     {
-      "name": "fake_installer",
+      "name": "Fake Installer",
       "request": "launch",
       "type": "dart",
       "console": "externalTerminal",

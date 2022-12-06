@@ -9,7 +9,7 @@ class FlutterConfigAndroidSDK extends SinglePriorStep {
   @override
   Future run() async {
     await waitForInput();
-    withMessage("Configuring Android SDK for Flutter", () async {
+    return await withMessage("Configuring Android SDK for Flutter", () async {
       final androidDir = join(ctx.targetDir, "android-sdk");
       final result = await Process.run(
         ctx.getBinary("flutter"),
