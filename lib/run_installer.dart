@@ -49,6 +49,7 @@ Future<void> runInstaller(Step installer) async {
 
   // Console.hideCursor();
   Console.eraseDisplay(2);
+  Console.hideCursor();
   final lastPos = installer.setPos(CursorPosition(1, 1));
   Console.moveCursor(column: 1, row: 1);
   await installer.run();

@@ -1,20 +1,38 @@
 import 'package:console/console.dart';
+import 'package:installer2/log.dart';
 
 abstract class Step<T> {
   // Necesito tener los steps aquí???
-  final List<Step> _steps;
+  Step? _input;
 
-  Step([List<Step>? steps]) : _steps = steps ?? [];
+  Step([Step? input]) : _input = input;
 
-  List<Step> get steps => _steps;
-  int get numInputSteps => 0;
+  Step get input {
+    if (_input == null) {
+      throw "Attempting to use _input when null";
+    }
+    return _input!;
+  }
+
+  set input(Step step) {
+    _input = step;
+  }
+
+  bool get hasInput => _input != null;
+
+  Future waitForInput() async {
+    return (_input != null ? await input.run() : null);
+  }
+
+  // Descripción
+  String get description => throw UnimplementedError();
 
   // Posicionado
   CursorPosition? pos;
   // Este método implica que puedes situar cada step de forma estática...
   // - Lo llamas con una posición y te da la siguiente
   CursorPosition setPos(CursorPosition p) {
-    pos = p;
+    pos = CursorPosition(p.column, p.row);
     return CursorPosition(p.column, p.row + 1);
   }
 
@@ -24,112 +42,129 @@ abstract class Step<T> {
     }
     Console.moveCursor(row: pos!.row, column: pos!.column);
     Console.write(msg + " " * (Console.columns - pos!.column - msg.length));
-    Console.moveCursor(row: pos!.row, column: pos!.column);
-  }
-
-  clear() {
-    show("");
   }
 
   Future<T> run();
 }
 
 abstract class SinglePriorStep<T, P> extends Step<T> {
-  SinglePriorStep([super.steps]);
-
-  @override
-  int get numInputSteps => 1;
+  SinglePriorStep([Step? priorStep]) : super(priorStep);
 
   @override
   CursorPosition setPos(CursorPosition p) {
-    pos = p;
-    return steps[0].setPos(p);
-  }
-
-  Future get input {
-    if (_steps.isEmpty) {
-      throw "Attempted to run null priorStep";
-    }
-    return _steps[0].run();
+    pos = CursorPosition(p.column, p.row);
+    return input.setPos(p);
   }
 }
 
 class Parallel extends Step {
-  Parallel(List<Step> steps) : super(steps);
-
-  Future<List> get inputs {
-    return Future.wait(
-      steps.map((step) => step.run()),
-    );
-  }
+  List<Step> parSteps;
+  Parallel(this.parSteps);
 
   @override
-  Future<List> run() async => await inputs;
+  String get description => "Parallel job";
+
+  @override
+  Future<List> run() async {
+    await waitForInput();
+    return Future.wait(
+      parSteps.map((s) => s.run()),
+    );
+  }
 
   @override
   CursorPosition setPos(CursorPosition p) {
     pos = p;
     var next = CursorPosition(p.column, p.row);
-    for (int i = 0; i < steps.length; i++) {
-      next = steps[i].setPos(next);
+    for (int i = 0; i < parSteps.length; i++) {
+      next = parSteps[i].setPos(CursorPosition(next.column, next.row));
     }
     return next;
   }
 }
 
-class Chain extends Step {
-  final String? name;
+abstract class SequenceBase extends Step {
+  final List<Step> seqSteps;
 
-  Chain({this.name, required List<Step> steps}) : super(steps) {
-    if (steps.isEmpty) {
+  SequenceBase(this.seqSteps) {
+    if (seqSteps.isEmpty) {
       throw "Chain with no inputs";
     }
-    for (int i = 1; i < steps.length; i++) {
-      final step = steps[i];
-      if (i == 0 && step.numInputSteps != 0) {
-        throw "First step in Chain must have 0 inputs";
-      }
-      if (i > 0 && step.numInputSteps > 1) {
-        throw "Second to last steps in Chain must have at most 1 input";
-      }
+    if (seqSteps[0].hasInput) {
+      throw "First step in Chain shouldn't have input";
     }
 
     // Set up chain
-    for (int i = 1; i < steps.length; i++) {
-      steps[i]._steps.add(steps[i - 1]);
+    for (int i = 1; i < seqSteps.length; i++) {
+      seqSteps[i].input = seqSteps[i - 1];
     }
   }
+
+  int get indent;
+
+  @override
+  CursorPosition setPos(CursorPosition p) {
+    for (final step in seqSteps) {
+      step.setPos(CursorPosition(p.column + indent, p.row));
+    }
+    return super.setPos(p);
+  }
+}
+
+class Chain extends SequenceBase {
+  final String name;
+  Chain(this.name, super.seqSteps);
+
+  @override
+  String get description => name;
+  String get prefix => "$name:";
+
+  @override
+  int get indent => prefix.length;
 
   @override
   Future run() async {
-    final prefix = name == null ? "" : "$name: ";
+    await waitForInput();
     show(prefix);
     try {
-      final result = await steps.last.run();
+      final result = await seqSteps.last.run();
       if (result != null) {
-        show("${prefix}success.");
+        show("$prefix ✓");
       }
       return result;
     } catch (e) {
-      show("$prefix$e");
+      show("$prefix ⨉ $e");
+      log.print("Error: $e");
+      return null;
     }
-    return null;
   }
+}
 
-  int get prefixLen => name == null ? 0 : name!.length + 2;
+class Sequence extends SequenceBase {
+  Sequence(super.seqSteps);
+
+  @override
+  int get indent => 0;
 
   @override
   CursorPosition setPos(CursorPosition p) {
     pos = p;
-    var next = CursorPosition(p.column, p.row);
-    for (int i = 0; i < steps.length; i++) {
-      final n = steps[i].setPos(
-        CursorPosition(p.column + prefixLen, p.row),
-      );
-      if (n.row > next.row) {
-        next = CursorPosition(p.column, n.row);
-      }
+    var next = p;
+    for (final s in seqSteps) {
+      next = s.setPos(next);
     }
     return next;
+  }
+
+  @override
+  Future run() async {
+    await waitForInput();
+    try {
+      await seqSteps.last.run();
+      return true;
+    } catch (e) {
+      log.print("Error: $e");
+      return null;
+    }
   }
 }

@@ -10,7 +10,7 @@ class Rename extends SinglePriorStep {
 
   @override
   Future run() async {
-    final dir = ((await input) as Dirname).value;
+    final dir = ((await input.run()) as Dirname).value;
     final basedir = dirname(dir);
     await Directory(dir).rename(join(basedir, to));
   }

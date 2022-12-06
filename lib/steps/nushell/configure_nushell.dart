@@ -66,7 +66,7 @@ class FileInfo {
 class ConfigureNushell extends SinglePriorStep {
   @override
   Future run() async {
-    await input;
+    await waitForInput();
 
     show("Configuring nushell...");
     final file = <String, String>{};

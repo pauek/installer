@@ -19,7 +19,7 @@ class AddBinaries extends SinglePriorStep<bool, Dirname?> {
 
   @override
   Future<bool> run() async {
-    final result = await input;
+    final result = await input.run();
     String baseDir;
     if (result == null) {
       baseDir = join(ctx.targetDir, dir);

@@ -11,7 +11,7 @@ class RunSdkManager extends SinglePriorStep {
 
   @override
   Future run() async {
-    final value = await input;
+    final value = await input.run();
     if (value == null) {
       return null;
     }

@@ -10,6 +10,13 @@
       "type": "dart",
       "console": "externalTerminal",
       "program": "bin/installer2.dart"
+    },
+    {
+      "name": "fake_installer",
+      "request": "launch",
+      "type": "dart",
+      "console": "externalTerminal",
+      "program": "bin/fake_installer.dart"
     }
   ]
 }

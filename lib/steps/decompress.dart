@@ -11,7 +11,7 @@ class Decompress extends SinglePriorStep {
 
   @override
   Future<Dirname> run() async {
-    final absFile = (await input as Filename).value;
+    final absFile = ((await input.run()) as Filename).value;
     show("Decompressing '$absFile'... ");
     var absDir = join(ctx.targetDir, subDir);
     log.print("Decompressing '$absFile' into '$absDir'");

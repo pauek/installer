@@ -11,7 +11,7 @@ class DownloadFile extends SinglePriorStep<Filename, URL> {
 
   @override
   Future<Filename> run() async {
-    final url = await input;
+    final url = await input.run();
     final urlPath = Uri.parse(url.value).path;
     final filename = forcedFilename ?? basename(urlPath);
     show("Downloading $filename...");

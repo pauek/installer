@@ -10,14 +10,11 @@ class FakeStep extends Step {
 
   @override
   Future run() async {
-    if (steps.isNotEmpty) {
-      await steps[0].run();
-    }
-    show("Fake step $number...");
+    await waitForInput();
 
+    show("#  Fake step $number");
     await Future.delayed(duration);
-
-    clear();
+    show("✓  Fake step $number");
     return true;
   }
 
@@ -32,18 +29,21 @@ final rnd = Random();
 
 rndDuration() => Duration(milliseconds: rnd.nextInt(1800) + 1200);
 
-final fakeInstaller = Parallel([
-  Chain(name: "Chain 1", steps: [
-    Parallel([
+final fakeInstaller = Sequence([
+  Parallel([
+    Chain("Chain 1", [
       FakeStep(1, rndDuration()),
       FakeStep(2, rndDuration()),
       FakeStep(3, rndDuration()),
+      FakeStep(4, rndDuration()),
     ]),
-    FakeStep(4, rndDuration()),
+    Chain("Chain 2", [
+      FakeStep(1, rndDuration()),
+      FakeStep(2, rndDuration()),
+      FakeStep(3, rndDuration()),
+    ])
   ]),
-  Chain(name: "Chain 2", steps: [
-    FakeStep(5, rndDuration()),
-    FakeStep(6, rndDuration()),
-    FakeStep(7, rndDuration()),
-  ])
+  Chain("Chain 3", [
+    FakeStep(1, rndDuration()),
+  ]),
 ]);

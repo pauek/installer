@@ -8,7 +8,7 @@ class GitInstall extends Step<Filename> {
   @override
   Future<Filename> run() async {
     show("Registering git binary");
-    final dirname = await steps[0].run();
+    final dirname = await input.run();
     Filename gitExe = Filename(join(dirname.value, "cmd", "git.exe"));
     ctx.addBinary("git", join(dirname.value, "cmd"), "git.exe");
     log.print("Git executable at '${gitExe.value}'");
