@@ -39,21 +39,25 @@ Future<SemVer> getLatestLTSVersion() async {
 class NodeGetDownloadURL extends Step<URL> {
   @override
   Future<URL> run() async {
-    show("Determining Node Download URL");
-    log.print("Node: Determining latest LTS version");
-    final version = await getLatestLTSVersion();
-    log.print("Node: found version $version");
+    return await withMessage(
+      "Determining Node Download URL",
+      () async {
+        log.print("Node: Determining latest LTS version");
+        final version = await getLatestLTSVersion();
+        log.print("Node: found version $version");
 
-    String os =
-        Platform.isMacOS ? "darwin" : (Platform.isLinux ? "linux" : "win");
-    String arch = ctx.getVariable("arch")!;
-    if (arch == "x86_64") {
-      arch = "x64";
-    }
-    String extension = Platform.isWindows ? ".7z" : ".tar.gz";
-    final file = "node-$version-$os-$arch$extension";
-    final url = "https://nodejs.org/dist/$version/$file";
-    log.print("Node: Download URL is '$url'");
-    return Future.value(URL(url));
+        String os =
+            Platform.isMacOS ? "darwin" : (Platform.isLinux ? "linux" : "win");
+        String arch = ctx.getVariable("arch")!;
+        if (arch == "x86_64") {
+          arch = "x64";
+        }
+        String extension = Platform.isWindows ? ".7z" : ".tar.gz";
+        final file = "node-$version-$os-$arch$extension";
+        final url = "https://nodejs.org/dist/$version/$file";
+        log.print("Node: Download URL is '$url'");
+        return Future.value(URL(url));
+      },
+    );
   }
 }

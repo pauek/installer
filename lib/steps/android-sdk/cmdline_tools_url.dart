@@ -22,22 +22,26 @@ String getOS() {
 class GetAndroidCmdlineToolsURL extends Step<URL> {
   @override
   Future<URL> run() async {
-    show("Detecting latest cmdline-tools version");
-    final response = await http.get(
-      Uri.parse("https://developer.android.com/studio"),
+    return await withMessage(
+      "Detecting latest cmdline-tools version",
+      () async {
+        final response = await http.get(
+          Uri.parse("https://developer.android.com/studio"),
+        );
+        final os = getOS();
+        final document = parse(response.body);
+        final button = document.querySelector(
+          'button[data-modal-dialog-id="sdk_${os}_download"]',
+        );
+        if (button == null) {
+          throw "Android Studio page format has changed!";
+        }
+        final filename = button.text;
+        final path = join("/android/repository/", filename);
+        final url = "https://dl.google.com$path";
+        log.print("Android: cmdline-tools URL is '$url'");
+        return URL(url);
+      },
     );
-    final os = getOS();
-    final document = parse(response.body);
-    final button = document.querySelector(
-      'button[data-modal-dialog-id="sdk_${os}_download"]',
-    );
-    if (button == null) {
-      throw "Android Studio page format has changed!";
-    }
-    final filename = button.text;
-    final path = join("/android/repository/", filename);
-    final url = "https://dl.google.com$path";
-    log.print("Android: cmdline-tools URL is '$url'");
-    return URL(url);
   }
 }

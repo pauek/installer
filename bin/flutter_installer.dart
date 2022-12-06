@@ -114,6 +114,9 @@ final installNushell = Chain("Nushell", [
   GetNushellDownloadURL(),
   DownloadFile(),
   Decompress(into: "nu"),
+  AddBinaries("nu", [
+    Binary("nu", win: "nu.exe", all: "nu"),
+  ])
 ]);
 
 void main(List<String> arguments) {
@@ -126,7 +129,9 @@ void main(List<String> arguments) {
         installAndroidSDK,
         installNushell,
       ]),
-      ConfigureNushell(),
+      Chain("Setup Path", [
+        ConfigureNushell(),
+      ]),
     ]),
   );
 }

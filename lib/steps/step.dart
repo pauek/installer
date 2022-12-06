@@ -1,6 +1,8 @@
 import 'package:console/console.dart';
 import 'package:installer2/log.dart';
 
+const frames = r"⢿⣻⣽⣾⣷⣯⣟⡿";
+
 abstract class Step<T> {
   // Necesito tener los steps aquí???
   Step? _input;
@@ -36,12 +38,35 @@ abstract class Step<T> {
     return CursorPosition(p.column, p.row + 1);
   }
 
-  show(String msg) {
+  show(String msg, {bool clear = true}) {
     if (pos == null) {
       throw "Step hasn't been positioned";
     }
     Console.moveCursor(row: pos!.row, column: pos!.column);
-    Console.write(msg + " " * (Console.columns - pos!.column - msg.length));
+    if (clear) {
+      Console.write(msg + " " * (Console.columns - pos!.column - msg.length));
+    } else {
+      Console.write(msg);
+    }
+  }
+
+  Future<void> hourGlass(Future future) async {
+    bool waiting = true;
+    future.whenComplete(() => waiting = false);
+    int i = 0;
+    while (waiting) {
+      show(" ${frames[i]} ", clear: false);
+      i = (i + 1) % frames.length;
+      await Future.delayed(Duration(milliseconds: 100));
+    }
+  }
+
+  Future withMessage(String msg, Future Function() func) async {
+    show(" # $msg");
+    final result = func();
+    hourGlass(result);
+    show("✓  $msg");
+    return await result;
   }
 
   Future<T> run();
@@ -52,8 +77,11 @@ abstract class SinglePriorStep<T, P> extends Step<T> {
 
   @override
   CursorPosition setPos(CursorPosition p) {
-    pos = CursorPosition(p.column, p.row);
-    return input.setPos(p);
+    var next = super.setPos(CursorPosition(p.column, p.row));
+    if (hasInput) {
+      next = input.setPos(p);
+    }
+    return next;
   }
 }
 
@@ -76,8 +104,8 @@ class Parallel extends Step {
   CursorPosition setPos(CursorPosition p) {
     pos = p;
     var next = CursorPosition(p.column, p.row);
-    for (int i = 0; i < parSteps.length; i++) {
-      next = parSteps[i].setPos(CursorPosition(next.column, next.row));
+    for (final step in parSteps) {
+      next = step.setPos(CursorPosition(next.column, next.row));
     }
     return next;
   }
@@ -149,11 +177,11 @@ class Sequence extends SequenceBase {
   @override
   CursorPosition setPos(CursorPosition p) {
     pos = p;
-    var next = p;
+    var next = CursorPosition(p.column, p.row);
     for (final s in seqSteps) {
       next = s.setPos(next);
     }
-    return next;
+    return CursorPosition(next.column, next.row);
   }
 
   @override

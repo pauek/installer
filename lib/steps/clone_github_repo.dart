@@ -17,37 +17,40 @@ class CloneGithubRepo extends Step<Dirname?> {
 
   @override
   Future<Dirname?> run() async {
-    show("Cloning repository '$repoUrl'");
+    return await withMessage(
+      "Cloning repository '$repoUrl'",
+      () async {
+        // Check if repo is already there
+        final targetDir = join(ctx.targetDir, dir);
+        final gitOrigin = await getGitRemote(targetDir);
+        if (gitOrigin != null && gitOrigin == repoUrl) {
+          log.print("Git repo for '$dir' already present");
+          return Dirname(targetDir);
+        }
 
-    // Check if repo is already there
-    final targetDir = join(ctx.targetDir, dir);
-    final gitOrigin = await getGitRemote(targetDir);
-    if (gitOrigin != null && gitOrigin == repoUrl) {
-      log.print("Git repo for '$dir' already present");
-      return Dirname(targetDir);
-    }
-
-    // Clone Repo
-    log.print("Cloning GitHub repository $repoUrl.");
-    final git = ctx.getBinary("git");
-    final cloneResult = await Process.run(
-      git,
-      [
-        "clone",
-        flutterRepo,
-        dir,
-        if (branch != null) ...["-b", branch!],
-      ],
-      workingDirectory: ctx.targetDir,
+        // Clone Repo
+        log.print("Cloning GitHub repository $repoUrl.");
+        final git = ctx.getBinary("git");
+        final cloneResult = await Process.run(
+          git,
+          [
+            "clone",
+            flutterRepo,
+            dir,
+            if (branch != null) ...["-b", branch!],
+          ],
+          workingDirectory: ctx.targetDir,
+        );
+        if (cloneResult.exitCode != 0) {
+          log.print("Git clone returned error ${cloneResult.exitCode}");
+          log.showOutput(cloneResult.stderr.toString().trim());
+          // show("ERROR (check .log file for details)");
+          return null;
+        } else {
+          log.print("Repo '$repoUrl' cloned ok.");
+          return Dirname(targetDir);
+        }
+      },
     );
-    if (cloneResult.exitCode != 0) {
-      log.print("Git clone returned error ${cloneResult.exitCode}");
-      log.showOutput(cloneResult.stderr.toString().trim());
-      show("ERROR (check .log file for details)");
-      return null;
-    } else {
-      log.print("Repo '$repoUrl' cloned ok.");
-      return Dirname(targetDir);
-    }
   }
 }

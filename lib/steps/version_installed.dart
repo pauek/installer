@@ -11,15 +11,19 @@ class VersionInstalled extends Step<SemVer?> {
 
   @override
   Future<SemVer?> run() async {
-    show("Determining if $cmd is installed");
-    final result = await Process.run(cmd, ["--version"], runInShell: true);
-    final match = versionRegexp.firstMatch(result.stdout.trim());
-    String? version = match?.group(1);
-    if (version != null) {
-      log.print("$cmd: found version '$version'.");
-    } else {
-      log.print("$cmd: not found.");
-    }
-    return version != null ? SemVer.fromName(version) : null;
+    return await withMessage(
+      "Determining if $cmd is installed",
+      () async {
+        final result = await Process.run(cmd, ["--version"], runInShell: true);
+        final match = versionRegexp.firstMatch(result.stdout.trim());
+        String? version = match?.group(1);
+        if (version != null) {
+          log.print("$cmd: found version '$version'.");
+        } else {
+          log.print("$cmd: not found.");
+        }
+        return version != null ? SemVer.fromName(version) : null;
+      },
+    );
   }
 }

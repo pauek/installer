@@ -11,19 +11,24 @@ class Decompress extends SinglePriorStep {
 
   @override
   Future<Dirname> run() async {
-    final absFile = ((await input.run()) as Filename).value;
-    show("Decompressing '$absFile'... ");
-    var absDir = join(ctx.targetDir, subDir);
-    log.print("Decompressing '$absFile' into '$absDir'");
-    await decompressFile(absFile, absDir);
-    log.print("Decompression ok");
+    final filename = await input.run();
+    final absFile = (filename as Filename).value;
+    return await withMessage(
+      "Decompressing '$absFile'",
+      () async {
+        var absDir = join(ctx.targetDir, subDir);
+        log.print("Decompressing '$absFile' into '$absDir'");
+        await decompressFile(absFile, absDir);
+        log.print("Decompression ok");
 
-    // If there is only one folder inside, return that!
-    final dirList = await listDirectories(absDir);
-    if (dirList.dirs.length == 1 && dirList.files.isEmpty) {
-      absDir = dirList.dirs[0];
-      log.print("Decompress result changed to '$absDir'");
-    }
-    return Dirname(absDir);
+        // If there is only one folder inside, return that!
+        final dirList = await listDirectories(absDir);
+        if (dirList.dirs.length == 1 && dirList.files.isEmpty) {
+          absDir = dirList.dirs[0];
+          log.print("Decompress result changed to '$absDir'");
+        }
+        return Dirname(absDir);
+      },
+    );
   }
 }

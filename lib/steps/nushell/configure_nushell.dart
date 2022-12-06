@@ -68,27 +68,32 @@ class ConfigureNushell extends SinglePriorStep {
   Future run() async {
     await waitForInput();
 
-    show("Configuring nushell...");
-    final file = <String, String>{};
-    for (final which in ['env', 'config']) {
-      final path = (await getNuPath(which)).trim();
-      await ensureDir(dirname(path));
-      await downloadFile(url: "$github${route}default_$which.nu", path: path);
-      file[which] = path;
-    }
+    return await withMessage(
+      "Configuring nushell",
+      () async {
+        final file = <String, String>{};
+        for (final which in ['env', 'config']) {
+          final path = (await getNuPath(which)).trim();
+          await ensureDir(dirname(path));
+          await downloadFile(
+              url: "$github${route}default_$which.nu", path: path);
+          file[which] = path;
+        }
 
-    await addLinesToFile(file['env']!, [
-      "let-env $vpath = (\$env.$vpath | prepend '${dartPubDir()}')",
-      for (final path in ctx.binaries.values)
-        "let-env $vpath = (\$env.$vpath | prepend '${dirname(path)}')",
-    ]);
+        await addLinesToFile(file['env']!, [
+          "let-env $vpath = (\$env.$vpath | prepend '${dartPubDir()}')",
+          for (final path in ctx.binaries.values)
+            "let-env $vpath = (\$env.$vpath | prepend '${dirname(path)}')",
+        ]);
 
-    await addLinesToFile(file['config']!, [
-      "let-env config = {",
-      "  show_banner: false",
-      "}",
-    ]);
+        await addLinesToFile(file['config']!, [
+          "let-env config = {",
+          "  show_banner: false",
+          "}",
+        ]);
 
-    return true;
+        return true;
+      },
+    );
   }
 }

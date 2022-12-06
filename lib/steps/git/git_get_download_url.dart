@@ -10,11 +10,15 @@ const gitForWindowsURL = "https://github.com"
 class GitGetDownloadURL extends Step<URL> {
   @override
   Future<URL> run() async {
-    show("Getting git download URL");
-    // if (Platform.isMacOS || Platform.isLinux) {
-    //   throw "MacOS and Linux download of Git not implemented yet";
-    // }
-    log.print("Git: Windows version URL at '$gitForWindowsURL'");
-    return Future.value(URL(gitForWindowsURL));
+    return await withMessage(
+      "Getting git download URL",
+      () async {
+        // if (Platform.isMacOS || Platform.isLinux) {
+        //   throw "MacOS and Linux download of Git not implemented yet";
+        // }
+        log.print("Git: Windows version URL at '$gitForWindowsURL'");
+        return Future.value(URL(gitForWindowsURL));
+      },
+    );
   }
 }

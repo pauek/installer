@@ -52,9 +52,13 @@ Future<String> getLatestJdkUrl() async {
 class JavaGetDownloadURL extends Step<URL> {
   @override
   Future<URL> run() async {
-    show("Determining Java Download URL");
-    final url = await getLatestJdkUrl();
-    log.print("Java: download url is '$url'");
-    return Future.value(URL(url));
+    return await withMessage(
+      "Determining Java Download URL",
+      () async {
+        final url = await getLatestJdkUrl();
+        log.print("Java: download url is '$url'");
+        return Future.value(URL(url));
+      },
+    );
   }
 }

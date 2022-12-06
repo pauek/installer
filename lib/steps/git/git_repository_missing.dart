@@ -10,16 +10,20 @@ class GitRepositoryMissing extends Step<bool> {
 
   @override
   Future<bool> run() async {
-    show("Checking if git repository is present");
-    final flutterDir = join(ctx.targetDir, dir);
-    final remote = await getGitRemote(flutterDir);
-    final missing = remote == null || remote != repoUrl;
-    if (missing) {
-      log.print("Git repository '$repoUrl' missing at '$dir'");
-      return false;
-    } else {
-      log.print("Git repository '$repoUrl' found at '$dir'");
-      return true;
-    }
+    return await withMessage(
+      "Checking if git repository is present",
+      () async {
+        final flutterDir = join(ctx.targetDir, dir);
+        final remote = await getGitRemote(flutterDir);
+        final missing = remote == null || remote != repoUrl;
+        if (missing) {
+          log.print("Git repository '$repoUrl' missing at '$dir'");
+          return false;
+        } else {
+          log.print("Git repository '$repoUrl' found at '$dir'");
+          return true;
+        }
+      },
+    );
   }
 }

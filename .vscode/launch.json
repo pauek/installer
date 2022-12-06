@@ -9,7 +9,7 @@
       "request": "launch",
       "type": "dart",
       "console": "externalTerminal",
-      "program": "bin/installer2.dart"
+      "program": "bin/flutter_installer.dart"
     },
     {
       "name": "fake_installer",

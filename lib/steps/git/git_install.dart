@@ -7,11 +7,15 @@ import 'package:path/path.dart';
 class GitInstall extends Step<Filename> {
   @override
   Future<Filename> run() async {
-    show("Registering git binary");
-    final dirname = await input.run();
-    Filename gitExe = Filename(join(dirname.value, "cmd", "git.exe"));
-    ctx.addBinary("git", join(dirname.value, "cmd"), "git.exe");
-    log.print("Git executable at '${gitExe.value}'");
-    return gitExe;
+    return await withMessage(
+      "Registering git binary",
+      () async {
+        final dirname = await input.run();
+        Filename gitExe = Filename(join(dirname.value, "cmd", "git.exe"));
+        ctx.addBinary("git", join(dirname.value, "cmd"), "git.exe");
+        log.print("Git executable at '${gitExe.value}'");
+        return gitExe;
+      },
+    );
   }
 }
