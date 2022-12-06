@@ -3,6 +3,7 @@ import 'package:installer2/steps/add_binary.dart';
 import 'package:installer2/steps/android-sdk/accept_android_licenses.dart';
 import 'package:installer2/steps/android-sdk/cmdline_tools_url.dart';
 import 'package:installer2/steps/clone_github_repo.dart';
+import 'package:installer2/steps/create_shortcut.dart';
 import 'package:installer2/steps/decompress.dart';
 import 'package:installer2/steps/download_file.dart';
 import 'package:installer2/steps/flutter/flutter_config_android_sdk.dart';
@@ -136,6 +137,7 @@ void main(List<String> arguments) {
       Chain("Final Setup", [
         ConfigureNushell(),
         FlutterConfigAndroidSDK(),
+        CreateShortcut(),
       ]),
     ]),
   );
