@@ -22,7 +22,7 @@ class Decompress extends SinglePriorStep {
         log.print("Decompression ok");
 
         // If there is only one folder inside, return that!
-        final dirList = await listDirectories(absDir);
+        final dirList = await dirListSubdirectories(absDir);
         if (dirList.dirs.length == 1 && dirList.files.isEmpty) {
           absDir = dirList.dirs[0];
           log.print("Decompress result changed to '$absDir'");

@@ -23,6 +23,9 @@ Future<void> removeDirRecursively(String dirPath) async {
 
 Future<void> ensureEmptyDir(String dir) async {
   if (await Directory(dir).exists()) {
+    if (await isDirEmpty(dir)) {
+      return;
+    }
     await removeDirRecursively(dir);
   }
   await ensureDir(dir);
@@ -50,13 +53,24 @@ class DirList {
   List<String> dirs = [], files = [];
 }
 
-Future<DirList> listDirectories(String dirPath) async {
+Future<List<String>> dirList(String dirPath) async {
+  List<String> result = [];
+  await for (final entity in Directory(dirPath).list()) {
+    result.add(entity.path);
+  }
+  return result;
+}
+
+Future<bool> isDirEmpty(String dirPath) async =>
+    (await dirList(dirPath)).isEmpty;
+
+Future<DirList> dirListSubdirectories(String dirPath) async {
   final dirList = DirList();
-  await for (final file in Directory(dirPath).list()) {
-    if (await isDirectory(file.path)) {
-      dirList.dirs.add(file.path);
+  await for (final entity in Directory(dirPath).list()) {
+    if (await isDirectory(entity.path)) {
+      dirList.dirs.add(entity.path);
     } else {
-      dirList.files.add(file.path);
+      dirList.files.add(entity.path);
     }
   }
   return dirList;

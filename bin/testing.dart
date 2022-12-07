@@ -1,15 +1,12 @@
 import 'package:installer2/run_installer.dart';
-import 'package:installer2/steps/step.dart';
-import 'package:installer2/steps/version_installed.dart';
+
+import 'flutter_installer.dart';
 
 final rJavaVersion = RegExp(r"^(?:java|openjdk) (?<version>[\d\.]+)");
 final rGitVersion = RegExp(r"^git version (?<version>[\w\.]+)$");
 
 void main(List<String> arguments) {
   runInstaller(
-    Parallel([
-      VersionInstalled("java", rJavaVersion),
-      VersionInstalled("git", rGitVersion),
-    ]),
+    install7z,
   );
 }

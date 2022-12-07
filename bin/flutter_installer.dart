@@ -1,4 +1,5 @@
 import 'package:installer2/run_installer.dart';
+import 'package:installer2/steps/7z/get_download_url.dart';
 import 'package:installer2/steps/add_binary.dart';
 import 'package:installer2/steps/android-sdk/accept_android_licenses.dart';
 import 'package:installer2/steps/android-sdk/cmdline_tools_url.dart';
@@ -14,6 +15,7 @@ import 'package:installer2/steps/git/git_repository_missing.dart';
 import 'package:installer2/steps/give_url.dart';
 import 'package:installer2/steps/if.dart';
 import 'package:installer2/steps/java/java_get_download_url.dart';
+import 'package:installer2/steps/move.dart';
 import 'package:installer2/steps/node/node_get_download_url.dart';
 import 'package:installer2/steps/not_null.dart';
 import 'package:installer2/steps/nushell/configure_nushell.dart';
@@ -74,8 +76,20 @@ final installVSCode = Chain("VSCode", [
   ])
 ]);
 
-final rJavaVersion = RegExp(r"^(?:java|openjdk) (?<version>[\d\.]+)$");
+final r7zVersion = RegExp(r"^7-Zip \(r\) (?<version>[\d.]+) \(x86\)");
+final install7z = If(
+  NotNull(VersionInstalled("7z", r7zVersion)),
+  then: Chain("7z", [
+    GiveURL("https://www.7-zip.org/a/7zr.exe"),
+    DownloadFile(),
+    Move(into: "7z", forcedFilename: "7z.exe"),
+    AddBinaries("7z", [
+      Binary("7z", win: "7z.exe"),
+    ])
+  ]),
+);
 
+final rJavaVersion = RegExp(r"^(?:java|openjdk) (?<version>[\d\.]+)$");
 final installJava = If(
   NotNull(
     // FIXME: Buscar la versión mínima para Android SDK
@@ -136,6 +150,7 @@ final installFonts = Chain("Fonts", [
 void main(List<String> arguments) {
   runInstaller(
     Sequence([
+      install7z,
       Parallel([
         installFlutter,
         installAndroidSDK,

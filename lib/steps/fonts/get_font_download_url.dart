@@ -9,7 +9,6 @@ class GetFontDownloadURL extends SinglePriorStep {
 
   @override
   Future run() async {
-    await waitForInput();
     return await withMessage("Getting font URL", () async {
       final response = await http.get(
         Uri.parse("https://www.nerdfonts.com/font-downloads"),
