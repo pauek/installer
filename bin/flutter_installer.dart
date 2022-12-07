@@ -152,3 +152,5 @@ void main(List<String> arguments) {
     ]),
   );
 }
+
+// TODO: Command line options to choose what installers to run
