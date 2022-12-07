@@ -17,6 +17,13 @@
       "type": "dart",
       "console": "externalTerminal",
       "program": "bin/fake_installer.dart"
+    },
+    {
+      "name": "Testing",
+      "request": "launch",
+      "type": "dart",
+      "console": "externalTerminal",
+      "program": "bin/testing.dart"
     }
   ]
 }
