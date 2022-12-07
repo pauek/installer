@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:html/parser.dart';
-import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
+import 'package:installer2/run_installer.dart';
 import 'package:installer2/semver.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/types.dart';
@@ -46,12 +46,6 @@ class NodeGetDownloadURL extends Step<URL> {
         final version = await getLatestLTSVersion();
         log.print("Node: found version $version");
 
-        String os =
-            Platform.isMacOS ? "darwin" : (Platform.isLinux ? "linux" : "win");
-        String arch = ctx.getVariable("arch")!;
-        if (arch == "x86_64") {
-          arch = "x64";
-        }
         String extension = Platform.isWindows ? ".7z" : ".tar.gz";
         final file = "node-$version-$os-$arch$extension";
         final url = "https://nodejs.org/dist/$version/$file";

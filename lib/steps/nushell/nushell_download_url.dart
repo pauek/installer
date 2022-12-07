@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
+import 'package:installer2/run_installer.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/types.dart';
 
@@ -14,7 +14,6 @@ class GetNushellDownloadURL extends Step<URL> {
       "Get nu download URL",
       () async {
         late String nuZip;
-        final arch = ctx.getVariable("arch");
         if (Platform.isWindows) {
           nuZip = "nu-$nuVersion-x86_64-pc-windows-msvc.zip";
         } else if (Platform.isMacOS) {

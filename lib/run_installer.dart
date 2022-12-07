@@ -7,17 +7,11 @@ import 'package:installer2/steps/step.dart';
 import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
+late final String os, arch;
+
 Future<void> initPlatformVariables() async {
-  String os = (await getCommandOutput("uname", [])).toLowerCase();
-  String arch = await getCommandOutput("uname", ["-m"]);
-  if (os.startsWith("mingw") || os.startsWith("cygwin")) {
-    os = "win";
-  }
-  if (arch == "x86_64") {
-    arch = "x64";
-  }
-  ctx.addVariable("os", os);
-  ctx.addVariable("arch", arch);
+  os = await getOS();
+  arch = await getArch();
 }
 
 Future<void> logEnv() async {

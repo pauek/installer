@@ -2,15 +2,14 @@ import 'dart:io';
 
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
-import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
+import 'package:installer2/run_installer.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/types.dart';
 
 const targetJdkVersion = 19;
 
 Future<bool> isOurPlatformDownload(String url) async {
-  final arch = ctx.getVariable("arch");
   if (Platform.isWindows) {
     return url.endsWith(".zip") && url.contains("windows");
   } else if (Platform.isMacOS) {
@@ -46,7 +45,7 @@ Future<String> getLatestJdkUrl() async {
       return href;
     }
   }
-  throw "Didn't find JDK download link for ${ctx.getVariable("arch")}";
+  throw "Didn't find JDK download link for $arch";
 }
 
 class JavaGetDownloadURL extends Step<URL> {

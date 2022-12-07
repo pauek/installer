@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
+import 'package:installer2/run_installer.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/types.dart';
 import 'package:path/path.dart';
@@ -38,7 +39,6 @@ class AddBinaries extends SinglePriorStep<bool, Dirname?> {
         throw "Platform is not supported";
       }
       if (path == null) {
-        final os = ctx.getVariable("os");
         throw "Path for ${b.cmd} is not specified on platform $os";
       }
       final file = basename(path);

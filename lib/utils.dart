@@ -108,3 +108,31 @@ Future<String> getCommandOutput(String cmd, List<String> args) async {
   final result = await Process.run(cmd, args);
   return result.stdout.toString().trim();
 }
+
+Future<String> getOS() async {
+  if (Platform.isWindows) {
+    return "win";
+  } else if (Platform.isMacOS) {
+    return "mac";
+  } else if (Platform.isLinux) {
+    return "linux";
+  }
+  throw "Platform not supported";
+}
+
+Future<String> getArch() async {
+  if (Platform.isWindows) {
+    final result = Platform.environment['PROCESSOR_ARCHITECTURE'];
+    if (result == "AMD64" || result == null) {
+      return "x64";
+    } else {
+      throw "Unknown architecture";
+    }
+  } else {
+    var arch = await getCommandOutput("uname", ["-m"]);
+    if (arch == "x86_64") {
+      arch = "x64";
+    }
+    return arch;
+  }
+}
