@@ -3,8 +3,10 @@ import 'package:installer2/steps/add_binary.dart';
 import 'package:installer2/steps/android-sdk/accept_android_licenses.dart';
 import 'package:installer2/steps/android-sdk/cmdline_tools_url.dart';
 import 'package:installer2/steps/clone_github_repo.dart';
+import 'package:installer2/steps/create_shortcut.dart';
 import 'package:installer2/steps/decompress.dart';
 import 'package:installer2/steps/download_file.dart';
+import 'package:installer2/steps/flutter/flutter_config_android_sdk.dart';
 import 'package:installer2/steps/fonts/get_font_download_url.dart';
 import 'package:installer2/steps/fonts/register_fonts.dart';
 import 'package:installer2/steps/git/git_get_download_url.dart';
@@ -14,6 +16,7 @@ import 'package:installer2/steps/if.dart';
 import 'package:installer2/steps/java/java_get_download_url.dart';
 import 'package:installer2/steps/node/node_get_download_url.dart';
 import 'package:installer2/steps/not_null.dart';
+import 'package:installer2/steps/nushell/configure_nushell.dart';
 import 'package:installer2/steps/nushell/nushell_download_url.dart';
 import 'package:installer2/steps/rename.dart';
 import 'package:installer2/steps/run_command.dart';
@@ -124,28 +127,28 @@ final installNushell = Chain("Nushell", [
 ]);
 
 final installFonts = Chain("Fonts", [
-  GetFontDownloadURL(fontName: "JetBrainsMono"),
+  GetFontDownloadURL(fontName: "Iosevka"),
   DownloadFile(),
-  Decompress(into: "fonts/JetBrainsMono"),
+  Decompress(into: "fonts/Iosevka"),
   RegisterFonts(),
 ]);
 
 void main(List<String> arguments) {
   runInstaller(
-    installFonts,
-    // Sequence([
-    //   Parallel([
-    //     installFlutter,
-    //     installVSCode,
-    //     installFirebaseCLI,
-    //     installAndroidSDK,
-    //     installNushell,
-    //   ]),
-    //   Chain("Final Setup", [
-    //     ConfigureNushell(),
-    //     FlutterConfigAndroidSDK(),
-    //     CreateShortcut(),
-    //   ]),
-    // ]),
+    Sequence([
+      Parallel([
+        installFlutter,
+        installAndroidSDK,
+        installFirebaseCLI,
+        installVSCode,
+        installNushell,
+        installFonts,
+      ]),
+      Chain("Final Setup", [
+        ConfigureNushell(),
+        FlutterConfigAndroidSDK(),
+        CreateShortcut(),
+      ]),
+    ]),
   );
 }
