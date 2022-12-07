@@ -97,7 +97,7 @@ Future<String?> getGitRemote(String repoDir) async {
   );
   if (result.exitCode != 0) {
     log.print("Error running 'git remove -v'");
-    log.showOutput(result.stderr.toString().trim());
+    log.printOutput(result.stderr.toString().trim());
     return null;
   }
   final match = _gitOriginRegex.firstMatch(result.stdout.trim());

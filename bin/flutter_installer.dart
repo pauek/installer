@@ -30,7 +30,7 @@ final installGit = Chain("Git", [
   Decompress(into: "git"),
 ]);
 
-final rGitVersion = RegExp(r"^git version (.*)$");
+final rGitVersion = RegExp(r"^git version (?<version>[\d\.]+)$");
 final installFlutter = Chain("Flutter", [
   If(
     NotNull(VersionInstalled("git", rGitVersion)),
@@ -74,7 +74,7 @@ final installVSCode = Chain("VSCode", [
   ])
 ]);
 
-final rJavaVersion = RegExp(r"^java (.*)$");
+final rJavaVersion = RegExp(r"^(?:java|openjdk) (?<version>[\d\.]+)$");
 
 final installJava = If(
   NotNull(

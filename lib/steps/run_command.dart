@@ -21,7 +21,7 @@ class RunCommand extends SinglePriorStep {
         final result = await Process.run(ctx.getBinary(cmd), args);
         if (result.exitCode != 0) {
           log.print("ERROR: $cmd returned $exitCode:");
-          log.showOutput(result.stderr.toString().trim());
+          log.printOutput(result.stderr.toString().trim());
           throw "$cmd returned $exitCode";
         }
         log.print("'$cmd ${args.join(" ")}' execution was successful");

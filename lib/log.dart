@@ -17,7 +17,7 @@ class Log {
     sink.write("$text\n");
   }
 
-  void showOutput(String output) {
+  void printOutput(String output) {
     for (final line in output.split("\n")) {
       log.print(" >> $line");
     }

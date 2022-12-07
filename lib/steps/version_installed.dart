@@ -15,8 +15,9 @@ class VersionInstalled extends Step<SemVer?> {
       "Determining if $cmd is installed",
       () async {
         final result = await Process.run(cmd, ["--version"], runInShell: true);
-        final match = versionRegexp.firstMatch(result.stdout.trim());
-        String? version = match?.group(1);
+        final output = result.stdout.trim();
+        final match = versionRegexp.firstMatch(output);
+        String? version = match?.namedGroup("version");
         if (version != null) {
           log.print("$cmd: found version '$version'.");
         } else {
