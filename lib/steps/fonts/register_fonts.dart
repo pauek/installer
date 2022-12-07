@@ -4,17 +4,17 @@ import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
 import 'package:installer2/steps/nushell/configure_nushell.dart';
 import 'package:installer2/steps/step.dart';
+import 'package:installer2/steps/types.dart';
 import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 class RegisterFonts extends SinglePriorStep {
   @override
   Future<void> run() async {
-    await waitForInput();
+    final fontsDir = ((await input.run()) as Dirname).value;
 
     return await withMessage("Registering Fonts", () async {
       // Get the font list
-      final fontsDir = join(ctx.targetDir, "fonts");
       final fontList = [];
       await for (final file in Directory(fontsDir).list()) {
         if (file.path.endsWith(".ttf") &&
