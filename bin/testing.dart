@@ -3,7 +3,7 @@ import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/version_installed.dart';
 
 final rJavaVersion = RegExp(r"^(?:java|openjdk) (?<version>[\d\.]+)");
-final rGitVersion = RegExp(r"^git version (?<version>[\d\.]+)$");
+final rGitVersion = RegExp(r"^git version (?<version>[\w\.]+)$");
 
 void main(List<String> arguments) {
   runInstaller(
