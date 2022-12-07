@@ -1,8 +1,18 @@
+import 'dart:io';
+
 import 'package:console/console.dart';
 import 'package:installer2/log.dart';
 
 const brailleFrames = r"⢿⣻⣽⣾⣷⣯⣟⡿";
 const frames = r"|/-\";
+
+String getStringAnimation() {
+  if (Platform.isWindows) {
+    return frames;
+  } else {
+    return brailleFrames;
+  }
+}
 
 abstract class Step<T> {
   // Necesito tener los steps aquí???
@@ -55,9 +65,10 @@ abstract class Step<T> {
     bool waiting = true;
     future.whenComplete(() => waiting = false);
     int i = 0;
+    final frames = getStringAnimation();
     while (waiting) {
-      show(" ${brailleFrames[i]} ", clear: false);
-      i = (i + 1) % brailleFrames.length;
+      show(" ${frames[i]} ", clear: false);
+      i = (i + 1) % frames.length;
       await Future.delayed(Duration(milliseconds: 100));
     }
   }
