@@ -1,5 +1,4 @@
 import 'package:installer2/run_installer.dart';
-import 'package:installer2/steps/7z/get_download_url.dart';
 import 'package:installer2/steps/add_binary.dart';
 import 'package:installer2/steps/android-sdk/accept_android_licenses.dart';
 import 'package:installer2/steps/android-sdk/cmdline_tools_url.dart';
