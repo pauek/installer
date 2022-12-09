@@ -10,15 +10,21 @@ class Decompress extends SinglePriorStep {
   Decompress({required String into}) : subDir = into;
 
   @override
-  Future<Dirname> run() async {
-    final filename = await input.run();
-    final absFile = (filename as Filename).value;
-    return await withMessage(
+  Future run() async {
+    final result = await input.run();
+    if (result is InstallerError) {
+      return result;
+    }
+    if (result is! Filename) {
+      return InstallerError("Decompress: Expected a Filename as input");
+    }
+    final absFile = result.value;
+    return withMessage<Dirname>(
       "Decompressing '$absFile'",
       () async {
         var absDir = join(ctx.targetDir, subDir);
         log.print("Decompressing '$absFile' into '$absDir'");
-        await decompressFile(absFile, absDir);
+        await decompress(absFile, absDir);
         log.print("Decompression ok");
 
         // If there is only one folder inside, return that!

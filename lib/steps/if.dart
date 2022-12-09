@@ -1,8 +1,9 @@
 import 'package:console/console.dart';
 import 'package:installer2/steps/step.dart';
+import 'package:installer2/utils.dart';
 
 class If extends Step {
-  final Step<bool> cond;
+  final Step cond;
   final Step then;
   final Step? orelse;
   If(this.cond, {required this.then, this.orelse});
@@ -18,8 +19,14 @@ class If extends Step {
 
   @override
   Future run() async {
-    show("");
-    if (!(await cond.run())) {
+    final result = await cond.run();
+    if (result is InstallerError) {
+      return result;
+    }
+    if (result is! bool) {
+      return InstallerError("Condition in If didn't return boolean");
+    }
+    if (result) {
       return await then.run();
     } else {
       if (orelse != null) {

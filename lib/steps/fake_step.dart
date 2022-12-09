@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:console/console.dart';
 import 'package:installer2/steps/step.dart';
+import 'package:installer2/utils.dart';
 
 class FakeStep extends Step {
   final int number;
@@ -10,8 +11,11 @@ class FakeStep extends Step {
 
   @override
   Future run() async {
-    await waitForInput();
-    return await withMessage("Fake step $number", () async {
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
+    return withMessage("Fake step $number", () async {
       await Future.delayed(duration);
       return true;
     });
@@ -21,6 +25,17 @@ class FakeStep extends Step {
   CursorPosition setPos(CursorPosition p) {
     pos = p;
     return CursorPosition(p.column, p.row + 1);
+  }
+}
+
+class ErrorStep extends Step {
+  @override
+  Future run() async {
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
+    return InstallerError("ErrorStep returned an error");
   }
 }
 
@@ -40,6 +55,7 @@ final fakeInstaller = Sequence([
       FakeStep(1, rndDuration()),
       FakeStep(2, rndDuration()),
       FakeStep(3, rndDuration()),
+      ErrorStep(),
     ])
   ]),
   Chain("Chain 3", [

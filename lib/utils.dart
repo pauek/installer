@@ -1,14 +1,28 @@
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:archive/archive_io.dart';
 import 'package:http/http.dart' as http;
 import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
+
+class InstallerError extends Error {
+  String message;
+  InstallerError(this.message);
+
+  @override
+  String toString() => "InstallerError: $message";
+}
+
+error(String message) {
+  throw InstallerError(message);
+}
 
 String getHomeDir() {
   final homeVar = Platform.isWindows ? 'userprofile' : 'HOME';
   final homeDir = Platform.environment[homeVar];
   if (homeDir == null) {
-    throw "Cannot get user home directory!";
+    return error("Cannot get user home directory!");
   }
   return homeDir;
 }
@@ -76,26 +90,17 @@ Future<DirList> dirListSubdirectories(String dirPath) async {
   return dirList;
 }
 
-Future<String?> decompressFile(String file, String targetDir) async {
+Future<void> decompress(String file, String targetDir) async {
   await ensureEmptyDir(targetDir);
-  late ProcessResult? result;
-  if (file.endsWith(".7z") || file.endsWith(".zip")) {
-    final cmd = ctx.getBinary("7z");
-    result = await Process.run(cmd, ["x", file], workingDirectory: targetDir);
+  if (file.endsWith(".zip")) {
+    await extractFileToDisk(file, targetDir);
   } else if (file.endsWith(".tar.gz")) {
-    final tar = ctx.getBinary("tar");
-    result = await Process.run(tar, ["xzf", file], workingDirectory: targetDir);
+    await extractFileToDisk(file, targetDir);
+  } else if (file.endsWith(".7z")) {
+    await decompress7z(file, targetDir);
   } else {
-    throw "Do not know how to decompress $file";
+    return error("Do not know how to decompress $file");
   }
-  if (result.exitCode != 0) {
-    final stderr = result.stderr.toString().trim();
-    for (final line in stderr.split(" ")) {
-      log.print(" >> $line");
-    }
-    throw "Decompression failed";
-  }
-  return targetDir;
 }
 
 final _gitOriginRegex = RegExp(r"^origin\s+(.+)\s+\(fetch\)");
@@ -131,7 +136,7 @@ Future<String> getOS() async {
   } else if (Platform.isLinux) {
     return "linux";
   }
-  throw "Platform not supported";
+  return error("Platform not supported");
 }
 
 Future<String> getArch() async {
@@ -140,7 +145,7 @@ Future<String> getArch() async {
     if (result == "AMD64" || result == null) {
       return "x64";
     } else {
-      throw "Unknown architecture";
+      return error("Unknown architecture");
     }
   } else {
     var arch = await getCommandOutput("uname", ["-m"]);
@@ -148,5 +153,21 @@ Future<String> getArch() async {
       arch = "x64";
     }
     return arch;
+  }
+}
+
+Future<void> decompress7z(String file, String targetDir) async {
+  final cmd = ctx.getBinary("7z");
+  final result = await Process.run(
+    cmd,
+    ["x", file],
+    workingDirectory: targetDir,
+  );
+  if (result.exitCode != 0) {
+    final stderr = result.stderr.toString().trim();
+    for (final line in stderr.split("\n")) {
+      log.print(" >> $line");
+    }
+    return error("Decompression failed");
   }
 }

@@ -4,7 +4,7 @@ import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
 import 'package:installer2/run_installer.dart';
 import 'package:installer2/steps/step.dart';
-import 'package:installer2/steps/types.dart';
+import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 class Binary {
@@ -13,14 +13,17 @@ class Binary {
   Binary(this.cmd, {this.win, this.mac, this.linux, this.all});
 }
 
-class AddBinaries extends SinglePriorStep<bool, Dirname?> {
+class AddBinaries extends SinglePriorStep {
   final String dir;
   final List<Binary> binaries;
   AddBinaries(this.dir, this.binaries);
 
   @override
-  Future<bool> run() async {
+  Future run() async {
     final result = await input.run();
+    if (result is InstallerError) {
+      return result;
+    }
     String baseDir;
     if (result == null) {
       baseDir = join(ctx.targetDir, dir);
@@ -36,10 +39,14 @@ class AddBinaries extends SinglePriorStep<bool, Dirname?> {
       } else if (Platform.isLinux) {
         path = b.linux ?? b.all;
       } else {
-        throw "Platform is not supported";
+        return error("Platform is not supported");
+      }
+      // FIXME: Do this better!!
+      if (b.cmd == "java") {
+        ctx.addVariable("JAVA_HOME", baseDir);
       }
       if (path == null) {
-        throw "Path for ${b.cmd} is not specified on platform $os";
+        return error("Path for ${b.cmd} is not specified on platform $os");
       }
       final file = basename(path);
       final subDir = dirname(path);

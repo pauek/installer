@@ -6,7 +6,7 @@ import 'package:installer2/steps/types.dart';
 import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
-class Move extends SinglePriorStep<Dirname, Filename> {
+class Move extends SinglePriorStep {
   final String into;
   final String? forcedFilename;
   Move({
@@ -15,15 +15,22 @@ class Move extends SinglePriorStep<Dirname, Filename> {
   });
 
   @override
-  Future<Dirname> run() async {
-    final absPath = ((await input.run()) as Filename).value;
+  Future run() async {
+    final result = await input.run();
+    if (result is InstallerError) {
+      return result;
+    }
+    if (result is! Filename) {
+      return InstallerError("Move: Expected Filename as input");
+    }
+    final absPath = result.value;
     final filename = forcedFilename ?? basename(absPath);
-    return await withMessage("Moving $filename", () async {
+    return withMessage("Moving $filename", () async {
       final newAbsPath = join(ctx.targetDir, into, filename);
       await ensureDir(dirname(newAbsPath));
       final file = await File(absPath).rename(newAbsPath);
       if (file.absolute.path != newAbsPath) {
-        throw "Something went wrong moving file $filename";
+        return error("Something went wrong moving file $filename");
       }
       return Dirname(dirname(file.absolute.path));
     });

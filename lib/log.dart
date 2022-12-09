@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:installer2/utils.dart';
+
 class Log {
   String filename;
   File file;
@@ -31,7 +33,7 @@ class Log {
 
 Log get log {
   if (Log._instance == null) {
-    throw "Call Log.init(...) first!";
+    return error("Call Log.init(...) first!");
   }
   return Log._instance!;
 }

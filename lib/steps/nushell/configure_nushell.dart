@@ -20,7 +20,7 @@ String dartPubDir() {
   } else if (Platform.isMacOS || Platform.isLinux) {
     return "$home/.pub-cache/bin";
   } else {
-    throw "Platform not supported";
+    return error("Platform not supported");
   }
 }
 
@@ -32,7 +32,7 @@ String get endl {
   } else if (Platform.isMacOS) {
     return "\n"; // "\r" ??
   } else {
-    throw "Platform not supported";
+    return error("Platform not supported");
   }
 }
 
@@ -42,7 +42,7 @@ String get vpath {
   } else if (Platform.isLinux || Platform.isMacOS) {
     return "PATH";
   } else {
-    throw "Platform not supported";
+    return error("Platform not supported");
   }
 }
 
@@ -68,7 +68,7 @@ class ConfigureNushell extends SinglePriorStep {
   Future run() async {
     await waitForInput();
 
-    return await withMessage(
+    return withMessage(
       "Configuring nushell",
       () async {
         final file = <String, String>{};

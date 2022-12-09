@@ -6,10 +6,15 @@ import 'package:installer2/steps/step.dart';
 import 'package:path/path.dart';
 
 class FlutterConfigAndroidSDK extends SinglePriorStep {
+  static String title = "Configuring Android SDK for Flutter";
   @override
   Future run() async {
-    await waitForInput();
-    return await withMessage("Configuring Android SDK for Flutter", () async {
+    try {
+      await waitForInput();
+    } catch (e) {
+      log.print("$title: $e");
+    }
+    return withMessage(title, () async {
       final androidDir = join(ctx.targetDir, "android-sdk");
       final result = await Process.run(
         ctx.getBinary("flutter"),

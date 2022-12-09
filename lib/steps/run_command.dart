@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
 import 'package:installer2/steps/step.dart';
+import 'package:installer2/utils.dart';
 
 class RunCommand extends SinglePriorStep {
   final String cmd;
@@ -15,14 +16,14 @@ class RunCommand extends SinglePriorStep {
     if (value == null) {
       return null;
     }
-    return await withMessage(
+    return withMessage(
       "Running '$cmd ${args.join(" ")}'",
       () async {
         final result = await Process.run(ctx.getBinary(cmd), args);
         if (result.exitCode != 0) {
           log.print("ERROR: $cmd returned $exitCode:");
           log.printOutput(result.stderr.toString().trim());
-          throw "$cmd returned $exitCode";
+          return error("$cmd returned $exitCode");
         }
         log.print("'$cmd ${args.join(" ")}' execution was successful");
         return true;

@@ -4,13 +4,18 @@ import 'package:installer2/log.dart';
 import 'package:installer2/run_installer.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/types.dart';
+import 'package:installer2/utils.dart';
 
 const nuVersion = "0.72.0";
 
-class GetNushellDownloadURL extends Step<URL> {
+class GetNushellDownloadURL extends Step {
   @override
-  Future<URL> run() async {
-    return await withMessage(
+  Future run() async {
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
+    return withMessage(
       "Get nu download URL",
       () async {
         late String nuZip;

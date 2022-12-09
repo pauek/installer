@@ -1,3 +1,5 @@
+import 'package:installer2/utils.dart';
+
 final semVerRegex = RegExp(r"^(\d+)\.(\d+)\.(\d+)");
 
 class SemVer {
@@ -8,11 +10,12 @@ class SemVer {
   SemVer.fromName(String name) {
     final match = semVerRegex.firstMatch(name);
     if (match == null) {
-      throw "Not a Semantic Version!";
+      error("Not a Semantic Version!");
+    } else {
+      major = int.parse(match.group(1)!);
+      minor = int.parse(match.group(2)!);
+      patch = int.parse(match.group(3)!);
     }
-    major = int.parse(match.group(1)!);
-    minor = int.parse(match.group(2)!);
-    patch = int.parse(match.group(3)!);
   }
 
   bool operator >(SemVer other) {

@@ -13,7 +13,7 @@ class RegisterFonts extends SinglePriorStep {
   Future<void> run() async {
     final fontsDir = ((await input.run()) as Dirname).value;
 
-    return await withMessage("Registering Fonts", () async {
+    return withMessage("Registering Fonts", () async {
       // Get the font list
       final fontList = [];
       await for (final file in Directory(fontsDir).list()) {

@@ -46,12 +46,24 @@ Future<void> runInstaller(Step installer) async {
   Console.hideCursor();
   final lastPos = installer.setPos(CursorPosition(1, 1));
   Console.moveCursor(column: 1, row: 1);
-  await installer.run();
+
+  try {
+    await installer.run();
+  } catch (e) {
+    log.print("runInstaller error: ${e.toString()}");
+  }
+
   await logEnv();
   await log.close();
   Console.moveCursor(column: lastPos.column, row: lastPos.row);
-  Console.write("[Press any key or close the terminal]\n");
+  if (!Platform.isWindows) {
+    Console.write("[Press any key or close the terminal]\n");
+  }
   Console.showCursor();
   Console.readLine();
-  exit(0); // Bug in Console??
+
+  // Note: we need this here because Console.hideCursor installs a
+  // SIGINT catcher and probably Dart doesn't exit if that the handler
+  // can still catch events.
+  exit(0);
 }

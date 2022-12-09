@@ -7,6 +7,7 @@ import 'package:installer2/semver.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/types.dart';
 import 'package:http/http.dart' as http;
+import 'package:installer2/utils.dart';
 
 bool isSemVerGreaterThan(SemVer a, SemVer b) {
   return a.major > b.major || a.minor > b.minor || a.patch > b.patch;
@@ -31,15 +32,19 @@ Future<SemVer> getLatestLTSVersion() async {
   }
   if (latest.major == 0) {
     log.print("Node: no node versions found");
-    throw "Node: no versions found";
+    return error("Node: no versions found");
   }
   return latest;
 }
 
-class NodeGetDownloadURL extends Step<URL> {
+class NodeGetDownloadURL extends Step {
   @override
-  Future<URL> run() async {
-    return await withMessage(
+  Future run() async {
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
+    return withMessage(
       "Determining Node Download URL",
       () async {
         log.print("Node: Determining latest LTS version");

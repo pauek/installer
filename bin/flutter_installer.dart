@@ -34,7 +34,7 @@ final installGit = Chain("Git", [
 final rGitVersion = RegExp(r"^git version (?<version>[\d\.]+)$");
 final installFlutter = Chain("Flutter", [
   If(
-    NotNull(VersionInstalled("git", rGitVersion)),
+    NotNull(NotInstalled("git", rGitVersion)),
     then: installGit,
   ),
   If(
@@ -77,7 +77,7 @@ final installVSCode = Chain("VSCode", [
 
 final r7zVersion = RegExp(r"^7-Zip \(r\) (?<version>[\d.]+) \(x86\)");
 final install7z = If(
-  NotNull(VersionInstalled("7z", r7zVersion)),
+  NotInstalled("7z", r7zVersion),
   then: Chain("7z", [
     GiveURL("https://www.7-zip.org/a/7zr.exe"),
     DownloadFile(),
@@ -90,10 +90,8 @@ final install7z = If(
 
 final rJavaVersion = RegExp(r"^(?:java|openjdk) (?<version>[\d\.]+)$");
 final installJava = If(
-  NotNull(
-    // FIXME: Buscar la versión mínima para Android SDK
-    VersionInstalled("java", rJavaVersion),
-  ),
+  // FIXME: Buscar la versión mínima para Android SDK
+  NotInstalled("java", rJavaVersion),
   then: Chain("Java", [
     JavaGetDownloadURL(),
     DownloadFile(),
@@ -113,12 +111,12 @@ final installAndroidSDK = Chain("Android SDK", [
   AddBinaries("android-sdk", [
     Binary(
       "sdkmanager",
-      win: "cmdline-tools/latest/bin/sdkmanager.bat",
+      win: r"cmdline-tools\latest\bin\sdkmanager.bat",
       all: "cmdline-tools/latest/bin/sdkmanager",
     ),
     Binary(
       "avdmanager",
-      win: "cmdline-tools/latest/bin/avdmanager.bat",
+      win: r"cmdline-tools\latest\bin\avdmanager.bat",
       all: "cmdline-tools/latest/bin/avdmanager",
     ),
   ]),
@@ -146,8 +144,8 @@ final installFonts = Chain("Fonts", [
   RegisterFonts(),
 ]);
 
-void main(List<String> arguments) {
-  runInstaller(
+void main(List<String> arguments) async {
+  await runInstaller(
     Sequence([
       install7z,
       Parallel([

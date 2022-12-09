@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:installer2/log.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/types.dart';
+import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 String getOS() {
@@ -15,13 +16,17 @@ String getOS() {
   } else if (Platform.isLinux) {
     return "linux";
   } else {
-    throw "Platform not supported";
+    return error("Platform not supported");
   }
 }
 
-class GetAndroidCmdlineToolsURL extends Step<URL> {
+class GetAndroidCmdlineToolsURL extends Step {
   @override
-  Future<URL> run() async {
+  Future run() async {
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
     return await withMessage(
       "Detecting latest cmdline-tools version",
       () async {
@@ -34,7 +39,7 @@ class GetAndroidCmdlineToolsURL extends Step<URL> {
           'button[data-modal-dialog-id="sdk_${os}_download"]',
         );
         if (button == null) {
-          throw "Android Studio page format has changed!";
+          return error("Android Studio page format has changed!");
         }
         final filename = button.text;
         final path = join("/android/repository/", filename);

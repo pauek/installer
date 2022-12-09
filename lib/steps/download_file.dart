@@ -5,16 +5,16 @@ import 'package:installer2/steps/types.dart';
 import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
-class DownloadFile extends SinglePriorStep<Filename, URL> {
+class DownloadFile extends SinglePriorStep {
   String? forcedFilename;
   DownloadFile([this.forcedFilename]);
 
   @override
-  Future<Filename> run() async {
+  Future run() async {
     final url = await input.run();
     final urlPath = Uri.parse(url.value).path;
     final filename = forcedFilename ?? basename(urlPath);
-    return await withMessage(
+    return withMessage(
       "Downloading $filename",
       () async {
         log.print("Downloading '$filename' from '${url.value}'");
@@ -23,7 +23,7 @@ class DownloadFile extends SinglePriorStep<Filename, URL> {
           log.print("Downloaded successfully at '$absFilename'");
         } else {
           log.print("Error downloading file '${url.value}'");
-          throw "Error downloading '${url.value}'";
+          return error("Error downloading '${url.value}'");
         }
         return Filename(absFilename);
       },

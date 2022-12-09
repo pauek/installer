@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:async/async.dart';
 import 'package:console/console.dart';
 import 'package:installer2/log.dart';
+import 'package:installer2/utils.dart';
 
 const brailleFrames = r"⢿⣻⣽⣾⣷⣯⣟⡿";
 const frames = r"|/-\";
@@ -14,7 +17,7 @@ String getStringAnimation() {
   }
 }
 
-abstract class Step<T> {
+abstract class Step {
   // Necesito tener los steps aquí???
   Step? _input;
 
@@ -22,7 +25,7 @@ abstract class Step<T> {
 
   Step get input {
     if (_input == null) {
-      throw "Attempting to use _input when null";
+      return error("Attempting to use _input when null");
     }
     return _input!;
   }
@@ -34,7 +37,15 @@ abstract class Step<T> {
   bool get hasInput => _input != null;
 
   Future waitForInput() async {
-    return (_input != null ? await input.run() : null);
+    if (_input != null) {
+      try {
+        await input.run();
+      } catch (e) {
+        log.print("Step error: $e");
+        return null;
+      }
+    }
+    return null;
   }
 
   // Descripción
@@ -51,7 +62,7 @@ abstract class Step<T> {
 
   show(String msg, {bool clear = true}) {
     if (pos == null) {
-      throw "Step hasn't been positioned";
+      return error("Step hasn't been positioned");
     }
     Console.moveCursor(row: pos!.row, column: pos!.column);
     if (clear) {
@@ -61,30 +72,42 @@ abstract class Step<T> {
     }
   }
 
-  Future<void> hourGlass(Future future) async {
-    bool waiting = true;
-    future.whenComplete(() => waiting = false);
-    int i = 0;
+  CancelableOperation hourGlassAnimation() {
     final frames = getStringAnimation();
-    while (waiting) {
-      show(" ${frames[i]} ", clear: false);
-      i = (i + 1) % frames.length;
-      await Future.delayed(Duration(milliseconds: 100));
+    bool waiting = true;
+    loop() async {
+      for (int i = 0; waiting; i = (i + 1) % frames.length) {
+        show(" ${frames[i]} ", clear: false);
+        await Future.delayed(Duration(milliseconds: 100));
+      }
+    }
+
+    return CancelableOperation.fromFuture(
+      loop(),
+      onCancel: () => waiting = false,
+    );
+  }
+
+  Future<T> withMessage<T>(String msg, Future Function() func) async {
+    final hourGlass = hourGlassAnimation();
+    try {
+      show(" # $msg");
+      final result = await func();
+      if (result is InstallerError) {
+        show(" ⨉ $result");
+      } else {
+        show(" ✓  $msg");
+      }
+      return result;
+    } finally {
+      hourGlass.cancel();
     }
   }
 
-  Future withMessage(String msg, Future Function() func) async {
-    show(" # $msg");
-    final result = func();
-    hourGlass(result);
-    show("✓  $msg");
-    return await result;
-  }
-
-  Future<T> run();
+  Future run();
 }
 
-abstract class SinglePriorStep<T, P> extends Step<T> {
+abstract class SinglePriorStep extends Step {
   SinglePriorStep([Step? priorStep]) : super(priorStep);
 
   @override
@@ -105,11 +128,15 @@ class Parallel extends Step {
   String get description => "Parallel job";
 
   @override
-  Future<List> run() async {
-    await waitForInput();
-    return Future.wait(
+  Future run() async {
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
+    final results = await Future.wait(
       parSteps.map((s) => s.run()),
     );
+    return results;
   }
 
   @override
@@ -128,10 +155,10 @@ abstract class SequenceBase extends Step {
 
   SequenceBase(this.seqSteps) {
     if (seqSteps.isEmpty) {
-      throw "Chain with no inputs";
+      error("Chain with no inputs");
     }
     if (seqSteps[0].hasInput) {
-      throw "First step in Chain shouldn't have input";
+      error("First step in Chain shouldn't have input");
     }
 
     // Set up chain
@@ -164,19 +191,18 @@ class Chain extends SequenceBase {
 
   @override
   Future run() async {
-    await waitForInput();
-    show(prefix);
-    try {
-      final result = await seqSteps.last.run();
-      if (result != null) {
-        show("$prefix ✓");
-      }
-      return result;
-    } catch (e) {
-      show("$prefix ⨉ $e");
-      log.print("Error: $e");
-      return null;
+    final r1 = await waitForInput();
+    if (r1 is InstallerError) {
+      return r1;
     }
+    show(prefix);
+    final r2 = await seqSteps.last.run();
+    if (r2 is InstallerError) {
+      show("$prefix ERROR: ${r2.message}");
+    } else {
+      show("$prefix ✓");
+    }
+    return r2;
   }
 }
 
@@ -198,10 +224,12 @@ class Sequence extends SequenceBase {
 
   @override
   Future run() async {
-    await waitForInput();
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
     try {
-      await seqSteps.last.run();
-      return true;
+      return await seqSteps.last.run();
     } catch (e) {
       log.print("Error: $e");
       return null;

@@ -4,13 +4,17 @@ import 'package:installer2/steps/step.dart';
 import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
-class GitRepositoryMissing extends Step<bool> {
+class GitRepositoryMissing extends Step {
   final String dir, repoUrl;
   GitRepositoryMissing(this.dir, this.repoUrl);
 
   @override
-  Future<bool> run() async {
-    return await withMessage(
+  Future run() async {
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
+    return withMessage(
       "Checking if git repository is present",
       () async {
         final flutterDir = join(ctx.targetDir, dir);

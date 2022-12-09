@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:installer2/log.dart';
+import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 class EnvVar {
@@ -49,7 +50,7 @@ class InstallerContext {
 
 InstallerContext get ctx {
   if (InstallerContext._instance == null) {
-    throw "Call InstallerContext.init(...) first!";
+    return error("Call InstallerContext.init(...) first!");
   }
   return InstallerContext._instance!;
 }

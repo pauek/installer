@@ -9,7 +9,7 @@ import 'package:path/path.dart';
 
 const flutterRepo = "https://github.com/flutter/flutter.git";
 
-class CloneGithubRepo extends Step<Dirname?> {
+class CloneGithubRepo extends Step {
   final String dir, repoUrl;
   final String? branch;
 

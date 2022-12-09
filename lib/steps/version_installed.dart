@@ -1,17 +1,21 @@
 import 'dart:io';
 
 import 'package:installer2/log.dart';
-import 'package:installer2/semver.dart';
 import 'package:installer2/steps/step.dart';
+import 'package:installer2/utils.dart';
 
-class VersionInstalled extends Step<SemVer?> {
+class NotInstalled extends Step {
   final String cmd;
   final RegExp versionRegexp;
-  VersionInstalled(this.cmd, this.versionRegexp);
+  NotInstalled(this.cmd, this.versionRegexp);
 
   @override
-  Future<SemVer?> run() async {
-    return await withMessage(
+  Future run() async {
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
+    return withMessage(
       "Determining if $cmd is installed",
       () async {
         final result = await Process.run(cmd, ["--version"], runInShell: true);
@@ -23,7 +27,7 @@ class VersionInstalled extends Step<SemVer?> {
         } else {
           log.print("$cmd: not found.");
         }
-        return version != null ? SemVer.fromName(version) : null;
+        return version == null;
       },
     );
   }
