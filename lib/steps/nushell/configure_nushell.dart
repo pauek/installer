@@ -66,8 +66,10 @@ class FileInfo {
 class ConfigureNushell extends SinglePriorStep {
   @override
   Future run() async {
-    await waitForInput();
-
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
     return withMessage(
       "Configuring nushell",
       () async {

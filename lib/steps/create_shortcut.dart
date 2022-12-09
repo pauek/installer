@@ -8,6 +8,10 @@ import 'package:path/path.dart';
 class CreateShortcut extends SinglePriorStep {
   @override
   Future run() async {
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
     if (Platform.isWindows) {
       final shortcutExe = join(ctx.downloadDir, "Shortcut.exe");
       await downloadFile(

@@ -30,6 +30,7 @@ Future<void> logEnv() async {
 }
 
 Future<void> runInstaller(Step installer) async {
+  final startTime = DateTime.now();
   Console.init();
   final homeDir = getHomeDir();
   await InstallerContext.init(
@@ -41,7 +42,7 @@ Future<void> runInstaller(Step installer) async {
 
   log.print("Setup: ok");
 
-  // Console.hideCursor();
+  Console.hideCursor();
   Console.eraseDisplay(2);
   Console.hideCursor();
   final lastPos = installer.setPos(CursorPosition(1, 1));
@@ -55,12 +56,23 @@ Future<void> runInstaller(Step installer) async {
 
   await logEnv();
   await log.close();
-  Console.moveCursor(column: lastPos.column, row: lastPos.row);
+  Console.moveCursor(column: lastPos.column, row: lastPos.row + 1);
+
+  final endTime = DateTime.now();
+  final total = endTime.difference(startTime);
+  String totalStr = "";
+  if (total.inMinutes < 1) {
+    totalStr = "${total.inSeconds}s";
+  } else {
+    totalStr = "${total.inMinutes}m ${(total.inSeconds.remainder(60))}s";
+  }
+  Console.write("Installation time: $totalStr\n");
+
+  Console.showCursor();
   if (!Platform.isWindows) {
     Console.write("[Press any key or close the terminal]\n");
+    Console.readLine();
   }
-  Console.showCursor();
-  Console.readLine();
 
   // Note: we need this here because Console.hideCursor installs a
   // SIGINT catcher and probably Dart doesn't exit if that the handler

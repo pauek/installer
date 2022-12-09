@@ -22,10 +22,10 @@ class GitRepositoryMissing extends Step {
         final missing = remote == null || remote != repoUrl;
         if (missing) {
           log.print("Git repository '$repoUrl' missing at '$dir'");
-          return false;
+          return true;
         } else {
           log.print("Git repository '$repoUrl' found at '$dir'");
-          return true;
+          return false;
         }
       },
     );

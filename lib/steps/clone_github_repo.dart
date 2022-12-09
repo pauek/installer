@@ -45,7 +45,7 @@ class CloneGithubRepo extends Step {
           log.print("Git clone returned error ${cloneResult.exitCode}");
           log.printOutput(cloneResult.stderr.toString().trim());
           // show("ERROR (check .log file for details)");
-          return null;
+          return InstallerError("Git clone failed, see log for details.");
         } else {
           log.print("Repo '$repoUrl' cloned ok.");
           return Dirname(targetDir);

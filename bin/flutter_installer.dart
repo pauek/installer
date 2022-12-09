@@ -34,7 +34,7 @@ final installGit = Chain("Git", [
 final rGitVersion = RegExp(r"^git version (?<version>[\d\.]+)$");
 final installFlutter = Chain("Flutter", [
   If(
-    NotNull(NotInstalled("git", rGitVersion)),
+    NotInstalled("git", rGitVersion),
     then: installGit,
   ),
   If(
