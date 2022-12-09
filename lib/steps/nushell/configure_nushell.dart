@@ -36,7 +36,7 @@ String get endl {
   }
 }
 
-String get vpath {
+String get pathVariable {
   if (Platform.isWindows) {
     return "Path";
   } else if (Platform.isLinux || Platform.isMacOS) {
@@ -74,6 +74,8 @@ class ConfigureNushell extends SinglePriorStep {
       "Configuring nushell",
       () async {
         final file = <String, String>{};
+
+        // TODO: Detect if these files exist first!!
         for (final which in ['env', 'config']) {
           final path = (await getNuPath(which)).trim();
           await ensureDir(dirname(path));
@@ -84,10 +86,16 @@ class ConfigureNushell extends SinglePriorStep {
           file[which] = path;
         }
 
+        Set<String> envpath = {}; // deduplicate
+        for (final path in ctx.binaries.values) {
+          envpath.add(dirname(path));
+        }
+
+        // TODO: Add lines in a controlled section
         await addLinesToFile(file['env']!, [
-          "let-env $vpath = (\$env.$vpath | prepend '${dartPubDir()}')",
-          for (final path in ctx.binaries.values)
-            "let-env $vpath = (\$env.$vpath | prepend '${dirname(path)}')",
+          "let-env $pathVariable = (\$env.$pathVariable | prepend '${dartPubDir()}')",
+          for (final path in envpath)
+            "let-env $pathVariable = (\$env.$pathVariable | prepend '$path')",
           for (final entry in ctx.variables)
             "let-env ${entry.variable} = '${entry.value}'",
         ]);

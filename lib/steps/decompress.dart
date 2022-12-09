@@ -24,7 +24,10 @@ class Decompress extends SinglePriorStep {
       () async {
         var absDir = join(ctx.targetDir, subDir);
         log.print("Decompressing '$absFile' into '$absDir'");
-        await decompress(absFile, absDir);
+        final result = await decompress(absFile, absDir);
+        if (result is InstallerError) {
+          return result;
+        }
         log.print("Decompression ok");
 
         // If there is only one folder inside, return that!

@@ -90,16 +90,32 @@ Future<DirList> dirListSubdirectories(String dirPath) async {
   return dirList;
 }
 
-Future<void> decompress(String file, String targetDir) async {
-  await ensureEmptyDir(targetDir);
-  if (file.endsWith(".zip")) {
-    await extractFileToDisk(file, targetDir);
-  } else if (file.endsWith(".tar.gz")) {
-    await extractFileToDisk(file, targetDir);
-  } else if (file.endsWith(".7z")) {
-    await decompress7z(file, targetDir);
-  } else {
-    return error("Do not know how to decompress $file");
+Future decompress(String file, String targetDir) async {
+  try {
+    await ensureEmptyDir(targetDir);
+  } catch (e) {
+    log.print("Couldn't empty dir $targetDir");
+    log.print(" >> $e");
+    return InstallerError(
+      "Couldn't empty dir $targetDir, see log for details.",
+    );
+  }
+  try {
+    if (file.endsWith(".zip")) {
+      await extractFileToDisk(file, targetDir);
+    } else if (file.endsWith(".tar.gz")) {
+      await extractFileToDisk(file, targetDir);
+    } else if (file.endsWith(".7z")) {
+      await decompress7z(file, targetDir);
+    } else {
+      return error("Do not know how to decompress $file");
+    }
+  } catch (e) {
+    log.print("Couldn't decompress $file");
+    log.print(" >> $e");
+    return InstallerError(
+      "Couldn't decompress $file, see log for details.",
+    );
   }
 }
 

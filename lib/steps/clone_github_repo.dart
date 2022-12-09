@@ -16,7 +16,11 @@ class CloneGithubRepo extends Step {
   CloneGithubRepo(this.dir, this.repoUrl, {this.branch});
 
   @override
-  Future<Dirname?> run() async {
+  Future run() async {
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
     return await withMessage(
       "Cloning repository '$repoUrl'",
       () async {
@@ -44,7 +48,6 @@ class CloneGithubRepo extends Step {
         if (cloneResult.exitCode != 0) {
           log.print("Git clone returned error ${cloneResult.exitCode}");
           log.printOutput(cloneResult.stderr.toString().trim());
-          // show("ERROR (check .log file for details)");
           return InstallerError("Git clone failed, see log for details.");
         } else {
           log.print("Repo '$repoUrl' cloned ok.");

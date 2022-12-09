@@ -16,7 +16,6 @@ import 'package:installer2/steps/if.dart';
 import 'package:installer2/steps/java/java_get_download_url.dart';
 import 'package:installer2/steps/move.dart';
 import 'package:installer2/steps/node/node_get_download_url.dart';
-import 'package:installer2/steps/not_null.dart';
 import 'package:installer2/steps/nushell/configure_nushell.dart';
 import 'package:installer2/steps/nushell/nushell_download_url.dart';
 import 'package:installer2/steps/rename.dart';
@@ -166,3 +165,5 @@ void main(List<String> arguments) async {
 }
 
 // TODO: Command line options to choose what installers to run
+// TODO: Fix repeated paths
+// TODO: Convert decompress into isolate

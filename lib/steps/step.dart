@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:console/console.dart';
@@ -77,7 +78,7 @@ abstract class Step {
     bool waiting = true;
     loop() async {
       for (int i = 0; waiting; i = (i + 1) % frames.length) {
-        show(" ${frames[i]} ", clear: false);
+        show("${frames[i]} ", clear: false);
         await Future.delayed(Duration(milliseconds: 100));
       }
     }
@@ -91,12 +92,12 @@ abstract class Step {
   Future<T> withMessage<T>(String msg, Future Function() func) async {
     final hourGlass = hourGlassAnimation();
     try {
-      show(" # $msg");
+      show("# $msg");
       final result = await func();
       if (result is InstallerError) {
-        show(" ⨉ $result");
+        show("⨉ $result");
       } else {
-        show(" ✓  $msg");
+        show("✓  $msg");
       }
       return result;
     } finally {
@@ -187,7 +188,7 @@ class Chain extends SequenceBase {
   String get prefix => "$name:";
 
   @override
-  int get indent => prefix.length;
+  int get indent => max(prefix.length + 1, 14);
 
   @override
   Future run() async {
@@ -195,7 +196,7 @@ class Chain extends SequenceBase {
     if (r1 is InstallerError) {
       return r1;
     }
-    show(prefix);
+    show("$prefix ");
     final r2 = await seqSteps.last.run();
     if (r2 is InstallerError) {
       show("$prefix ERROR: ${r2.message}");
