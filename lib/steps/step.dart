@@ -54,16 +54,23 @@ abstract class Step {
     return CursorPosition(p.column, p.row + 1);
   }
 
-  show(String msg, {bool clear = true}) {
+  homePos() {
     if (pos == null) {
       return error("Step hasn't been positioned");
     }
     Console.moveCursor(row: pos!.row, column: pos!.column);
+  }
+
+  show(String msg, {bool clear = true, Color color = Color.WHITE}) {
+    homePos();
+    final pen = TextPen();
+    pen.setColor(color);
     if (clear) {
-      Console.write(msg + " " * (Console.columns - pos!.column - msg.length));
+      pen.text(msg + " " * (Console.columns - pos!.column - msg.length));
     } else {
-      Console.write(msg);
+      pen.text(msg);
     }
+    pen.print();
   }
 
   CancelableOperation hourGlassAnimation() {
@@ -85,12 +92,12 @@ abstract class Step {
   Future<T> withMessage<T>(String msg, Future Function() func) async {
     final hourGlass = hourGlassAnimation();
     try {
-      show("# $msg");
+      show("  $msg", color: Color.GRAY);
       final result = await func();
       if (result is InstallerError) {
-        show("⨉ $result");
+        show("  $result", color: Color.RED);
       } else {
-        show("✓  $msg");
+        show("  $msg", color: Color.GRAY);
       }
       return result;
     } finally {
@@ -190,12 +197,26 @@ class Chain extends SequenceBase {
     if (r1 is InstallerError) {
       return r1;
     }
-    show("$prefix ");
+    show("$prefix ", color: Color.BLUE);
     final r2 = await seqSteps.last.run();
     if (r2 is InstallerError) {
-      show("${prefix}ERROR: ${r2.message}");
+      homePos();
+      final pen = TextPen();
+      pen.setColor(Color.BLUE);
+      pen.text(prefix);
+      pen.setColor(Color.RED);
+      pen.text("ERROR: ${r2.message}");
+      pen.text(" " * (Console.columns - pen.buffer.length - pos!.column));
+      pen.print();
     } else {
-      show("$prefix✓ ");
+      homePos();
+      final pen = TextPen();
+      pen.setColor(Color.BLUE);
+      pen.text(prefix);
+      pen.setColor(Color.GREEN);
+      pen.text("ok");
+      pen.text(" " * (Console.columns - pen.buffer.length - pos!.column));
+      pen.print();
     }
     return r2;
   }

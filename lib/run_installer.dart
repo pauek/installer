@@ -45,7 +45,6 @@ Future<void> runInstaller(Step installer) async {
 
   log.print("info: Setup ok.");
 
-  Console.hideCursor();
   Console.eraseDisplay(2);
   Console.hideCursor();
   final lastPos = installer.setPos(CursorPosition(1, 1));
@@ -65,10 +64,17 @@ Future<void> runInstaller(Step installer) async {
   } else {
     totalStr = "${total.inMinutes}m ${(total.inSeconds.remainder(60))}s";
   }
-  Console.write("Installation time: $totalStr\n\n");
+
+  final pen = TextPen();
+  pen.setColor(Color.GOLD);
+  pen.text("Installation time: ");
+  pen.setColor(Color.YELLOW);
+  pen.text("$totalStr\n\n");
+  pen.setColor(Color.GRAY);
+  pen.text("[Press any key or close the terminal]\n\n");
+  pen.print();
 
   Console.showCursor();
-  Console.write("[Press any key or close the terminal]\n");
   Console.readLine();
 
   // Note: we need this here because Console.hideCursor installs a
