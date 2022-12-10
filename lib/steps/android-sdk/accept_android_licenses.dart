@@ -10,18 +10,16 @@ class AcceptAndroidLicenses extends Step {
   static String title = "Accepting Android Licenses";
   @override
   Future run() async {
-    try {
-      await waitForInput();
-    } catch (e) {
-      log.print("$title: $e");
-      return null;
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
     }
     return withMessage(title, () async {
-      final process = await Process.start(ctx.getBinary("sdkmanager"), [
-        "--licenses"
-      ], environment: {
-        "JAVA_HOME": ctx.getVariable("JAVA_HOME")!,
-      });
+      final process = await Process.start(
+        ctx.getBinary("sdkmanager"),
+        ["--licenses"],
+        environment: ctx.environment,
+      );
       process.stdin.write("y\n" * 50); // Accept licenses
       List<int> bStdout = [], bStderr = [];
       process.stdout.listen((bytes) => bStdout.addAll(bytes));

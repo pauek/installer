@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:console/console.dart';
-import 'package:installer2/log.dart';
 import 'package:installer2/utils.dart';
 
 const brailleFrames = r"⢿⣻⣽⣾⣷⣯⣟⡿";
@@ -38,15 +37,9 @@ abstract class Step {
   bool get hasInput => _input != null;
 
   Future waitForInput() async {
-    if (_input != null) {
-      try {
-        await input.run();
-      } catch (e) {
-        log.print("Step error: $e");
-        return null;
-      }
+    if (hasInput) {
+      return await input.run();
     }
-    return null;
   }
 
   // Descripción
@@ -182,13 +175,14 @@ abstract class SequenceBase extends Step {
 class Chain extends SequenceBase {
   final String name;
   Chain(this.name, super.seqSteps);
+  Chain.noPrefix(super.seqSteps) : name = "";
 
   @override
   String get description => name;
-  String get prefix => "$name:";
+  String get prefix => name.isEmpty ? "" : "$name: ";
 
   @override
-  int get indent => max(prefix.length + 1, 14);
+  int get indent => name.isEmpty ? 0 : max(prefix.length + 1, 14);
 
   @override
   Future run() async {
@@ -199,9 +193,9 @@ class Chain extends SequenceBase {
     show("$prefix ");
     final r2 = await seqSteps.last.run();
     if (r2 is InstallerError) {
-      show("$prefix ERROR: ${r2.message}");
+      show("${prefix}ERROR: ${r2.message}");
     } else {
-      show("$prefix ✓");
+      show("$prefix✓ ");
     }
     return r2;
   }
@@ -229,11 +223,6 @@ class Sequence extends SequenceBase {
     if (result is InstallerError) {
       return result;
     }
-    try {
-      return await seqSteps.last.run();
-    } catch (e) {
-      log.print("Error: $e");
-      return null;
-    }
+    return await seqSteps.last.run();
   }
 }

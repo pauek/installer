@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:console/console.dart';
+import 'package:installer2/config.dart';
 import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
 import 'package:installer2/steps/step.dart';
@@ -21,7 +22,7 @@ Future<void> logEnv() async {
       log.print("  $entry");
     }
   }
-  for (final entry in ctx.variables) {
+  for (final entry in ctx.variableList) {
     log.print("${entry.variable} = ${entry.value}");
   }
   for (final entry in ctx.binaries.entries) {
@@ -34,13 +35,13 @@ Future<void> runInstaller(Step installer) async {
   Console.init();
   final homeDir = getHomeDir();
   await InstallerContext.init(
-    targetDir: join(homeDir, "MobileDevelopment2"),
-    downloadDir: join(homeDir, "Downloads"),
+    targetDir: join(homeDir, targetDir),
+    downloadDir: join(homeDir, downloadDir),
   );
-  Log.init(filename: "flutter-installer.log");
+  Log.init(filename: logFile);
   await initPlatformVariables();
 
-  log.print("Setup: ok");
+  log.print("ok: setup");
 
   Console.hideCursor();
   Console.eraseDisplay(2);
@@ -48,11 +49,7 @@ Future<void> runInstaller(Step installer) async {
   final lastPos = installer.setPos(CursorPosition(1, 1));
   Console.moveCursor(column: 1, row: 1);
 
-  try {
-    await installer.run();
-  } catch (e) {
-    log.print("runInstaller error: ${e.toString()}");
-  }
+  await installer.run();
 
   await logEnv();
   await log.close();
@@ -69,10 +66,8 @@ Future<void> runInstaller(Step installer) async {
   Console.write("Installation time: $totalStr\n");
 
   Console.showCursor();
-  if (!Platform.isWindows) {
-    Console.write("[Press any key or close the terminal]\n");
-    Console.readLine();
-  }
+  Console.write("[Press any key or close the terminal]\n");
+  Console.readLine();
 
   // Note: we need this here because Console.hideCursor installs a
   // SIGINT catcher and probably Dart doesn't exit if that the handler

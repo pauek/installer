@@ -19,16 +19,21 @@ class If extends Step {
 
   @override
   Future run() async {
-    final result = await cond.run();
+    final result = await waitForInput();
     if (result is InstallerError) {
       return result;
     }
-    if (result is! bool) {
+    final condResult = await cond.run();
+    if (condResult is InstallerError) {
+      return condResult;
+    }
+    if (condResult is! bool) {
       return InstallerError("Condition in If didn't return boolean");
     }
-    if (result) {
+    if (condResult) {
       return await then.run();
     } else {
+      show("");
       if (orelse != null) {
         return await orelse!.run();
       } else {

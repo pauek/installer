@@ -38,9 +38,10 @@ class RunSdkManager extends SinglePriorStep {
 
         if (exitCode != 0) {
           final dec = Utf8Decoder();
-          // final stdout = dec.convert(bStdout);
+          final stdout = dec.convert(bStdout);
           final stderr = dec.convert(bStderr);
           log.print("ERROR: sdkmanager returned $exitCode:");
+          log.printOutput(stdout);
           log.printOutput(stderr);
           return error("sdkmanager returned $exitCode");
         }

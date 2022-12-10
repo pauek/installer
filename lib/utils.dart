@@ -72,11 +72,15 @@ class DirList {
 }
 
 Future<List<String>> dirList(String dirPath) async {
-  List<String> result = [];
-  await for (final entity in Directory(dirPath).list()) {
-    result.add(entity.path);
+  try {
+    List<String> result = [];
+    await for (final entity in Directory(dirPath).list()) {
+      result.add(entity.path);
+    }
+    return result;
+  } catch (e) {
+    return [];
   }
-  return result;
 }
 
 Future<bool> isDirEmpty(String dirPath) async =>

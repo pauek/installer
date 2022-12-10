@@ -20,13 +20,17 @@ class InstallerContext {
   InstallerContext._(this.targetDir, this.downloadDir);
 
   List<String> get path => _path.toList();
-  List<EnvVar> get variables =>
+
+  Map<String, String> get environment => _variables;
+  List<EnvVar> get variableList =>
       _variables.entries.map((e) => EnvVar(e.key, e.value)).toList();
 
   Map<String, String> get binaries => _binaries;
 
-  void addBinary(String cmd, String dir, String filename) =>
-      _binaries[cmd] = join(dir, filename);
+  void addBinary(String cmd, String dir, String filename) {
+    _path.add(dirname(dir));
+    _binaries[cmd] = join(dir, filename);
+  }
 
   addVariable(String variable, String value) {
     log.print("Added variable '$variable' = '$value'");

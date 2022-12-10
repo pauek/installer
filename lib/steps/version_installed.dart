@@ -15,20 +15,17 @@ class NotInstalled extends Step {
     if (result is InstallerError) {
       return result;
     }
-    return withMessage(
-      "Determining if $cmd is installed",
-      () async {
-        final result = await Process.run(cmd, ["--version"], runInShell: true);
-        final output = result.stdout.trim();
-        final match = versionRegexp.firstMatch(output);
-        String? version = match?.namedGroup("version");
-        if (version != null) {
-          log.print("$cmd: found version '$version'.");
-        } else {
-          log.print("$cmd: not found.");
-        }
-        return version == null;
-      },
-    );
+    return withMessage("Determining if $cmd is installed", () async {
+      final result = await Process.run(cmd, ["--version"], runInShell: true);
+      final output = result.stdout.trim();
+      final match = versionRegexp.firstMatch(output);
+      String? version = match?.namedGroup("version");
+      if (version != null) {
+        log.print("$cmd: found version '$version'.");
+      } else {
+        log.print("$cmd: not found.");
+      }
+      return version == null;
+    });
   }
 }

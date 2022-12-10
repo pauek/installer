@@ -13,21 +13,23 @@ class NushellMissing extends Step {
     if (result is InstallerError) {
       return result;
     }
+    return withMessage("Determining if Nushell is installed", () async {
+      final nuexePath = join(ctx.targetDir, "nu", "nu.exe");
+      if (!(await isFilePresent(nuexePath))) {
+        return true;
+      }
 
-    // Check if nu.exe exists at its supposed location
-    final nuexePath = join(ctx.targetDir, "nu", "nu.exe");
-    if (!(await isFilePresent(nuexePath))) {
-      return true;
-    }
+      // Try to execute it (and get the version)
+      final nuProcess = await Process.run(nuexePath, ["--version"]);
+      if (nuProcess.exitCode != 0) {
+        return true;
+      }
 
-    // Try to execute it (and get the version)
-    final nuProcess = await Process.run(nuexePath, ["--version"]);
-    if (nuProcess.exitCode != 0) {
-      return true;
-    }
+      final version = nuProcess.stdout.toString().trim();
+      log.print("info: Nushell already installed (version '$version')");
+      ctx.addBinary("nu", join(ctx.targetDir, "nu"), "nu.exe");
 
-    final version = nuProcess.stdout.toString().trim();
-    log.print("info: Found nushell already installed (version '$version')");
-    ctx.addBinary("nu", join(ctx.targetDir, "nu"), "nu.exe");
+      return false; // not missing
+    });
   }
 }

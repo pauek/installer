@@ -96,7 +96,7 @@ class ConfigureNushell extends SinglePriorStep {
           "let-env $pathVariable = (\$env.$pathVariable | prepend '${dartPubDir()}')",
           for (final path in envpath)
             "let-env $pathVariable = (\$env.$pathVariable | prepend '$path')",
-          for (final entry in ctx.variables)
+          for (final entry in ctx.variableList)
             "let-env ${entry.variable} = '${entry.value}'",
         ]);
 
