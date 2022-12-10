@@ -16,7 +16,7 @@ class Decompress extends SinglePriorStep {
       return result;
     }
     if (result is! Filename) {
-      return InstallerError("Decompress: Expected a Filename as input");
+      return error("Decompress: Expected a Filename as input");
     }
     final absFile = result.value;
     return withMessage<Dirname>(

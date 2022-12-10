@@ -27,6 +27,10 @@ class RunCommand extends SinglePriorStep {
         final result = await Process.run(cmdPath, args, environment: env);
         if (result.exitCode != 0) {
           log.print("ERROR: $cmd returned ${result.exitCode}.");
+          log.print("ERROR: stdout:");
+          log.printOutput(result.stdout.toString().trim());
+          log.print("ERROR: stderr:");
+          log.printOutput(result.stderr.toString().trim());
           return error("$cmd returned ${result.exitCode}");
         }
         log.print("info: '$cmd ${args.join(" ")}' execution was successful.");

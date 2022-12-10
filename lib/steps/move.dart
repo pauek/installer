@@ -21,7 +21,7 @@ class Move extends SinglePriorStep {
       return result;
     }
     if (result is! Filename) {
-      return InstallerError("Move: Expected Filename as input");
+      return error("Move: Expected Filename as input");
     }
     final absPath = result.value;
     final filename = forcedFilename ?? basename(absPath);

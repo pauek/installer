@@ -16,7 +16,7 @@ class DownloadFile extends SinglePriorStep {
       return result;
     }
     if (result is! URL) {
-      return InstallerError("DownloadFile needs a URL as input");
+      return error("DownloadFile needs a URL as input");
     }
     final url = result;
     final urlPath = Uri.parse(url.value).path;

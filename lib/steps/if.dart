@@ -28,7 +28,7 @@ class If extends Step {
       return condResult;
     }
     if (condResult is! bool) {
-      return InstallerError("Condition in If didn't return boolean");
+      return error("Condition in If didn't return boolean");
     }
     if (condResult) {
       return await then.run();

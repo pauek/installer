@@ -35,7 +35,7 @@ class ErrorStep extends Step {
     if (result is InstallerError) {
       return result;
     }
-    return InstallerError("ErrorStep returned an error");
+    return error("ErrorStep returned an error");
   }
 }
 

@@ -13,7 +13,7 @@ class GitInstall extends Step {
       return result;
     }
     if (result is! Dirname) {
-      return InstallerError("GitInstall needs a Dirname as input");
+      return error("GitInstall needs a Dirname as input");
     }
     final dirname = result;
     return withMessage("Registering git binary", () async {
