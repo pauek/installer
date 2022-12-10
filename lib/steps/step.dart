@@ -186,7 +186,7 @@ class Chain extends SequenceBase {
 
   @override
   String get description => name;
-  String get prefix => name.isEmpty ? "" : "$name: ";
+  String get prefix => name.isEmpty ? "" : name;
 
   @override
   int get indent => name.isEmpty ? 0 : max(prefix.length + 1, 14);
@@ -197,25 +197,23 @@ class Chain extends SequenceBase {
     if (r1 is InstallerError) {
       return r1;
     }
-    show("$prefix ", color: Color.BLUE);
+    show(prefix, color: Color.BLUE);
     final r2 = await seqSteps.last.run();
     if (r2 is InstallerError) {
-      homePos();
+      Console.moveCursor(row: pos!.row, column: pos!.column + indent);
       final pen = TextPen();
-      pen.setColor(Color.BLUE);
-      pen.text(prefix);
       pen.setColor(Color.RED);
       pen.text("ERROR: ${r2.message}");
-      pen.text(" " * (Console.columns - pen.buffer.length - pos!.column));
+      pen.text(
+          " " * (Console.columns - pen.buffer.length - pos!.column - indent));
       pen.print();
     } else {
-      homePos();
+      Console.moveCursor(row: pos!.row, column: pos!.column + indent);
       final pen = TextPen();
-      pen.setColor(Color.BLUE);
-      pen.text(prefix);
       pen.setColor(Color.GREEN);
       pen.text("ok");
-      pen.text(" " * (Console.columns - pen.buffer.length - pos!.column));
+      pen.text(
+          " " * (Console.columns - pen.buffer.length - pos!.column - indent));
       pen.print();
     }
     return r2;

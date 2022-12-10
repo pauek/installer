@@ -185,7 +185,6 @@ void main(List<String> arguments) async {
   );
 }
 
-// FIXME: Colores para las cosas
 // FIXME: Isolates para el unzip, o algo equivalente
 // FIXME: Obtener el SHA y mirar si tenemos el fichero
 // FIXME: Opciones de línea de comandos para instalar selectivamente

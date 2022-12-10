@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
 
+import 'decompress_isolate.dart';
+
 class InstallerError extends Error {
   String message;
   InstallerError(this.message);
@@ -107,12 +109,10 @@ Future decompress(String file, String targetDir) async {
     );
   }
   try {
-    if (file.endsWith(".zip")) {
-      await extractFileToDisk(file, targetDir);
-    } else if (file.endsWith(".tar.gz")) {
-      await extractFileToDisk(file, targetDir);
+    if (file.endsWith(".zip") || file.endsWith(".tar.gz")) {
+      return await isolatedExtractFileToDisk(file, targetDir);
     } else if (file.endsWith(".7z")) {
-      await decompress7z(file, targetDir);
+      return await decompress7z(file, targetDir);
     } else {
       return error("Do not know how to decompress $file");
     }
@@ -178,7 +178,7 @@ Future<String> getArch() async {
   }
 }
 
-Future<void> decompress7z(String file, String targetDir) async {
+Future decompress7z(String file, String targetDir) async {
   final cmd = ctx.getBinary("7z");
   final result = await Process.run(
     cmd,
