@@ -45,6 +45,10 @@ Future<void> ensureEmptyDir(String dir) async {
   await ensureDir(dir);
 }
 
+Future<bool> isFilePresent(String filePath) async {
+  return File(filePath).exists();
+}
+
 Future<bool> isDirectory(String dirPath) async {
   return await Directory(dirPath).exists();
 }

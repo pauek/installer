@@ -18,6 +18,7 @@ import 'package:installer2/steps/move.dart';
 import 'package:installer2/steps/node/node_get_download_url.dart';
 import 'package:installer2/steps/nushell/configure_nushell.dart';
 import 'package:installer2/steps/nushell/nushell_download_url.dart';
+import 'package:installer2/steps/nushell/nushell_missing.dart';
 import 'package:installer2/steps/rename.dart';
 import 'package:installer2/steps/run_command.dart';
 import 'package:installer2/steps/run_sdk_manager.dart';
@@ -40,7 +41,7 @@ final installFlutter = Chain("Flutter", [
     GitRepositoryMissing("flutter", flutterRepo),
     then: CloneGithubRepo("flutter", flutterRepo, branch: "stable"),
   ),
-  AddBinaries("flutter", [
+  AddToEnv("flutter", [
     Binary("flutter", win: "bin/flutter.bat", all: "bin/flutter"),
     Binary("dart", win: "bin/dart.bat", all: "bin/dart"),
   ]),
@@ -51,7 +52,7 @@ final installNode = Chain("Node", [
   NodeGetDownloadURL(),
   DownloadFile(),
   Decompress(into: "node"),
-  AddBinaries("node", [
+  AddToEnv("node", [
     Binary("node", win: "node.exe", all: "bin/node"),
     Binary("npm", win: "npm.cmd", all: "bin/npm"),
   ]),
@@ -69,7 +70,7 @@ final installVSCode = Chain("VSCode", [
   ),
   DownloadFile("vscode.zip"),
   Decompress(into: "vscode"),
-  AddBinaries("vscode", [
+  AddToEnv("vscode", [
     Binary("code", win: "bin/code.cmd", all: "code"),
   ])
 ]);
@@ -81,7 +82,7 @@ final install7z = If(
     GiveURL("https://www.7-zip.org/a/7zr.exe"),
     DownloadFile(),
     Move(into: "7z", forcedFilename: "7z.exe"),
-    AddBinaries("7z", [
+    AddToEnv("7z", [
       Binary("7z", win: "7z.exe"),
     ])
   ]),
@@ -95,8 +96,9 @@ final installJava = If(
     JavaGetDownloadURL(),
     DownloadFile(),
     Decompress(into: "java"),
-    AddBinaries("java", [
+    AddToEnv("java", [
       Binary("java", all: "bin/java"),
+      EnvVariable("JAVA_HOME"),
     ])
   ]),
 );
@@ -107,7 +109,7 @@ final installAndroidSDK = Chain("Android SDK", [
   DownloadFile(),
   Decompress(into: "android-sdk/cmdline-tools"),
   Rename(from: "cmdline-tools", to: "latest"),
-  AddBinaries("android-sdk", [
+  AddToEnv("android-sdk", [
     Binary(
       "sdkmanager",
       win: r"cmdline-tools\latest\bin\sdkmanager.bat",
@@ -127,14 +129,17 @@ final installAndroidSDK = Chain("Android SDK", [
   AcceptAndroidLicenses(),
 ]);
 
-final installNushell = Chain("Nushell", [
-  GetNushellDownloadURL(),
-  DownloadFile(),
-  Decompress(into: "nu"),
-  AddBinaries("nu", [
-    Binary("nu", win: "nu.exe", all: "nu"),
-  ])
-]);
+final installNushell = If(
+  NushellMissing(),
+  then: Chain("Nushell", [
+    GetNushellDownloadURL(),
+    DownloadFile(),
+    Decompress(into: "nu"),
+    AddToEnv("nu", [
+      Binary("nu", win: "nu.exe", all: "nu"),
+    ])
+  ]),
+);
 
 final installFonts = Chain("Fonts", [
   GetFontDownloadURL(fontName: "Iosevka"),
@@ -146,14 +151,13 @@ final installFonts = Chain("Fonts", [
 void main(List<String> arguments) async {
   await runInstaller(
     Sequence([
-      install7z,
+      // install7z,
       Parallel([
         installFlutter,
         installAndroidSDK,
         installFirebaseCLI,
         installVSCode,
         installNushell,
-        installFonts,
       ]),
       Chain("Final Setup", [
         ConfigureNushell(),
@@ -164,6 +168,8 @@ void main(List<String> arguments) async {
   );
 }
 
-// TODO: Command line options to choose what installers to run
-// TODO: Fix repeated paths
-// TODO: Convert decompress into isolate
+// FIXME: Detectar si algo ya está instalado
+// FIXME: Colores para las cosas
+// FIXME: Isolates para el unzip, o algo equivalente
+// FIXME: Obtener el SHA y mirar si tenemos el fichero
+// FIXME: Opciones de línea de comandos para instalar selectivamente

@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 
 class FlutterConfigAndroidSDK extends SinglePriorStep {
   static String title = "Configuring Android SDK for Flutter";
+
   @override
   Future run() async {
     final result = await waitForInput();
