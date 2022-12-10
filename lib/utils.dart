@@ -14,9 +14,7 @@ class InstallerError extends Error {
   String toString() => "InstallerError: $message";
 }
 
-error(String message) {
-  throw InstallerError(message);
-}
+error(String message) => InstallerError(message);
 
 String getHomeDir() {
   final homeVar = Platform.isWindows ? 'userprofile' : 'HOME';
@@ -104,7 +102,7 @@ Future decompress(String file, String targetDir) async {
   } catch (e) {
     log.print("Couldn't empty dir $targetDir.");
     log.print("   >> $e");
-    return InstallerError(
+    return error(
       "Couldn't empty dir $targetDir, see log for details.",
     );
   }
@@ -121,7 +119,7 @@ Future decompress(String file, String targetDir) async {
   } catch (e) {
     log.print("Couldn't decompress $file.");
     log.print("    $e");
-    return InstallerError(
+    return error(
       "Couldn't decompress $file, see log for details.",
     );
   }
