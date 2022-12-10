@@ -5,6 +5,7 @@ import 'package:installer2/log.dart';
 import 'package:installer2/steps/nushell/configure_nushell.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/utils.dart';
+import 'package:path/path.dart';
 
 class RunCommand extends SinglePriorStep {
   final String cmd;
@@ -18,11 +19,15 @@ class RunCommand extends SinglePriorStep {
       return result;
     }
     return withMessage("Running '$cmd ${args.join(" ")}'", () async {
-      final currPath = Platform.environment['Path']?.split(';') ?? [];
+      final envPath = Platform.environment['Path']?.split(';') ?? [];
+      // Add node path for npm installs!
+      envPath.add(
+        dirname(ctx.getBinary("node")),
+      );
       try {
         final cmdPath = ctx.getBinary(cmd);
         final env = {
-          pathVariable: currPath.join(";"),
+          pathVariable: envPath.join(";"),
         };
         final result = await Process.run(cmdPath, args, environment: env);
         if (result.exitCode != 0) {
