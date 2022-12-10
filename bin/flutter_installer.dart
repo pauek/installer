@@ -82,7 +82,7 @@ final installFirebaseCLI = Chain("FirebaseCLI", [
   installNode,
   If(
     FirebaseMissing(),
-    then: RunCommand("npm.cmd", ["install", "-g", "firebase-tools"]),
+    then: RunCommand("npm", ["install", "-g", "firebase-tools"]),
   ),
 ]);
 
