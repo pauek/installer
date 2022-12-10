@@ -50,9 +50,9 @@ String addEndl(String line) => "$line$endl";
 
 Future<void> addLinesToFile(String path, List<String> lines) async {
   final file = await File(path).open(mode: FileMode.writeOnlyAppend);
-  log.print("Added to $path");
+  log.print("info: Added to $path:");
   for (final line in lines) {
-    log.print(" >> $line");
+    log.print("   >> $line");
   }
   await file.writeString(lines.map(addEndl).join(""));
   await file.close();

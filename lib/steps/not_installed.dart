@@ -21,9 +21,9 @@ class NotInstalled extends Step {
       final match = versionRegexp.firstMatch(output);
       String? version = match?.namedGroup("version");
       if (version != null) {
-        log.print("$cmd: found version '$version'.");
+        log.print("info: found '$cmd' version '$version'.");
       } else {
-        log.print("$cmd: not found.");
+        log.print("info: '$cmd' not found.");
       }
       return version == null;
     });

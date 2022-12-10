@@ -24,7 +24,7 @@ class RegisterFonts extends SinglePriorStep {
         }
       }
       for (final font in fontList) {
-        log.print("Adding font '$font'");
+        log.print("info: Adding font '$font'.");
       }
 
       // Create a script for PowerShell
@@ -41,7 +41,7 @@ class RegisterFonts extends SinglePriorStep {
 
       // Run PowerShell with the script
       final result = await Process.run("powershell.exe", [scriptFile]);
-      log.print("Registering fonts produced:");
+      log.print("info: Registering fonts produced:");
       log.printOutput(result.stderr);
       return result.exitCode == 0;
     });

@@ -19,7 +19,7 @@ class GitInstall extends Step {
     return withMessage("Registering git binary", () async {
       Filename gitExe = Filename(join(dirname.value, "cmd", "git.exe"));
       ctx.addBinary("git", join(dirname.value, "cmd"), "git.exe");
-      log.print("Git executable at '${gitExe.value}'");
+      log.print("info: Git installed at '${gitExe.value}'.");
       return gitExe;
     });
   }

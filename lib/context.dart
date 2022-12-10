@@ -33,7 +33,7 @@ class InstallerContext {
   }
 
   addVariable(String variable, String value) {
-    log.print("Added variable '$variable' = '$value'");
+    log.print("info: Added variable '$variable' = '$value'.");
     _variables[variable] = value;
   }
 

@@ -21,7 +21,7 @@ class Log {
 
   void printOutput(String output) {
     for (final line in output.split("\n")) {
-      log.print(" >> $line");
+      log.print("   >> $line");
     }
   }
 

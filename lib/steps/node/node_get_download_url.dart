@@ -31,7 +31,7 @@ Future<SemVer> getLatestLTSVersion() async {
     }
   }
   if (latest.major == 0) {
-    log.print("Node: no node versions found");
+    log.print("Node: no node versions found.");
     return error("Node: no versions found");
   }
   return latest;
@@ -44,19 +44,16 @@ class NodeGetDownloadURL extends Step {
     if (result is InstallerError) {
       return result;
     }
-    return withMessage(
-      "Determining Node Download URL",
-      () async {
-        log.print("Node: Determining latest LTS version");
-        final version = await getLatestLTSVersion();
-        log.print("Node: found version $version");
+    return withMessage("Determining Node Download URL", () async {
+      log.print("info: Node Determining latest LTS version.");
+      final version = await getLatestLTSVersion();
+      log.print("info: Node found, version $version.");
 
-        String extension = Platform.isWindows ? ".7z" : ".tar.gz";
-        final file = "node-$version-$os-$arch$extension";
-        final url = "https://nodejs.org/dist/$version/$file";
-        log.print("Node: Download URL is '$url'");
-        return Future.value(URL(url));
-      },
-    );
+      String extension = Platform.isWindows ? ".7z" : ".tar.gz";
+      final file = "node-$version-$os-$arch$extension";
+      final url = "https://nodejs.org/dist/$version/$file";
+      log.print("info: Node Download URL is '$url'.");
+      return Future.value(URL(url));
+    });
   }
 }

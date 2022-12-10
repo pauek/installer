@@ -24,13 +24,13 @@ class DownloadFile extends SinglePriorStep {
     return withMessage(
       "Downloading $filename",
       () async {
-        log.print("Downloading '$filename' from '${url.value}'");
+        log.print("info: Downloading '$filename' from '${url.value}'.");
         final absFilename = join(ctx.downloadDir, filename);
         if (await downloadFile(url: url.value, path: absFilename)) {
-          log.print("Downloaded successfully at '$absFilename'");
+          log.print("info: Downloaded '$absFilename'.");
         } else {
-          log.print("Error downloading file '${url.value}'");
-          return error("Error downloading '${url.value}'");
+          log.print("ERROR: Error downloading file '${url.value}'.");
+          return error("Error downloading '${url.value}'.");
         }
         return Filename(absFilename);
       },

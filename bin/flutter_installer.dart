@@ -16,7 +16,7 @@ import 'package:installer2/steps/if.dart';
 import 'package:installer2/steps/java/java_get_download_url.dart';
 import 'package:installer2/steps/java/java_missing.dart';
 import 'package:installer2/steps/move.dart';
-import 'package:installer2/steps/node/firebase_version.dart';
+import 'package:installer2/steps/node/firebase_missing.dart';
 import 'package:installer2/steps/node/node_get_download_url.dart';
 import 'package:installer2/steps/node/node_missing.dart';
 import 'package:installer2/steps/nushell/configure_nushell.dart';

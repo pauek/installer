@@ -44,7 +44,7 @@ class GetAndroidCmdlineToolsURL extends Step {
         final filename = button.text;
         final path = join("/android/repository/", filename);
         final url = "https://dl.google.com$path";
-        log.print("Android: cmdline-tools URL is '$url'");
+        log.print("info: cmdline-tools is at '$url'.");
         return URL(url);
       },
     );

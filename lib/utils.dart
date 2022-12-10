@@ -102,8 +102,8 @@ Future decompress(String file, String targetDir) async {
   try {
     await ensureEmptyDir(targetDir);
   } catch (e) {
-    log.print("Couldn't empty dir $targetDir");
-    log.print(" >> $e");
+    log.print("Couldn't empty dir $targetDir.");
+    log.print("   >> $e");
     return InstallerError(
       "Couldn't empty dir $targetDir, see log for details.",
     );
@@ -119,8 +119,8 @@ Future decompress(String file, String targetDir) async {
       return error("Do not know how to decompress $file");
     }
   } catch (e) {
-    log.print("Couldn't decompress $file");
-    log.print(" >> $e");
+    log.print("Couldn't decompress $file.");
+    log.print("    $e");
     return InstallerError(
       "Couldn't decompress $file, see log for details.",
     );
@@ -139,7 +139,7 @@ Future<String?> getGitRemote(String repoDir) async {
     stdoutEncoding: Encoding.getByName("utf-8"),
   );
   if (result.exitCode != 0) {
-    log.print("Error running 'git remove -v'");
+    log.print("Error: running 'git remove -v'.");
     log.printOutput(result.stderr.toString().trim());
     return null;
   }

@@ -21,10 +21,10 @@ class GitRepositoryMissing extends Step {
         final remote = await getGitRemote(flutterDir);
         final missing = remote == null || remote != repoUrl;
         if (missing) {
-          log.print("Git repository '$repoUrl' missing at '$dir'");
+          log.print("info: Git repository '$repoUrl' missing at '$dir'.");
           return true;
         } else {
-          log.print("Git repository '$repoUrl' found at '$dir'");
+          log.print("info: Git repository '$repoUrl' found at '$dir'.");
           return false;
         }
       },

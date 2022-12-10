@@ -60,7 +60,7 @@ class JavaGetDownloadURL extends Step {
       "Determining Java Download URL",
       () async {
         final url = await getLatestJdkUrl();
-        log.print("Java: download url is '$url'");
+        log.print("info: Java is at '$url'.");
         return Future.value(URL(url));
       },
     );

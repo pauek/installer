@@ -27,7 +27,7 @@ class AcceptAndroidLicenses extends Step {
       final exitCode = await process.exitCode;
       if (exitCode != 0) {
         final dec = Utf8Decoder();
-        log.print("$title failed, stderr:");
+        log.print("ERROR: $title failed, stderr:");
         log.printOutput(dec.convert(bStderr));
         log.printOutput(dec.convert(bStdout));
         return InstallerError("$title failed, log for details");

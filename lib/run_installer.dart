@@ -17,16 +17,18 @@ Future<void> initPlatformVariables() async {
 
 Future<void> logEnv() async {
   if (ctx.path.isNotEmpty) {
-    log.print("Path:");
+    log.print("info: Path:");
     for (final entry in ctx.path) {
-      log.print("  $entry");
+      log.print("   >> $entry");
     }
   }
+  log.print("info: Environment variables:");
   for (final entry in ctx.variableList) {
-    log.print("${entry.variable} = ${entry.value}");
+    log.print("   >> ${entry.variable} = ${entry.value}");
   }
+  log.print("info: Registered binaries:");
   for (final entry in ctx.binaries.entries) {
-    log.print("${entry.key} = ${entry.value}");
+    log.print("   >> ${entry.key} = ${entry.value}");
   }
 }
 
@@ -41,7 +43,7 @@ Future<void> runInstaller(Step installer) async {
   Log.init(filename: logFile);
   await initPlatformVariables();
 
-  log.print("ok: setup");
+  log.print("info: setup ok.");
 
   Console.hideCursor();
   Console.eraseDisplay(2);

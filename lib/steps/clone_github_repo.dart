@@ -28,12 +28,12 @@ class CloneGithubRepo extends Step {
         final targetDir = join(ctx.targetDir, dir);
         final gitOrigin = await getGitRemote(targetDir);
         if (gitOrigin != null && gitOrigin == repoUrl) {
-          log.print("Git repo for '$dir' already present");
+          log.print("info: Git repo for '$dir' already present.");
           return Dirname(targetDir);
         }
 
         // Clone Repo
-        log.print("Cloning GitHub repository $repoUrl.");
+        log.print("info: Cloning GitHub repository $repoUrl.");
         final git = ctx.getBinary("git");
         final cloneResult = await Process.run(
           git,
@@ -46,11 +46,11 @@ class CloneGithubRepo extends Step {
           workingDirectory: ctx.targetDir,
         );
         if (cloneResult.exitCode != 0) {
-          log.print("Git clone returned error ${cloneResult.exitCode}");
+          log.print("ERROR: Git clone returned error ${cloneResult.exitCode}.");
           log.printOutput(cloneResult.stderr.toString().trim());
           return InstallerError("Git clone failed, see log for details.");
         } else {
-          log.print("Repo '$repoUrl' cloned ok.");
+          log.print("info: Repo '$repoUrl' cloned ok.");
           return Dirname(targetDir);
         }
       },

@@ -27,7 +27,7 @@ class GetNushellDownloadURL extends Step {
       }
       final url = "https://github.com/nushell/nushell/releases/download/"
           "$nuVersion/$nuZip";
-      log.print("Nushell: URL is '$url'");
+      log.print("info: Nushell is at '$url'.");
       return URL(url);
     });
   }

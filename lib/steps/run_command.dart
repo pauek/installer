@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:installer2/context.dart';
@@ -14,9 +13,9 @@ class RunCommand extends SinglePriorStep {
 
   @override
   Future run() async {
-    final value = await waitForInput();
-    if (value == null) {
-      return null;
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
     }
     return withMessage("Running '$cmd ${args.join(" ")}'", () async {
       final currPath = Platform.environment['Path']?.split(';') ?? [];
@@ -25,17 +24,12 @@ class RunCommand extends SinglePriorStep {
         final env = {
           pathVariable: currPath.join(";"),
         };
-
-        final process = await Process.start(cmdPath, args, environment: env);
-        final dec = Utf8Decoder();
-        process.stdout.listen((bytes) => log.print(dec.convert(bytes)));
-        process.stderr.listen((bytes) => log.print(dec.convert(bytes)));
-        final exitCode = await process.exitCode;
-        if (exitCode != 0) {
-          log.print("ERROR: $cmd returned $exitCode:");
-          return error("$cmd returned $exitCode");
+        final result = await Process.run(cmdPath, args, environment: env);
+        if (result.exitCode != 0) {
+          log.print("ERROR: $cmd returned ${result.exitCode}.");
+          return error("$cmd returned ${result.exitCode}");
         }
-        log.print("'$cmd ${args.join(" ")}' execution was successful");
+        log.print("info: '$cmd ${args.join(" ")}' execution was successful.");
         return true;
       } catch (e) {
         return error("ERROR: command '$cmd' failed: $e");

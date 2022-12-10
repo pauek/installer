@@ -35,7 +35,7 @@ class Binary extends EnvItem {
     final subDir = dirname(path);
     final absDir = join(baseDir, subDir);
     ctx.addBinary(cmd, absDir, file);
-    log.print("info: Added binary '$cmd' in '${join(absDir, file)}'");
+    log.print("info: Added binary '$cmd' in '${join(absDir, file)}'.");
     return true;
   }
 }

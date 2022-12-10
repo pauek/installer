@@ -30,11 +30,11 @@ class FirebaseMissing extends Step {
       if (await Directory(nodeTargetDir).exists()) {
         final dirs = await dirList(nodeTargetDir);
         if (dirs.length == 1) {
-          final firebaseDir = join(nodeTargetDir, dirs[0]);
-          final firebaseExe = join(firebaseDir, "firebase.cmd");
+          final nodeDir = dirs[0];
+          final firebaseExe = join(nodeDir, "firebase.cmd");
           final version = await _getVersion(firebaseExe);
           if (version != null) {
-            ctx.addBinary("firebase", firebaseDir, "firebase.cmd");
+            ctx.addBinary("firebase", nodeDir, "firebase.cmd");
             return false; // Not missing!
           }
         }
@@ -42,7 +42,7 @@ class FirebaseMissing extends Step {
       // Try with system
       final systemVersion = await _getVersion("firebase");
       if (systemVersion == null) {
-        log.print("info: firebase not found in system");
+        log.print("info: firebase not found in system.");
       }
       return systemVersion == null;
     });

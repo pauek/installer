@@ -21,7 +21,7 @@ class FlutterConfigAndroidSDK extends SinglePriorStep {
         ctx.getBinary("flutter"),
         ["config", "--android-sdk", androidDir],
       );
-      log.print("Configured Flutter Android SDK at '$androidDir'");
+      log.print("info: Configured Flutter Android SDK at '$androidDir'.");
       return result.exitCode == 0;
     });
   }

@@ -30,7 +30,7 @@ class NodeMissing extends Step {
       if (await Directory(nodeTargetDir).exists()) {
         final dirs = await dirList(nodeTargetDir);
         if (dirs.length == 1) {
-          final nodeDir = join(nodeTargetDir, dirs[0]);
+          final nodeDir = dirs[0];
           final nodeExe = join(nodeDir, "node.exe");
           final nodeVersion = await _getVersion(nodeExe);
           if (nodeVersion != null) {
@@ -43,7 +43,7 @@ class NodeMissing extends Step {
       // Try with system
       final nodeVersion = await _getVersion("node");
       if (nodeVersion == null) {
-        log.print("Node not found on Path");
+        log.print("info: Node not found on Path.");
       }
       return nodeVersion == null;
     });

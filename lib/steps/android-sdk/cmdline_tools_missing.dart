@@ -42,7 +42,7 @@ class CmdlineToolsMissing extends Step {
       // Try with system
       final systemVersion = await _getVersion("sdkmanager");
       if (systemVersion == null) {
-        log.print("info: cmdline-tools missing in system");
+        log.print("info: cmdline-tools missing in system.");
       }
       return systemVersion == null;
     });

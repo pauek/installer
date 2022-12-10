@@ -26,7 +26,7 @@ class NushellMissing extends Step {
       }
 
       final version = nuProcess.stdout.toString().trim();
-      log.print("info: Nushell already installed (version '$version')");
+      log.print("info: Nushell found, version '$version'.");
       ctx.addBinary("nu", join(ctx.targetDir, "nu"), "nu.exe");
 
       return false; // not missing

@@ -7,7 +7,7 @@ import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 class GitMissing extends Step {
-  final _rVersion = RegExp(r"^git version (?<version>[\d\.]+)$");
+  final _rVersion = RegExp(r"^git version (?<version>[\w\.]+)");
 
   Future<String?> _getVersion(String gitExe) async {
     final result = await Process.run(gitExe, ["--version"], runInShell: true);
@@ -39,7 +39,7 @@ class GitMissing extends Step {
       // Try with system
       final systemVersion = await _getVersion("git");
       if (systemVersion == null) {
-        log.print("info: Git not found in system");
+        log.print("info: Git not found in system.");
       }
       return systemVersion == null;
     });
