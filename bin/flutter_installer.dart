@@ -9,6 +9,7 @@ import 'package:installer2/steps/decompress.dart';
 import 'package:installer2/steps/download_file.dart';
 import 'package:installer2/steps/flutter/flutter_config_android_sdk.dart';
 import 'package:installer2/steps/git/git_get_download_url.dart';
+import 'package:installer2/steps/git/git_missing.dart';
 import 'package:installer2/steps/git/git_repository_missing.dart';
 import 'package:installer2/steps/give_url.dart';
 import 'package:installer2/steps/if.dart';
@@ -25,7 +26,6 @@ import 'package:installer2/steps/rename.dart';
 import 'package:installer2/steps/run_command.dart';
 import 'package:installer2/steps/run_sdk_manager.dart';
 import 'package:installer2/steps/step.dart';
-import 'package:installer2/steps/version_installed.dart';
 import 'package:installer2/steps/vscode/vscode_missing.dart';
 
 final r7zVersion = RegExp(r"^7-Zip \(r\) (?<version>[\d.]+) \(x86\)");
@@ -38,10 +38,9 @@ final install7z = Chain("7z", [
   ])
 ]);
 
-final rGitVersion = RegExp(r"^git version (?<version>[\d\.]+)$");
 final installGit = Chain("Git", [
   If(
-    NotInstalled("git", rGitVersion),
+    GitMissing(),
     then: Chain.noPrefix([
       GitGetDownloadURL(),
       DownloadFile(),

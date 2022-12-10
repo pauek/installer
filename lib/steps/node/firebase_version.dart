@@ -9,14 +9,14 @@ import 'package:path/path.dart';
 class FirebaseMissing extends Step {
   static final _rVersion = RegExp(r"^(?<version>[\d\.]+)");
 
-  Future<bool> _getVersion(String exe) async {
+  Future<String?> _getVersion(String exe) async {
     final result = await Process.run(exe, ["--version"], runInShell: true);
     final match = _rVersion.firstMatch(result.stdout.trim());
     String? version = match?.namedGroup("version");
     if (version != null) {
       log.print("info: Firebase found, version '$version'.");
     }
-    return version == null;
+    return version;
   }
 
   @override
@@ -32,14 +32,19 @@ class FirebaseMissing extends Step {
         if (dirs.length == 1) {
           final firebaseDir = join(nodeTargetDir, dirs[0]);
           final firebaseExe = join(firebaseDir, "firebase.cmd");
-          if (await _getVersion(firebaseExe)) {
+          final version = await _getVersion(firebaseExe);
+          if (version != null) {
             ctx.addBinary("firebase", firebaseDir, "firebase.cmd");
             return false; // Not missing!
           }
         }
       }
       // Try with system
-      return await _getVersion("firebase");
+      final systemVersion = await _getVersion("firebase");
+      if (systemVersion == null) {
+        log.print("info: firebase not found in system");
+      }
+      return systemVersion == null;
     });
   }
 }

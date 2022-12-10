@@ -9,14 +9,14 @@ import 'package:path/path.dart';
 class CmdlineToolsMissing extends Step {
   static final _rVersion = RegExp(r"^(?<version>[\d\.]+)");
 
-  Future<bool> _getVersion(String exe) async {
+  Future<String?> _getVersion(String exe) async {
     final result = await Process.run(exe, ["--version"], runInShell: true);
     final match = _rVersion.firstMatch(result.stdout.trim());
     String? version = match?.namedGroup("version");
     if (version != null) {
       log.print("info: '${basename(exe)}' found, version '$version'.");
     }
-    return version == null;
+    return version;
   }
 
   @override
@@ -33,13 +33,18 @@ class CmdlineToolsMissing extends Step {
       );
       if (await Directory(cmdlineToolsBinDir).exists()) {
         final sdkmanagerExe = join(cmdlineToolsBinDir, "sdkmanager.bat");
-        if (await _getVersion(sdkmanagerExe)) {
+        final version = await _getVersion(sdkmanagerExe);
+        if (version != null) {
           ctx.addBinary("sdkmanager", cmdlineToolsBinDir, "sdkmanager.bat");
           return false; // Not missing!
         }
       }
       // Try with system
-      return await _getVersion("sdkmanager");
+      final systemVersion = await _getVersion("sdkmanager");
+      if (systemVersion == null) {
+        log.print("info: cmdline-tools missing in system");
+      }
+      return systemVersion == null;
     });
   }
 }

@@ -9,14 +9,14 @@ import 'package:path/path.dart';
 class NodeMissing extends Step {
   static final rNodeVersion = RegExp(r"^v(?<version>[\d\.]+)");
 
-  Future<bool> _getVersion(String nodeExe) async {
+  Future<String?> _getVersion(String nodeExe) async {
     final result = await Process.run(nodeExe, ["--version"], runInShell: true);
     final match = rNodeVersion.firstMatch(result.stdout.trim());
     String? version = match?.namedGroup("version");
     if (version != null) {
       log.print("info: Node found, version '$version'.");
     }
-    return version == null;
+    return version;
   }
 
   @override
@@ -32,7 +32,8 @@ class NodeMissing extends Step {
         if (dirs.length == 1) {
           final nodeDir = join(nodeTargetDir, dirs[0]);
           final nodeExe = join(nodeDir, "node.exe");
-          if (await _getVersion(nodeExe)) {
+          final nodeVersion = await _getVersion(nodeExe);
+          if (nodeVersion != null) {
             ctx.addBinary("node", nodeDir, "node.exe");
             ctx.addBinary("npm", nodeDir, "npm.cmd");
             return false; // Not missing!
@@ -40,7 +41,11 @@ class NodeMissing extends Step {
         }
       }
       // Try with system
-      return await _getVersion("node");
+      final nodeVersion = await _getVersion("node");
+      if (nodeVersion == null) {
+        log.print("Node not found on Path");
+      }
+      return nodeVersion == null;
     });
   }
 }

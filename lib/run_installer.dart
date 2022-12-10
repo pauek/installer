@@ -63,7 +63,7 @@ Future<void> runInstaller(Step installer) async {
   } else {
     totalStr = "${total.inMinutes}m ${(total.inSeconds.remainder(60))}s";
   }
-  Console.write("Installation time: $totalStr\n");
+  Console.write("Installation time: $totalStr\n\n");
 
   Console.showCursor();
   Console.write("[Press any key or close the terminal]\n");
