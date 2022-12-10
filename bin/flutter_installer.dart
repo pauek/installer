@@ -176,10 +176,10 @@ void main(List<String> arguments) async {
     Sequence([
       install7z,
       Parallel([
-        // installNushell,
-        // installVSCode,
+        installNushell,
+        installVSCode,
         installFlutter,
-        // installAndroidSDK,
+        installAndroidSDK,
         installFirebaseCLI,
       ]),
       finalSetup,
