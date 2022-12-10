@@ -12,15 +12,15 @@ class GitInstall extends Step {
     if (result is InstallerError) {
       return result;
     }
-    return withMessage(
-      "Registering git binary",
-      () async {
-        final dirname = await input.run();
-        Filename gitExe = Filename(join(dirname.value, "cmd", "git.exe"));
-        ctx.addBinary("git", join(dirname.value, "cmd"), "git.exe");
-        log.print("Git executable at '${gitExe.value}'");
-        return gitExe;
-      },
-    );
+    if (result is! Dirname) {
+      return InstallerError("GitInstall needs a Dirname as input");
+    }
+    final dirname = result;
+    return withMessage("Registering git binary", () async {
+      Filename gitExe = Filename(join(dirname.value, "cmd", "git.exe"));
+      ctx.addBinary("git", join(dirname.value, "cmd"), "git.exe");
+      log.print("Git executable at '${gitExe.value}'");
+      return gitExe;
+    });
   }
 }

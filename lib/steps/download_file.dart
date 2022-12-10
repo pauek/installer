@@ -11,7 +11,14 @@ class DownloadFile extends SinglePriorStep {
 
   @override
   Future run() async {
-    final url = await input.run();
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
+    }
+    if (result is! URL) {
+      return InstallerError("DownloadFile needs a URL as input");
+    }
+    final url = result;
     final urlPath = Uri.parse(url.value).path;
     final filename = forcedFilename ?? basename(urlPath);
     return withMessage(

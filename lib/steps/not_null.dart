@@ -6,7 +6,7 @@ class NotNull extends SinglePriorStep {
 
   @override
   Future run() async {
-    final result = await input.run();
+    final result = await waitForInput();
     if (result is InstallerError) {
       return result;
     }

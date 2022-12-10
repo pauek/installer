@@ -14,14 +14,9 @@ class RunSdkManager extends SinglePriorStep {
 
   @override
   Future run() async {
-    try {
-      final value = await input.run();
-      if (value == null) {
-        return null;
-      }
-    } catch (e) {
-      log.print("$title: $e");
-      return null;
+    final result = await waitForInput();
+    if (result is InstallerError) {
+      return result;
     }
     return withMessage(
       title,
@@ -29,6 +24,7 @@ class RunSdkManager extends SinglePriorStep {
         final process = await Process.start(
           ctx.getBinary("sdkmanager"),
           packages,
+          environment: ctx.environment,
         );
         process.stdin.write("y\n" * 50); // Accept licenses
         List<int> bStdout = [], bStderr = [];
