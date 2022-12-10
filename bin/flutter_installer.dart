@@ -131,11 +131,6 @@ final installAndroidSDK = Chain("Android SDK", [
           win: r"cmdline-tools\latest\bin\sdkmanager.bat",
           all: "cmdline-tools/latest/bin/sdkmanager",
         ),
-        Binary(
-          "avdmanager",
-          win: r"cmdline-tools\latest\bin\avdmanager.bat",
-          all: "cmdline-tools/latest/bin/avdmanager",
-        ),
       ]),
     ]),
   ),
