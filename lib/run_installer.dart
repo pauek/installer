@@ -43,7 +43,7 @@ Future<void> runInstaller(Step installer) async {
   Log.init(filename: logFile);
   await initPlatformVariables();
 
-  log.print("info: setup ok.");
+  log.print("info: Setup ok.");
 
   Console.hideCursor();
   Console.eraseDisplay(2);

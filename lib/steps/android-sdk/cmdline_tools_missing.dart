@@ -29,7 +29,9 @@ class CmdlineToolsMissing extends Step {
       final androidTargetDir = join(ctx.targetDir, "android-sdk");
       final cmdlineToolsBinDir = join(
         androidTargetDir,
-        "cmdline-tools/latest/bin",
+        "cmdline-tools",
+        "latest",
+        "bin",
       );
       if (await Directory(cmdlineToolsBinDir).exists()) {
         final sdkmanagerExe = join(cmdlineToolsBinDir, "sdkmanager.bat");
