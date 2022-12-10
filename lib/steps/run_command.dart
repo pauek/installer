@@ -41,7 +41,9 @@ class RunCommand extends SinglePriorStep {
         log.print("info: '$cmd ${args.join(" ")}' execution was successful.");
         return true;
       } catch (e) {
-        return error("ERROR: command '$cmd' failed: $e");
+        log.print("Error: Command '$cmd ${args.join(" ")}' failed:");
+        log.printOutput(e.toString());
+        return error("Command '$cmd' failed, see log for details");
       }
     });
   }

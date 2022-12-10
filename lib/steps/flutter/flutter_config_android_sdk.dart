@@ -17,12 +17,18 @@ class FlutterConfigAndroidSDK extends SinglePriorStep {
     }
     return withMessage(title, () async {
       final androidDir = join(ctx.targetDir, "android-sdk");
-      final result = await Process.run(
-        ctx.getBinary("flutter"),
-        ["config", "--android-sdk", androidDir],
-      );
-      log.print("info: Configured Flutter Android SDK at '$androidDir'.");
-      return result.exitCode == 0;
+      try {
+        final result = await Process.run(
+          ctx.getBinary("flutter"),
+          ["config", "--android-sdk", androidDir],
+        );
+        log.print("info: Configured Flutter Android SDK at '$androidDir'.");
+        return result.exitCode == 0;
+      } catch (e) {
+        log.print("ERROR: Flutter config Android SDK failed:");
+        log.printOutput(e.toString());
+        return error("Configuring Android SDK for Flutter failed.");
+      }
     });
   }
 }

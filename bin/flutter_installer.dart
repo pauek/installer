@@ -82,7 +82,7 @@ final installFirebaseCLI = Chain("FirebaseCLI", [
   installNode,
   If(
     FirebaseMissing(),
-    then: RunCommand("npm", ["install", "-g", "firebase-tools"]),
+    then: RunCommand("npm.cmd", ["install", "-g", "firebase-tools"]),
   ),
 ]);
 
@@ -176,10 +176,10 @@ void main(List<String> arguments) async {
     Sequence([
       install7z,
       Parallel([
-        installNushell,
-        installVSCode,
+        // installNushell,
+        // installVSCode,
         installFlutter,
-        installAndroidSDK,
+        // installAndroidSDK,
         installFirebaseCLI,
       ]),
       finalSetup,
