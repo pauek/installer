@@ -96,6 +96,9 @@ final installVSCode = Chain("VSCode", [
       ),
       DownloadFile("vscode.zip"),
       Decompress(into: "vscode"),
+      AddToEnv("vscode", [
+        Binary("code", win: "bin/code.cmd", all: "bin/code"),
+      ]),
     ]),
   )
 ]);
