@@ -40,12 +40,8 @@ class NodeMissing extends Step {
           }
         }
       }
-      // Try with system
-      final nodeVersion = await _getVersion("node");
-      if (nodeVersion == null) {
-        log.print("info: Node not found on Path.");
-      }
-      return nodeVersion == null;
+      log.print("info: Node not found on Path.");
+      return true;
     });
   }
 }

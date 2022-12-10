@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:installer2/config.dart';
 import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
 import 'package:installer2/steps/step.dart';
@@ -36,12 +37,8 @@ class GitMissing extends Step {
           return false; // Not missing!
         }
       }
-      // Try with system
-      final systemVersion = await _getVersion("git");
-      if (systemVersion == null) {
-        log.print("info: Git not found in system.");
-      }
-      return systemVersion == null;
+      log.print("info: Git not found in $targetDir.");
+      return true;
     });
   }
 }
