@@ -186,5 +186,5 @@ void main(List<String> arguments) async {
   );
 }
 
-// FIXME: Obtener el SHA y mirar si tenemos el fichero
+// FIXME: Obtener el SHA y mirar si tenemos el fichero (por orden del tamaño del fichero)
 // FIXME: Opciones de línea de comandos para instalar selectivamente
