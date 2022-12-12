@@ -11,30 +11,36 @@ class Get7zDownloadURL extends Step {
   @override
   Future run() async {
     return withMessage("Getting font URL", () async {
-      final response = await http.get(Uri.parse(url7z));
-      final document = parse(response.body);
-      final anchorList = document.querySelectorAll('td.Item a');
-      String url = "";
-      for (final anchor in anchorList) {
-        final href = anchor.attributes['href'];
-        if (href == null) {
-          continue;
+      try {
+        final response = await http.get(Uri.parse(url7z));
+        final document = parse(response.body);
+        final anchorList = document.querySelectorAll('td.Item a');
+        String url = "";
+        for (final anchor in anchorList) {
+          final href = anchor.attributes['href'];
+          if (href == null) {
+            continue;
+          }
+          if (anchor.text == "Download" && href.contains("extra")) {
+            final base = Uri.parse(url7z);
+            final merged = Uri(
+              host: base.host,
+              scheme: base.scheme,
+              path: "/$href",
+            );
+            url = merged.toString();
+          }
         }
-        if (anchor.text == "Download" && href.contains("extra")) {
-          final base = Uri.parse(url7z);
-          final merged = Uri(
-            host: base.host,
-            scheme: base.scheme,
-            path: "/$href",
-          );
-          url = merged.toString();
+        if (url.isEmpty) {
+          return error("7z download URL not found");
         }
+        log.print("info: 7z is at '$url'.");
+        return URL(url);
+      } catch (e) {
+        log.print("ERROR: 7z download URL error:");
+        log.printOutput(e.toString());
+        return error("7z download URL error: $e");
       }
-      if (url.isEmpty) {
-        return error("7z download URL not found");
-      }
-      log.print("info: 7z is at '$url'.");
-      return URL(url);
     });
   }
 }
