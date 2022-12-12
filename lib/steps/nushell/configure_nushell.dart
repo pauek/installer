@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
 import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
 import 'package:installer2/steps/step.dart';
@@ -8,9 +9,22 @@ import 'package:path/path.dart';
 
 const github = "https://raw.githubusercontent.com";
 const route = "/nushell/nushell/main/crates/nu-utils/src/sample_config/";
+const magicLine = "### FlutterDev ###";
 
 Future<String> getNuPath(name) async {
-  return await getCommandOutput(ctx.getBinary("nu"), ["-c", "\$nu.$name-path"]);
+  final output = await getCommandOutput(
+    ctx.getBinary("nu"),
+    ["-c", "\$nu.$name-path"],
+  );
+  return output.trim();
+}
+
+Future<List<String>> defaultNuFileLines(String which) async {
+  final path = await getNuPath(which);
+  await ensureDir(dirname(path));
+  final url = "$github${route}default_$which.nu";
+  final response = await http.get(Uri.parse(url));
+  return response.body.trim().split("\n");
 }
 
 String dartPubDir() {
@@ -58,6 +72,31 @@ Future<void> addLinesToFile(String path, List<String> lines) async {
   await file.close();
 }
 
+Future<List<String>> getFileLines(String which, String path) async {
+  if (await File(path).exists()) {
+    return await File(path).readAsLines();
+  } else {
+    return await defaultNuFileLines(which);
+  }
+}
+
+Future addOrReplaceLines(
+  String which,
+  List<String> fileLines,
+  List<String> newLines,
+) async {
+  if (fileLines.contains(magicLine)) {
+    // If they exist, remove previous inserted lines
+    final begin = fileLines.indexOf(magicLine);
+    final end = fileLines.indexOf(magicLine, begin + 1);
+    if (end == -1) {
+      error("Found only one magic line in Nu's $which file");
+    }
+    fileLines.removeRange(begin, end + 1);
+  }
+  fileLines.addAll([magicLine, ...newLines, magicLine]);
+}
+
 class FileInfo {
   String path, dir, filename;
   FileInfo({required this.path, required this.dir, required this.filename});
@@ -68,26 +107,20 @@ class ConfigureNushell extends SinglePriorStep {
 
   @override
   Future run() async {
-    final file = <String, String>{};
+    final configFilePath = await getNuPath("config");
+    final envFilePath = await getNuPath("env");
 
-    // TODO: Detect if these files exist first!!
-    for (final which in ['env', 'config']) {
-      final path = (await getNuPath(which)).trim();
-      await ensureDir(dirname(path));
-      await downloadFile(
-        url: "$github${route}default_$which.nu",
-        path: path,
-      );
-      file[which] = path;
-    }
+    // Read config files' lines
+    final configLines = await getFileLines("config", configFilePath);
+    final envLines = await getFileLines("env", envFilePath);
 
+    // Change Path
     Set<String> envpath = {}; // deduplicate
     for (final path in ctx.binaries.values) {
       envpath.add(dirname(path));
     }
-
-    // TODO: Add lines in a controlled section
-    await addLinesToFile(file['env']!, [
+    // Add or replace path
+    addOrReplaceLines("env", envLines, [
       "let-env $pathVariable = (\$env.$pathVariable | prepend '${dartPubDir()}')",
       for (final path in envpath)
         "let-env $pathVariable = (\$env.$pathVariable | prepend '$path')",
@@ -95,11 +128,22 @@ class ConfigureNushell extends SinglePriorStep {
         "let-env ${entry.variable} = '${entry.value}'",
     ]);
 
-    await addLinesToFile(file['config']!, [
+    // Add or replace banner suppression
+    addOrReplaceLines("config", configLines, [
       "let-env config = {",
       "  show_banner: false",
       "}",
     ]);
+
+    // Change Prompt char
+    for (int i = 0; i < envLines.length; i++) {
+      if (envLines[i].contains("〉")) {
+        envLines[i] = envLines[i].replaceFirst("〉", "> ");
+      }
+    }
+
+    await File(configFilePath).writeAsString(configLines.join(endl) + endl);
+    await File(envFilePath).writeAsString(envLines.join(endl) + endl);
 
     return true;
   }
