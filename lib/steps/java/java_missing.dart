@@ -7,7 +7,7 @@ import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 class JavaMissing extends Step {
-  JavaMissing();
+  JavaMissing() : super("See if Java is missing");
 
   static final _rVersion = RegExp(r"^(?:java|openjdk) (?<version>[\d\.]+) ");
 
@@ -23,33 +23,27 @@ class JavaMissing extends Step {
 
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
-    }
-    return withMessage("Determining if Java is installed", () async {
-      // Check Java in targetDir
-      final javaTarget = join(ctx.targetDir, "java");
-      if (await Directory(javaTarget).exists()) {
-        final dirs = await dirList(javaTarget);
-        if (dirs.length == 1) {
-          final javaSdkDir = dirs[0];
-          final javaExe = join(javaSdkDir, "bin", "java.exe");
-          final javaVersion = await _getVersion(javaExe);
-          if (javaVersion != null) {
-            ctx.addBinary("java", dirname(javaExe), "java.exe");
-            ctx.addVariable("JAVA_HOME", javaSdkDir);
-            return false; // Not missing!
-          }
+    // Check Java in targetDir
+    final javaTarget = join(ctx.targetDir, "java");
+    if (await Directory(javaTarget).exists()) {
+      final dirs = await dirList(javaTarget);
+      if (dirs.length == 1) {
+        final javaSdkDir = dirs[0];
+        final javaExe = join(javaSdkDir, "bin", "java.exe");
+        final javaVersion = await _getVersion(javaExe);
+        if (javaVersion != null) {
+          ctx.addBinary("java", dirname(javaExe), "java.exe");
+          ctx.addVariable("JAVA_HOME", javaSdkDir);
+          return false; // Not missing!
         }
       }
-      // Try with system Java
-      // FIXME: Check minimum version!
-      final systemVersion = await _getVersion("java");
-      if (systemVersion == null) {
-        log.print("Warning: java not found on system.");
-      }
-      return systemVersion == null;
-    });
+    }
+    // Try with system Java
+    // FIXME: Check minimum version!
+    final systemVersion = await _getVersion("java");
+    if (systemVersion == null) {
+      log.print("Warning: java not found on system.");
+    }
+    return systemVersion == null;
   }
 }

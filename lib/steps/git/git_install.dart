@@ -6,16 +6,14 @@ import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 class GitInstall extends Step {
+  GitInstall() : super("Install git");
+
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
-    }
-    if (result is! Dirname) {
+    if (input is! Dirname) {
       return error("GitInstall needs a Dirname as input");
     }
-    final dirname = result;
+    final dirname = input;
     return withMessage("Registering git binary", () async {
       Filename gitExe = Filename(join(dirname.value, "cmd", "git.exe"));
       ctx.addBinary("git", join(dirname.value, "cmd"), "git.exe");

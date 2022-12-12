@@ -1,41 +1,38 @@
 import 'dart:math';
 
-import 'package:console/console.dart';
+import 'package:installer2/steps/if.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/utils.dart';
 
 class FakeStep extends Step {
   final int number;
   final Duration duration;
-  FakeStep(this.number, this.duration);
+  FakeStep(this.number, this.duration) : super("Fake Step $number");
 
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
-    }
-    return withMessage("Fake step $number", () async {
-      await Future.delayed(duration);
-      return true;
-    });
-  }
-
-  @override
-  CursorPosition setPos(CursorPosition p) {
-    pos = p;
-    return CursorPosition(p.column, p.row + 1);
+    await Future.delayed(duration);
+    return true;
   }
 }
 
 class ErrorStep extends Step {
+  final String name;
+  ErrorStep(this.name) : super("ErrorStep $name");
+
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
-    }
-    return error("ErrorStep returned an error");
+    throw InstallerError("ErrorStep $name giving the error.");
+  }
+}
+
+class GiveValue extends Step {
+  dynamic value;
+  GiveValue(this.value) : super("Give $value");
+
+  @override
+  Future run() {
+    return Future.value(value);
   }
 }
 
@@ -44,8 +41,20 @@ final rnd = Random();
 rndDuration() => Duration(milliseconds: rnd.nextInt(900) + 600);
 
 final fakeInstaller = Sequence([
+  Chain("Before", [
+    FakeStep(0, Duration(seconds: 1)),
+  ]),
   Parallel([
     Chain("Chain 1", [
+      If(
+        GiveValue(true),
+        then: Chain("Subchain 1.1", [
+          FakeStep(1, rndDuration()),
+          FakeStep(2, rndDuration()),
+          FakeStep(3, rndDuration()),
+          FakeStep(4, rndDuration()),
+        ]),
+      ),
       FakeStep(1, rndDuration()),
       FakeStep(2, rndDuration()),
       FakeStep(3, rndDuration()),
@@ -55,10 +64,17 @@ final fakeInstaller = Sequence([
       FakeStep(1, rndDuration()),
       FakeStep(2, rndDuration()),
       FakeStep(3, rndDuration()),
-      ErrorStep(),
-    ])
+      ErrorStep("A"),
+    ]),
+    Chain("Chain 3", [
+      FakeStep(1, rndDuration()),
+      ErrorStep("B"),
+      FakeStep(2, rndDuration()),
+      FakeStep(3, rndDuration()),
+    ]),
   ]),
-  Chain("Chain 3", [
+  Chain("After", [
     FakeStep(1, rndDuration()),
+    FakeStep(2, rndDuration()),
   ]),
 ]);

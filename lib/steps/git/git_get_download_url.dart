@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:installer2/log.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/types.dart';
@@ -9,21 +11,14 @@ const gitForWindowsURL = "https://github.com"
     "v$version.windows.1/MinGit-$version-64-bit.zip";
 
 class GitGetDownloadURL extends Step {
+  GitGetDownloadURL() : super("Get Git download URL");
+
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
+    if (Platform.isMacOS || Platform.isLinux) {
+      return error("MacOS and Linux download of Git not implemented yet");
     }
-    return withMessage(
-      "Getting git download URL",
-      () async {
-        // if (Platform.isMacOS || Platform.isLinux) {
-        //   return error("MacOS and Linux download of Git not implemented yet");
-        // }
-        log.print("info: Git for Windows at '$gitForWindowsURL'.");
-        return Future.value(URL(gitForWindowsURL));
-      },
-    );
+    log.print("info: Git for Windows at '$gitForWindowsURL'.");
+    return Future.value(URL(gitForWindowsURL));
   }
 }

@@ -38,22 +38,18 @@ Future<SemVer> getLatestLTSVersion() async {
 }
 
 class NodeGetDownloadURL extends Step {
+  NodeGetDownloadURL() : super("Get Node download URL");
+
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
-    }
-    return withMessage("Determining Node Download URL", () async {
-      log.print("info: Node Determining latest LTS version.");
-      final version = await getLatestLTSVersion();
-      log.print("info: Node found, version $version.");
+    log.print("info: Node Determining latest LTS version.");
+    final version = await getLatestLTSVersion();
+    log.print("info: Node found, version $version.");
 
-      String extension = Platform.isWindows ? ".7z" : ".tar.gz";
-      final file = "node-$version-$os-$arch$extension";
-      final url = "https://nodejs.org/dist/$version/$file";
-      log.print("info: Node Download URL is '$url'.");
-      return Future.value(URL(url));
-    });
+    String extension = Platform.isWindows ? ".7z" : ".tar.gz";
+    final file = "node-$version-$os-$arch$extension";
+    final url = "https://nodejs.org/dist/$version/$file";
+    log.print("info: Node Download URL is '$url'.");
+    return Future.value(URL(url));
   }
 }

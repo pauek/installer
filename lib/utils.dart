@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:archive/archive_io.dart';
 import 'package:http/http.dart' as http;
 import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
@@ -16,7 +15,9 @@ class InstallerError extends Error {
   String toString() => "InstallerError: $message";
 }
 
-error(String message) => InstallerError(message);
+error(String message) {
+  throw InstallerError(message);
+}
 
 String getHomeDir() {
   final homeVar = Platform.isWindows ? 'userprofile' : 'HOME';
@@ -114,7 +115,7 @@ Future decompress(String file, String targetDir) async {
     } else if (file.endsWith(".7z")) {
       return await decompress7z(file, targetDir);
     } else {
-      return error("Do not know how to decompress $file");
+      return Future.value(error("Do not know how to decompress $file"));
     }
   } catch (e) {
     log.print("Couldn't decompress $file.");

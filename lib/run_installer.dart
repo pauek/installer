@@ -50,7 +50,13 @@ Future<void> runInstaller(Step installer) async {
   final lastPos = installer.setPos(CursorPosition(1, 1));
   Console.moveCursor(column: 1, row: 1);
 
-  await installer.run();
+  dynamic result;
+  try {
+    result = await installer.runChecked();
+  } catch (e) {
+    result = e;
+  }
+  log.print("Final result was: $result");
 
   await logEnv();
   await log.close();

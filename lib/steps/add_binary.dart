@@ -53,19 +53,15 @@ class EnvVariable extends EnvItem {
 class AddToEnv extends SinglePriorStep {
   final String dir;
   final List<EnvItem> items;
-  AddToEnv(this.dir, this.items);
+  AddToEnv(this.dir, this.items) : super("AddToEnv");
 
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
-    }
     String baseDir;
-    if (result == null) {
+    if (input == null) {
       baseDir = join(ctx.targetDir, dir);
     } else {
-      baseDir = result.value;
+      baseDir = input.value;
     }
     for (final it in items) {
       final result = it.add(baseDir);

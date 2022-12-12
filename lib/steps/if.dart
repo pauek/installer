@@ -6,7 +6,8 @@ class If extends Step {
   final Step cond;
   final Step then;
   final Step? orelse;
-  If(this.cond, {required this.then, this.orelse});
+  If(this.cond, {required this.then, this.orelse})
+      : super("if (${cond.title}) ${then.title} ${orelse?.title ?? ""}");
 
   @override
   CursorPosition setPos(CursorPosition p) {
@@ -19,11 +20,10 @@ class If extends Step {
 
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
+    if (input is InstallerError) {
+      return input;
     }
-    final condResult = await cond.run();
+    final condResult = await cond.runChecked();
     if (condResult is InstallerError) {
       return condResult;
     }
@@ -31,11 +31,11 @@ class If extends Step {
       return error("Condition in If didn't return boolean");
     }
     if (condResult) {
-      return await then.run();
+      return then.runChecked();
     } else {
       show("");
       if (orelse != null) {
-        return await orelse!.run();
+        return orelse!.runChecked();
       } else {
         return null;
       }

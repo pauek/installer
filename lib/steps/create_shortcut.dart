@@ -6,24 +6,18 @@ import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 class CreateShortcut extends SinglePriorStep {
+  CreateShortcut() : super("Create Shortcut");
+
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
-    }
     if (!Platform.isWindows) {
       return error("Platform not supported");
     }
     final shortcutExe = join(ctx.downloadDir, "Shortcut.exe");
-    try {
-      await downloadFile(
-        url: "https://files.pauek.info/Shortcut.exe",
-        path: shortcutExe,
-      );
-    } catch (e) {
-      return error("Couldn't download shortcut.exe: $e");
-    }
+    await downloadFile(
+      url: "https://files.pauek.info/Shortcut.exe",
+      path: shortcutExe,
+    );
     final shortcutFile = join(getHomeDir(), "Desktop", "Flutter.lnk");
     final targetExe = ctx.getBinary("nu");
     final shortcutProcess = await Process.run(shortcutExe, [

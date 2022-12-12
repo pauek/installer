@@ -50,19 +50,12 @@ Future<String> getLatestJdkUrl() async {
 }
 
 class JavaGetDownloadURL extends Step {
+  JavaGetDownloadURL() : super("Get Java download URL");
+
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
-    }
-    return withMessage(
-      "Determining Java Download URL",
-      () async {
-        final url = await getLatestJdkUrl();
-        log.print("info: Java is at '$url'.");
-        return Future.value(URL(url));
-      },
-    );
+    final url = await getLatestJdkUrl();
+    log.print("info: Java is at '$url'.");
+    return Future.value(URL(url));
   }
 }

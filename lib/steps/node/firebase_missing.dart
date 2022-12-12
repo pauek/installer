@@ -7,6 +7,8 @@ import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 class FirebaseMissing extends Step {
+  FirebaseMissing() : super("See if firebase is missing");
+
   static final _rVersion = RegExp(r"^(?<version>[\d\.]+)");
 
   Future<String?> _getVersion(String exe) async {
@@ -21,30 +23,24 @@ class FirebaseMissing extends Step {
 
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
-    }
-    return withMessage("Determining if firebase is installed", () async {
-      final nodeTargetDir = join(ctx.targetDir, "node");
-      if (await Directory(nodeTargetDir).exists()) {
-        final dirs = await dirList(nodeTargetDir);
-        if (dirs.length == 1) {
-          final nodeDir = dirs[0];
-          final firebaseExe = join(nodeDir, "firebase.cmd");
-          final version = await _getVersion(firebaseExe);
-          if (version != null) {
-            ctx.addBinary("firebase", nodeDir, "firebase.cmd");
-            return false; // Not missing!
-          }
+    final nodeTargetDir = join(ctx.targetDir, "node");
+    if (await Directory(nodeTargetDir).exists()) {
+      final dirs = await dirList(nodeTargetDir);
+      if (dirs.length == 1) {
+        final nodeDir = dirs[0];
+        final firebaseExe = join(nodeDir, "firebase.cmd");
+        final version = await _getVersion(firebaseExe);
+        if (version != null) {
+          ctx.addBinary("firebase", nodeDir, "firebase.cmd");
+          return false; // Not missing!
         }
       }
-      // Try with system
-      final systemVersion = await _getVersion("firebase");
-      if (systemVersion == null) {
-        log.print("info: firebase not found in system.");
-      }
-      return systemVersion == null;
-    });
+    }
+    // Try with system
+    final systemVersion = await _getVersion("firebase");
+    if (systemVersion == null) {
+      log.print("info: firebase not found in system.");
+    }
+    return systemVersion == null;
   }
 }

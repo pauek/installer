@@ -10,41 +10,32 @@ import 'package:path/path.dart';
 class RunCommand extends SinglePriorStep {
   final String cmd;
   final List<String> args;
-  RunCommand(this.cmd, this.args);
+  RunCommand(this.cmd, this.args)
+      : super("Run command '$cmd ${args.join(" ")}");
 
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
+    final envPath = Platform.environment['Path']?.split(';') ?? [];
+
+    // Add node path for npm installs!
+    envPath.add(
+      dirname(ctx.getBinary("node")),
+    );
+    final cmdPath = ctx.getBinary(cmd);
+    final env = {
+      pathVariable: envPath.join(";"),
+    };
+    final result = await Process.run(cmdPath, args, environment: env);
+
+    if (result.exitCode != 0) {
+      log.print("ERROR: $cmd returned ${result.exitCode}.");
+      log.print("ERROR: stdout:");
+      log.printOutput(result.stdout.toString().trim());
+      log.print("ERROR: stderr:");
+      log.printOutput(result.stderr.toString().trim());
+      return error("$cmd returned ${result.exitCode}");
     }
-    return withMessage("Running '$cmd ${args.join(" ")}'", () async {
-      final envPath = Platform.environment['Path']?.split(';') ?? [];
-      // Add node path for npm installs!
-      envPath.add(
-        dirname(ctx.getBinary("node")),
-      );
-      try {
-        final cmdPath = ctx.getBinary(cmd);
-        final env = {
-          pathVariable: envPath.join(";"),
-        };
-        final result = await Process.run(cmdPath, args, environment: env);
-        if (result.exitCode != 0) {
-          log.print("ERROR: $cmd returned ${result.exitCode}.");
-          log.print("ERROR: stdout:");
-          log.printOutput(result.stdout.toString().trim());
-          log.print("ERROR: stderr:");
-          log.printOutput(result.stderr.toString().trim());
-          return error("$cmd returned ${result.exitCode}");
-        }
-        log.print("info: '$cmd ${args.join(" ")}' execution was successful.");
-        return true;
-      } catch (e) {
-        log.print("Error: Command '$cmd ${args.join(" ")}' failed:");
-        log.printOutput(e.toString());
-        return error("Command '$cmd' failed, see log for details");
-      }
-    });
+    log.print("info: '$cmd ${args.join(" ")}' execution was successful.");
+    return true;
   }
 }

@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:async/async.dart';
 import 'package:console/console.dart';
+import 'package:installer2/log.dart';
 import 'package:installer2/utils.dart';
 
 const brailleFrames = r"⢿⣻⣽⣾⣷⣯⣟⡿";
@@ -18,27 +19,30 @@ String getStringAnimation() {
 }
 
 abstract class Step {
-  // Necesito tener los steps aquí???
-  Step? _input;
+  String title;
+  Step? _inputStep;
+  dynamic _inputResult;
 
-  Step([Step? input]) : _input = input;
+  Step(this.title, [Step? inputStep]) : _inputStep = inputStep;
 
-  Step get input {
-    if (_input == null) {
+  Step get inputStep {
+    if (_inputStep == null) {
       return error("Attempting to use _input when null");
     }
-    return _input!;
+    return _inputStep!;
   }
 
-  set input(Step step) {
-    _input = step;
+  bool get hasInputStep => _inputStep != null;
+
+  set inputStep(Step step) {
+    _inputStep = step;
   }
 
-  bool get hasInput => _input != null;
+  dynamic get input => _inputResult;
 
   Future waitForInput() async {
-    if (hasInput) {
-      return await input.run();
+    if (hasInputStep) {
+      _inputResult = await inputStep.runChecked();
     }
   }
 
@@ -105,17 +109,31 @@ abstract class Step {
     }
   }
 
-  Future run();
+  Future run() => throw "Missing Step.run implementation!";
+
+  Future runChecked() async {
+    await waitForInput();
+    if (input is InstallerError) {
+      return input;
+    }
+    try {
+      return await withMessage(title, () => run());
+    } catch (e) {
+      log.print("ERROR: $title error:");
+      log.printOutput(e.toString());
+      return error("$title error, see log for details");
+    }
+  }
 }
 
 abstract class SinglePriorStep extends Step {
-  SinglePriorStep([Step? priorStep]) : super(priorStep);
+  SinglePriorStep(String title, [Step? priorStep]) : super(title, priorStep);
 
   @override
   CursorPosition setPos(CursorPosition p) {
     var next = super.setPos(CursorPosition(p.column, p.row));
-    if (hasInput) {
-      next = input.setPos(p);
+    if (hasInputStep) {
+      next = inputStep.setPos(p);
     }
     return next;
   }
@@ -123,19 +141,19 @@ abstract class SinglePriorStep extends Step {
 
 class Parallel extends Step {
   List<Step> parSteps;
-  Parallel(this.parSteps);
+  Parallel(this.parSteps) : super("Parallel");
 
   @override
   String get description => "Parallel job";
 
   @override
-  Future run() async {
+  Future runChecked() async {
     final result = await waitForInput();
     if (result is InstallerError) {
       return result;
     }
     final results = await Future.wait(
-      parSteps.map((s) => s.run()),
+      parSteps.map((s) => s.runChecked()),
     );
     return results;
   }
@@ -154,17 +172,17 @@ class Parallel extends Step {
 abstract class SequenceBase extends Step {
   final List<Step> seqSteps;
 
-  SequenceBase(this.seqSteps) {
+  SequenceBase(super.title, this.seqSteps) {
     if (seqSteps.isEmpty) {
       error("Chain with no inputs");
     }
-    if (seqSteps[0].hasInput) {
+    if (seqSteps[0].hasInputStep) {
       error("First step in Chain shouldn't have input");
     }
 
     // Set up chain
     for (int i = 1; i < seqSteps.length; i++) {
-      seqSteps[i].input = seqSteps[i - 1];
+      seqSteps[i].inputStep = seqSteps[i - 1];
     }
   }
 
@@ -181,24 +199,31 @@ abstract class SequenceBase extends Step {
 
 class Chain extends SequenceBase {
   final String name;
-  Chain(this.name, super.seqSteps);
-  Chain.noPrefix(super.seqSteps) : name = "";
+  Chain(this.name, List<Step> seqSteps) : super(name, seqSteps);
+  Chain.noPrefix(List<Step> seqSteps)
+      : name = "",
+        super("Chain", seqSteps);
 
   @override
   String get description => name;
   String get prefix => name.isEmpty ? "" : name;
 
   @override
-  int get indent => name.isEmpty ? 0 : max(prefix.length + 1, 14);
+  int get indent => name.isEmpty ? 0 : math.max(prefix.length + 1, 14);
 
   @override
-  Future run() async {
+  Future runChecked() async {
     final r1 = await waitForInput();
     if (r1 is InstallerError) {
       return r1;
     }
     show(prefix, color: Color.BLUE);
-    final r2 = await seqSteps.last.run();
+    dynamic r2;
+    try {
+      r2 = await seqSteps.last.runChecked();
+    } catch (e) {
+      r2 = e;
+    }
     if (r2 is InstallerError) {
       Console.moveCursor(row: pos!.row, column: pos!.column + indent);
       final pen = TextPen();
@@ -221,7 +246,7 @@ class Chain extends SequenceBase {
 }
 
 class Sequence extends SequenceBase {
-  Sequence(super.seqSteps);
+  Sequence(List<Step> seqSteps) : super("Sequence", seqSteps);
 
   @override
   int get indent => 0;
@@ -237,11 +262,11 @@ class Sequence extends SequenceBase {
   }
 
   @override
-  Future run() async {
+  Future runChecked() async {
     final result = await waitForInput();
     if (result is InstallerError) {
       return result;
     }
-    return await seqSteps.last.run();
+    return await seqSteps.last.runChecked();
   }
 }

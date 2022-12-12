@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
 import 'package:installer2/steps/step.dart';
-import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 class CmdlineToolsMissing extends Step {
+  CmdlineToolsMissing() : super("See if cmdline-tools are missing");
+
   static final _rVersion = RegExp(r"^(?<version>[\d\.]+)");
 
   Future<String?> _getVersion(String exe) async {
@@ -21,33 +22,21 @@ class CmdlineToolsMissing extends Step {
 
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
-    }
-    return withMessage("Determining if cmdline-tools are installed", () async {
-      try {
-        final androidTargetDir = join(ctx.targetDir, "android-sdk");
-        final cmdlineToolsBinDir = join(
-          androidTargetDir,
-          "cmdline-tools",
-          "latest",
-          "bin",
-        );
-        if (await Directory(cmdlineToolsBinDir).exists()) {
-          final sdkmanagerExe = join(cmdlineToolsBinDir, "sdkmanager.bat");
-          final version = await _getVersion(sdkmanagerExe);
-          if (version != null) {
-            ctx.addBinary("sdkmanager", cmdlineToolsBinDir, "sdkmanager.bat");
-            return false; // Not missing!
-          }
-          return true;
-        }
-      } catch (e) {
-        log.print("ERROR: cmdline-tools missing error:");
-        log.printOutput(e.toString());
-        return error("cmdline-tools missing error: $e");
+    final androidTargetDir = join(ctx.targetDir, "android-sdk");
+    final cmdlineToolsBinDir = join(
+      androidTargetDir,
+      "cmdline-tools",
+      "latest",
+      "bin",
+    );
+    if (await Directory(cmdlineToolsBinDir).exists()) {
+      final sdkmanagerExe = join(cmdlineToolsBinDir, "sdkmanager.bat");
+      final version = await _getVersion(sdkmanagerExe);
+      if (version != null) {
+        ctx.addBinary("sdkmanager", cmdlineToolsBinDir, "sdkmanager.bat");
+        return false; // Not missing!
       }
-    });
+    }
+    return true;
   }
 }

@@ -4,10 +4,11 @@ import 'package:installer2/config.dart';
 import 'package:installer2/context.dart';
 import 'package:installer2/log.dart';
 import 'package:installer2/steps/step.dart';
-import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
 class GitMissing extends Step {
+  GitMissing() : super("See if git is missing");
+
   final _rVersion = RegExp(r"^git version (?<version>[\w\.]+)");
 
   Future<String?> _getVersion(String gitExe) async {
@@ -22,23 +23,17 @@ class GitMissing extends Step {
 
   @override
   Future run() async {
-    final result = await waitForInput();
-    if (result is InstallerError) {
-      return result;
-    }
-    return withMessage("Determining if Git is installed", () async {
-      final gitTargetDir = join(ctx.targetDir, "git");
-      if (await Directory(gitTargetDir).exists()) {
-        final gitDir = join(gitTargetDir, "cmd");
-        final gitExe = join(gitDir, "git.exe");
-        final gitVersion = await _getVersion(gitExe);
-        if (gitVersion != null) {
-          ctx.addBinary("git", gitDir, "git.exe");
-          return false; // Not missing!
-        }
+    final gitTargetDir = join(ctx.targetDir, "git");
+    if (await Directory(gitTargetDir).exists()) {
+      final gitDir = join(gitTargetDir, "cmd");
+      final gitExe = join(gitDir, "git.exe");
+      final gitVersion = await _getVersion(gitExe);
+      if (gitVersion != null) {
+        ctx.addBinary("git", gitDir, "git.exe");
+        return false; // Not missing!
       }
-      log.print("info: Git not found in $targetDir.");
-      return true;
-    });
+    }
+    log.print("info: Git not found in $targetDir.");
+    return true;
   }
 }
