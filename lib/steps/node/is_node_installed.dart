@@ -6,8 +6,8 @@ import 'package:installer2/steps/step.dart';
 import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
-class NodeMissing extends Step {
-  NodeMissing() : super("See if node is missing");
+class IsNodeInstalled extends Step {
+  IsNodeInstalled() : super("See if node is missing");
 
   static final rNodeVersion = RegExp(r"^v(?<version>[\d\.]+)");
 
@@ -33,11 +33,11 @@ class NodeMissing extends Step {
         if (nodeVersion != null) {
           ctx.addBinary("node", nodeDir, "node.exe");
           ctx.addBinary("npm", nodeDir, "npm.cmd");
-          return false; // Not missing!
+          return true;
         }
       }
     }
     log.print("info: Node not found on Path.");
-    return true;
+    return false;
   }
 }

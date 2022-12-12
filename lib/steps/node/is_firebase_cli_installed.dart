@@ -6,8 +6,8 @@ import 'package:installer2/steps/step.dart';
 import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
-class FirebaseMissing extends Step {
-  FirebaseMissing() : super("See if firebase is missing");
+class IsFirebaseCliInstalled extends Step {
+  IsFirebaseCliInstalled() : super("See if firebase CLI is missing");
 
   static final _rVersion = RegExp(r"^(?<version>[\d\.]+)");
 
@@ -16,7 +16,7 @@ class FirebaseMissing extends Step {
     final match = _rVersion.firstMatch(result.stdout.trim());
     String? version = match?.namedGroup("version");
     if (version != null) {
-      log.print("info: Firebase found, version '$version'.");
+      log.print("info: 'firebase' found, version '$version'.");
     }
     return version;
   }
@@ -32,15 +32,11 @@ class FirebaseMissing extends Step {
         final version = await _getVersion(firebaseExe);
         if (version != null) {
           ctx.addBinary("firebase", nodeDir, "firebase.cmd");
-          return false; // Not missing!
+          return true; // installed!
         }
       }
     }
-    // Try with system
-    final systemVersion = await _getVersion("firebase");
-    if (systemVersion == null) {
-      log.print("info: firebase not found in system.");
-    }
-    return systemVersion == null;
+    log.print("info: firebase not found in system.");
+    return false;
   }
 }

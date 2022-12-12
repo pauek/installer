@@ -6,8 +6,8 @@ import 'package:installer2/log.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:path/path.dart';
 
-class GitMissing extends Step {
-  GitMissing() : super("See if git is missing");
+class IsGitInstalled extends Step {
+  IsGitInstalled() : super("Check if git is installed");
 
   final _rVersion = RegExp(r"^git version (?<version>[\w\.]+)");
 
@@ -30,10 +30,10 @@ class GitMissing extends Step {
       final gitVersion = await _getVersion(gitExe);
       if (gitVersion != null) {
         ctx.addBinary("git", gitDir, "git.exe");
-        return false; // Not missing!
+        return true; // Not missing!
       }
     }
     log.print("info: Git not found in $targetDir.");
-    return true;
+    return false;
   }
 }

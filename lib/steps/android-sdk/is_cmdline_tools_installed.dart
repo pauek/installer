@@ -5,8 +5,8 @@ import 'package:installer2/log.dart';
 import 'package:installer2/steps/step.dart';
 import 'package:path/path.dart';
 
-class CmdlineToolsMissing extends Step {
-  CmdlineToolsMissing() : super("See if cmdline-tools are missing");
+class IsCmdlineToolsInstalled extends Step {
+  IsCmdlineToolsInstalled() : super("See if cmdline-tools are missing");
 
   static final _rVersion = RegExp(r"^(?<version>[\d\.]+)");
 
@@ -34,9 +34,11 @@ class CmdlineToolsMissing extends Step {
       final version = await _getVersion(sdkmanagerExe);
       if (version != null) {
         ctx.addBinary("sdkmanager", cmdlineToolsBinDir, "sdkmanager.bat");
-        return false; // Not missing!
+        log.print("info: found cmdline-tools at '$cmdlineToolsBinDir");
+        return true;
       }
     }
-    return true;
+    log.print("info: cmdline-tools not found");
+    return false;
   }
 }

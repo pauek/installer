@@ -1,7 +1,7 @@
 import 'package:installer2/run_installer.dart';
 import 'package:installer2/steps/add_binary.dart';
 import 'package:installer2/steps/android-sdk/accept_android_licenses.dart';
-import 'package:installer2/steps/android-sdk/cmdline_tools_missing.dart';
+import 'package:installer2/steps/android-sdk/is_cmdline_tools_installed.dart';
 import 'package:installer2/steps/android-sdk/cmdline_tools_url.dart';
 import 'package:installer2/steps/clone_github_repo.dart';
 import 'package:installer2/steps/create_shortcut.dart';
@@ -9,24 +9,25 @@ import 'package:installer2/steps/decompress.dart';
 import 'package:installer2/steps/download_file.dart';
 import 'package:installer2/steps/flutter/flutter_config_android_sdk.dart';
 import 'package:installer2/steps/git/git_get_download_url.dart';
-import 'package:installer2/steps/git/git_missing.dart';
-import 'package:installer2/steps/git/git_repository_missing.dart';
+import 'package:installer2/steps/git/is_git_installed.dart';
+import 'package:installer2/steps/git/git_repository_present.dart';
 import 'package:installer2/steps/give_url.dart';
 import 'package:installer2/steps/if.dart';
 import 'package:installer2/steps/java/java_get_download_url.dart';
-import 'package:installer2/steps/java/java_missing.dart';
+import 'package:installer2/steps/java/is_java_installed.dart';
 import 'package:installer2/steps/move.dart';
-import 'package:installer2/steps/node/firebase_missing.dart';
+import 'package:installer2/steps/node/is_firebase_cli_installed.dart';
 import 'package:installer2/steps/node/node_get_download_url.dart';
-import 'package:installer2/steps/node/node_missing.dart';
+import 'package:installer2/steps/node/is_node_installed.dart';
+import 'package:installer2/steps/not.dart';
 import 'package:installer2/steps/nushell/configure_nushell.dart';
 import 'package:installer2/steps/nushell/nushell_download_url.dart';
-import 'package:installer2/steps/nushell/nushell_missing.dart';
+import 'package:installer2/steps/nushell/is_nushell_installed.dart';
 import 'package:installer2/steps/rename.dart';
 import 'package:installer2/steps/run_command.dart';
 import 'package:installer2/steps/run_sdk_manager.dart';
 import 'package:installer2/steps/step.dart';
-import 'package:installer2/steps/vscode/vscode_missing.dart';
+import 'package:installer2/steps/vscode/is_vscode_installed.dart';
 
 final r7zVersion = RegExp(r"^7-Zip \(r\) (?<version>[\d.]+) \(x86\)");
 final install7z = Chain("7z", [
@@ -40,7 +41,7 @@ final install7z = Chain("7z", [
 
 final installGit = Chain("Git", [
   If(
-    GitMissing(),
+    Not(IsGitInstalled()),
     then: Chain.noPrefix([
       GitGetDownloadURL(),
       DownloadFile(),
@@ -55,7 +56,7 @@ final installGit = Chain("Git", [
 final installFlutter = Chain("Flutter", [
   installGit,
   If(
-    GitRepositoryMissing("flutter", flutterRepo),
+    Not(GitRepositoryPresent("flutter", flutterRepo)),
     then: CloneGithubRepo("flutter", flutterRepo, branch: "stable"),
   ),
   AddToEnv("flutter", [
@@ -66,7 +67,7 @@ final installFlutter = Chain("Flutter", [
 ]);
 
 final installNode = If(
-  NodeMissing(),
+  Not(IsNodeInstalled()),
   then: Chain("Node", [
     NodeGetDownloadURL(),
     DownloadFile(),
@@ -81,14 +82,14 @@ final installNode = If(
 final installFirebaseCLI = Chain("FirebaseCLI", [
   installNode,
   If(
-    FirebaseMissing(),
+    Not(IsFirebaseCliInstalled()),
     then: RunCommand("npm", ["install", "-g", "firebase-tools"]),
   ),
 ]);
 
 final installVSCode = Chain("VSCode", [
   If(
-    VSCodeMissing(),
+    Not(IsVSCodeInstalled()),
     then: Chain.noPrefix([
       GiveURL(
         "https://code.visualstudio.com"
@@ -104,7 +105,7 @@ final installVSCode = Chain("VSCode", [
 ]);
 
 final installJava = If(
-  JavaMissing(),
+  Not(IsJavaInstalled()),
   then: Chain.noPrefix([
     JavaGetDownloadURL(),
     DownloadFile(),
@@ -119,7 +120,7 @@ final installJava = If(
 final installAndroidSDK = Chain("Android SDK", [
   installJava,
   If(
-    CmdlineToolsMissing(),
+    Not(IsCmdlineToolsInstalled()),
     then: Chain.noPrefix([
       GetAndroidCmdlineToolsURL(),
       DownloadFile(),
@@ -144,7 +145,7 @@ final installAndroidSDK = Chain("Android SDK", [
 
 final installNushell = Chain("Nushell", [
   If(
-    NushellMissing(),
+    Not(IsNushellInstalled()),
     then: Chain.noPrefix([
       GetNushellDownloadURL(),
       DownloadFile(),

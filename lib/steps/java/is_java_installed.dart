@@ -6,8 +6,8 @@ import 'package:installer2/steps/step.dart';
 import 'package:installer2/utils.dart';
 import 'package:path/path.dart';
 
-class JavaMissing extends Step {
-  JavaMissing() : super("See if Java is missing");
+class IsJavaInstalled extends Step {
+  IsJavaInstalled() : super("See if Java is missing");
 
   static final _rVersion = RegExp(r"^(?:java|openjdk) (?<version>[\d\.]+) ");
 
@@ -34,7 +34,7 @@ class JavaMissing extends Step {
         if (javaVersion != null) {
           ctx.addBinary("java", dirname(javaExe), "java.exe");
           ctx.addVariable("JAVA_HOME", javaSdkDir);
-          return false; // Not missing!
+          return true; // found!
         }
       }
     }
@@ -44,6 +44,6 @@ class JavaMissing extends Step {
     if (systemVersion == null) {
       log.print("Warning: java not found on system.");
     }
-    return systemVersion == null;
+    return systemVersion != null;
   }
 }
