@@ -6,6 +6,7 @@ import 'package:installer2/steps/android-sdk/cmdline_tools_url.dart';
 import 'package:installer2/steps/clone_github_repo.dart';
 import 'package:installer2/steps/create_shortcut.dart';
 import 'package:installer2/steps/decompress.dart';
+import 'package:installer2/steps/delay.dart';
 import 'package:installer2/steps/download_file.dart';
 import 'package:installer2/steps/flutter/flutter_config_android_sdk.dart';
 import 'package:installer2/steps/git/git_get_download_url.dart';
@@ -125,6 +126,7 @@ final installAndroidSDK = Chain("Android SDK", [
       GetAndroidCmdlineToolsURL(),
       DownloadFile(),
       Decompress(into: "android-sdk/cmdline-tools"),
+      Delay(duration: Duration(milliseconds: 500)),
       Rename(from: "cmdline-tools", to: "latest"),
       AddToEnv("android-sdk", [
         Binary(
