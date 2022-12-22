@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:installer2/run_installer.dart';
 import 'package:installer2/steps/add_binary.dart';
 import 'package:installer2/steps/android-sdk/accept_android_licenses.dart';
@@ -35,9 +37,7 @@ final install7z = Chain("7z", [
   GiveURL("https://www.7-zip.org/a/7zr.exe"),
   DownloadFile(),
   Move(into: "7z", forcedFilename: "7z.exe"),
-  AddToEnv("7z", [
-    Binary("7z", win: "7z.exe"),
-  ])
+  AddToEnv("7z", [Binary("7z", win: "7z.exe")])
 ]);
 
 final installGit = Chain("Git", [
@@ -172,16 +172,72 @@ final finalSetup = Chain("Final Setup", [
   CreateShortcut(),
 ]);
 
+class Option {
+  String name, description;
+  Step step;
+  Option(this.name, this.step, this.description);
+}
+
+List<Option> candidates = [
+  Option(
+    "nu",
+    installNushell,
+    "Install Nushell",
+  ),
+  Option(
+    "vscode",
+    installVSCode,
+    "Install Visual Studio Code",
+  ),
+  Option(
+    "flutter",
+    installFlutter,
+    "Install Flutter",
+  ),
+  Option(
+    "android-sdk",
+    installAndroidSDK,
+    "Install the Android SDK",
+  ),
+  Option(
+    "firebase-cli",
+    installFirebaseCLI,
+    "Install Firebase Command Line Interface",
+  ),
+];
+
+final longestName = candidates.map((k) => k.name.length).reduce(max);
+
+bool removeCurrentInstallation = false;
+
 void main(List<String> arguments) async {
+  List<String> args = arguments.where((a) => !a.startsWith("-")).toList();
+  List<String> options = arguments.where((a) => a.startsWith("-")).toList();
+
+  removeCurrentInstallation = options.contains("--reinstall");
+
+  bool isSingle(String x) => (args.length == 1 && args.single == x);
+
+  if (isSingle("help")) {
+    print("Installers: ");
+    print("  ${"all".padRight(longestName)} - All below [default]");
+    for (final c in candidates) {
+      print("  ${c.name.padRight(longestName)} - ${c.description}");
+    }
+    print("\nExample:");
+    print("  flutter-installer.exe flutter android-sdk");
+    print("");
+    return;
+  }
+
+  install(x) => args.isEmpty || isSingle("all") || args.contains(x);
+
   await runInstaller(
     Sequence([
       install7z,
       Parallel([
-        installNushell,
-        installVSCode,
-        installFlutter,
-        installAndroidSDK,
-        installFirebaseCLI,
+        for (final c in candidates)
+          if (install(c.name)) c.step
       ]),
       finalSetup,
     ]),

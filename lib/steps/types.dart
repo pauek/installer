@@ -11,6 +11,7 @@ class Filename extends Value<String> {
 }
 
 class URL extends Value<String> {
+  String? hash;
   URL(super.value);
 }
 
