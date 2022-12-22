@@ -33,130 +33,144 @@ import 'package:installer2/steps/step.dart';
 import 'package:installer2/steps/vscode/is_vscode_installed.dart';
 
 final r7zVersion = RegExp(r"^7-Zip \(r\) (?<version>[\d.]+) \(x86\)");
-final install7z = Chain("7z", [
-  GiveURL("https://www.7-zip.org/a/7zr.exe"),
-  DownloadFile(),
-  Move(into: "7z", forcedFilename: "7z.exe"),
-  AddToEnv("7z", [Binary("7z", win: "7z.exe")])
-]);
-
-final installGit = Chain("Git", [
-  If(
-    Not(IsGitInstalled()),
-    then: Chain.noPrefix([
-      GitGetDownloadURL(),
+install7z(Set<String> options) => Chain("7z", [
+      GiveURL("https://www.7-zip.org/a/7zr.exe"),
       DownloadFile(),
-      Decompress(into: "git"),
-      AddToEnv("git", [
-        Binary("git", win: "cmd/git.exe"),
-      ])
-    ]),
-  ),
-]);
+      Move(into: "7z", forcedFilename: "7z.exe"),
+      AddToEnv("7z", [Binary("7z", win: "7z.exe")])
+    ]);
 
-final installFlutter = Chain("Flutter", [
-  installGit,
-  If(
-    Not(GitRepositoryPresent("flutter", flutterRepo)),
-    then: CloneGithubRepo("flutter", flutterRepo, branch: "stable"),
-  ),
-  AddToEnv("flutter", [
-    Binary("flutter", win: "bin/flutter.bat", all: "bin/flutter"),
-    Binary("dart", win: "bin/dart.bat", all: "bin/dart"),
-  ]),
-  RunCommand("dart", ["pub", "global", "activate", "flutterfire_cli"]),
-]);
-
-final installNode = If(
-  Not(IsNodeInstalled()),
-  then: Chain("Node", [
-    NodeGetDownloadURL(),
-    DownloadFile(),
-    Decompress(into: "node"),
-    AddToEnv("node", [
-      Binary("node", win: "node.exe", all: "bin/node"),
-      Binary("npm", win: "npm.cmd", all: "bin/npm"),
-    ]),
-  ]),
-);
-
-final installFirebaseCLI = Chain("FirebaseCLI", [
-  installNode,
-  If(
-    Not(IsFirebaseCliInstalled()),
-    then: RunCommand("npm", ["install", "-g", "firebase-tools"]),
-  ),
-]);
-
-final installVSCode = Chain("VSCode", [
-  If(
-    Not(IsVSCodeInstalled()),
-    then: Chain.noPrefix([
-      GiveURL(
-        "https://code.visualstudio.com"
-        "/sha/download?build=stable&os=win32-x64-archive",
+installGit(Set<String> options) => Chain("Git", [
+      If(
+        Not(IsGitInstalled()),
+        then: Chain.noPrefix([
+          GitGetDownloadURL(),
+          DownloadFile(),
+          Decompress(into: "git"),
+          AddToEnv("git", [
+            Binary("git", win: "cmd/git.exe"),
+          ])
+        ]),
       ),
-      DownloadFile("vscode.zip"),
-      Decompress(into: "vscode"),
-      AddToEnv("vscode", [
-        Binary("code", win: "bin/code.cmd", all: "bin/code"),
+    ]);
+
+installFlutter(Set<String> options) => Chain("Flutter", [
+      installGit(options),
+      If(
+        Not(GitRepositoryPresent("flutter", flutterRepo)),
+        then: CloneGithubRepo("flutter", flutterRepo, branch: "stable"),
+      ),
+      AddToEnv("flutter", [
+        Binary("flutter", win: "bin/flutter.bat", all: "bin/flutter"),
+        Binary("dart", win: "bin/dart.bat", all: "bin/dart"),
       ]),
-    ]),
-  )
-]);
+      RunCommand("dart", ["pub", "global", "activate", "flutterfire_cli"]),
+    ]);
 
-final installJava = If(
-  Not(IsJavaInstalled()),
-  then: Chain.noPrefix([
-    JavaGetDownloadURL(),
-    DownloadFile(),
-    Decompress(into: "java"),
-    AddToEnv("java", [
-      Binary("java", all: "bin/java"),
-      EnvVariable("JAVA_HOME"),
-    ])
-  ]),
-);
-
-final installAndroidSDK = Chain("Android SDK", [
-  installJava,
-  If(
-    Not(IsCmdlineToolsInstalled()),
-    then: Chain.noPrefix([
-      GetAndroidCmdlineToolsURL(),
-      DownloadFile(),
-      Decompress(into: "android-sdk/cmdline-tools"),
-      Delay(duration: Duration(milliseconds: 500)),
-      Rename(from: "cmdline-tools", to: "latest"),
-      AddToEnv("android-sdk", [
-        Binary(
-          "sdkmanager",
-          win: r"cmdline-tools\latest\bin\sdkmanager.bat",
-          all: "cmdline-tools/latest/bin/sdkmanager",
-        ),
+installNode(Set<String> options) => If(
+      Not(IsNodeInstalled()),
+      then: Chain("Node", [
+        NodeGetDownloadURL(),
+        DownloadFile(),
+        Decompress(into: "node"),
+        AddToEnv("node", [
+          Binary("node", win: "node.exe", all: "bin/node"),
+          Binary("npm", win: "npm.cmd", all: "bin/npm"),
+        ]),
       ]),
-    ]),
-  ),
-  RunSdkManager([
-    "platforms;android-33",
-    "build-tools;33.0.1",
-    "platform-tools",
-  ]),
-  AcceptAndroidLicenses(),
-]);
+    );
 
-final installNushell = Chain("Nushell", [
-  If(
-    Not(IsNushellInstalled()),
-    then: Chain.noPrefix([
-      GetNushellDownloadURL(),
-      DownloadFile(),
-      Decompress(into: "nu"),
-      AddToEnv("nu", [
-        Binary("nu", win: "nu.exe", all: "nu"),
-      ])
+installFirebaseCLI(Set<String> options) => Chain("FirebaseCLI", [
+      installNode(options),
+      If(
+        Not(IsFirebaseCliInstalled()),
+        then: RunCommand("npm", ["install", "-g", "firebase-tools"]),
+      ),
+    ]);
+
+installVSCode(Set<String> options) {
+  final installIt = Chain.noPrefix([
+    GiveURL(
+      "https://code.visualstudio.com"
+      "/sha/download?build=stable&os=win32-x64-archive",
+    ),
+    DownloadFile("vscode.zip"),
+    Decompress(into: "vscode"),
+    AddToEnv("vscode", [
+      Binary("code", win: "bin/code.cmd", all: "bin/code"),
     ]),
-  )
+  ]);
+
+  if (options.contains("--force")) {
+    return Chain("VSCode", [installIt]);
+  } else {
+    return Chain("VSCode", [
+      If(
+        Not(IsVSCodeInstalled()),
+        then: installIt,
+      )
+    ]);
+  }
+}
+
+installJava(Set<String> options) => If(
+      Not(IsJavaInstalled()),
+      then: Chain.noPrefix([
+        JavaGetDownloadURL(),
+        DownloadFile(),
+        Decompress(into: "java"),
+        AddToEnv("java", [
+          Binary("java", all: "bin/java"),
+          EnvVariable("JAVA_HOME"),
+        ])
+      ]),
+    );
+
+installAndroidSDK(Set<String> options) => Chain("Android SDK", [
+      installJava(options),
+      If(
+        Not(IsCmdlineToolsInstalled()),
+        then: Chain.noPrefix([
+          GetAndroidCmdlineToolsURL(),
+          DownloadFile(),
+          Decompress(into: "android-sdk/cmdline-tools"),
+          Delay(duration: Duration(milliseconds: 500)),
+          Rename(from: "cmdline-tools", to: "latest"),
+          AddToEnv("android-sdk", [
+            Binary(
+              "sdkmanager",
+              win: r"cmdline-tools\latest\bin\sdkmanager.bat",
+              all: "cmdline-tools/latest/bin/sdkmanager",
+            ),
+          ]),
+        ]),
+      ),
+      RunSdkManager([
+        "platforms;android-33",
+        "build-tools;33.0.1",
+        "platform-tools",
+      ]),
+      AcceptAndroidLicenses(),
+    ]);
+
+installNushell(Set<String> options) => Chain("Nushell", [
+      If(
+        Not(IsNushellInstalled()),
+        then: Chain.noPrefix([
+          GetNushellDownloadURL(),
+          DownloadFile(),
+          Decompress(into: "nu"),
+          AddToEnv("nu", [
+            Binary("nu", win: "nu.exe", all: "nu"),
+          ])
+        ]),
+      )
+    ]);
+
+final finalSetup = Chain("Final Setup", [
+  ConfigureNushell(),
+  FlutterConfigAndroidSDK(),
+  CreateShortcut(),
 ]);
 
 // final installFonts = Chain("Fonts", [
@@ -166,57 +180,49 @@ final installNushell = Chain("Nushell", [
 //   RegisterFonts(),
 // ]);
 
-final finalSetup = Chain("Final Setup", [
-  ConfigureNushell(),
-  FlutterConfigAndroidSDK(),
-  CreateShortcut(),
-]);
-
 class Option {
   String name, description;
   Step step;
   Option(this.name, this.step, this.description);
 }
 
-List<Option> candidates = [
-  Option(
-    "nu",
-    installNushell,
-    "Install Nushell",
-  ),
-  Option(
-    "vscode",
-    installVSCode,
-    "Install Visual Studio Code",
-  ),
-  Option(
-    "flutter",
-    installFlutter,
-    "Install Flutter",
-  ),
-  Option(
-    "android-sdk",
-    installAndroidSDK,
-    "Install the Android SDK",
-  ),
-  Option(
-    "firebase-cli",
-    installFirebaseCLI,
-    "Install Firebase Command Line Interface",
-  ),
-];
-
-final longestName = candidates.map((k) => k.name.length).reduce(max);
-
 bool removeCurrentInstallation = false;
 
 void main(List<String> arguments) async {
-  List<String> args = arguments.where((a) => !a.startsWith("-")).toList();
-  List<String> options = arguments.where((a) => a.startsWith("-")).toList();
-
-  removeCurrentInstallation = options.contains("--reinstall");
+  final args = arguments.where((a) => !a.startsWith("-")).toList();
+  final options = arguments.where((a) => a.startsWith("-")).toSet();
 
   bool isSingle(String x) => (args.length == 1 && args.single == x);
+
+  List<Option> candidates = [
+    Option(
+      "nu",
+      installNushell(options),
+      "Install Nushell",
+    ),
+    Option(
+      "vscode",
+      installVSCode(options),
+      "Install Visual Studio Code",
+    ),
+    Option(
+      "flutter",
+      installFlutter(options),
+      "Install Flutter",
+    ),
+    Option(
+      "android-sdk",
+      installAndroidSDK(options),
+      "Install the Android SDK",
+    ),
+    Option(
+      "firebase-cli",
+      installFirebaseCLI(options),
+      "Install Firebase Command Line Interface",
+    ),
+  ];
+
+  final longestName = candidates.map((k) => k.name.length).reduce(max);
 
   if (isSingle("help")) {
     print("Installers: ");
@@ -234,12 +240,12 @@ void main(List<String> arguments) async {
 
   await runInstaller(
     Sequence([
-      install7z,
+      install7z(options),
       Parallel([
         for (final c in candidates)
           if (install(c.name)) c.step
       ]),
-      finalSetup,
+      if (isSingle("all")) finalSetup,
     ]),
   );
 }
