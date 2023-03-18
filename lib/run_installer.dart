@@ -1,12 +1,10 @@
 import 'dart:io';
 
 import 'package:console/console.dart';
-import 'package:installer/config.dart';
 import 'package:installer/context.dart';
 import 'package:installer/log.dart';
 import 'package:installer/steps/step.dart';
 import 'package:installer/utils.dart';
-import 'package:path/path.dart';
 
 late final String os, arch;
 
