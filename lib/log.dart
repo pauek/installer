@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:installer2/utils.dart';
+import 'package:installer/utils.dart';
 
 class Log {
   String filename;

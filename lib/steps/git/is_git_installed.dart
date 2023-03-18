@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:installer2/config.dart';
-import 'package:installer2/context.dart';
-import 'package:installer2/log.dart';
-import 'package:installer2/steps/step.dart';
+import 'package:installer/context.dart';
+import 'package:installer/log.dart';
+import 'package:installer/steps/step.dart';
 import 'package:path/path.dart';
 
 class IsGitInstalled extends Step {
@@ -33,7 +32,7 @@ class IsGitInstalled extends Step {
         return true; // Not missing!
       }
     }
-    log.print("info: Git not found in $targetDir.");
+    log.print("info: Git not found in ${ctx.targetDir}.");
     return false;
   }
 }

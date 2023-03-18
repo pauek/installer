@@ -2,10 +2,25 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:installer2/context.dart';
-import 'package:installer2/log.dart';
+import 'package:installer/context.dart';
+import 'package:installer/log.dart';
 
 import 'decompress_isolate.dart';
+
+extension ListSeparate on List {
+  List<List<T>> separate<T>(Function(T) fn) {
+    List<T> yes = [], no = [];
+    for (final elem in this) {
+      final discriminator = fn(elem);
+      if (discriminator == true) {
+        yes.add(elem);
+      } else {
+        no.add(elem);
+      }
+    }
+    return [yes, no];
+  }
+}
 
 class InstallerError extends Error {
   String message;

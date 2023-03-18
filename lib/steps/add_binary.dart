@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:installer2/context.dart';
-import 'package:installer2/log.dart';
-import 'package:installer2/run_installer.dart';
-import 'package:installer2/steps/step.dart';
-import 'package:installer2/utils.dart';
+import 'package:installer/context.dart';
+import 'package:installer/log.dart';
+import 'package:installer/run_installer.dart';
+import 'package:installer/steps/step.dart';
+import 'package:installer/utils.dart';
 import 'package:path/path.dart';
 
 abstract class EnvItem {

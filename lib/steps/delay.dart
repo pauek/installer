@@ -1,4 +1,4 @@
-import 'package:installer2/steps/step.dart';
+import 'package:installer/steps/step.dart';
 
 class Delay extends SinglePriorStep {
   final Duration duration;

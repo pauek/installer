@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:installer2/context.dart';
-import 'package:installer2/steps/step.dart';
-import 'package:installer2/utils.dart';
+import 'package:installer/context.dart';
+import 'package:installer/steps/step.dart';
+import 'package:installer/utils.dart';
 import 'package:path/path.dart';
 
 class CreateShortcut extends SinglePriorStep {

@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:installer2/log.dart';
-import 'package:installer2/steps/step.dart';
-import 'package:installer2/steps/types.dart';
-import 'package:installer2/utils.dart';
+import 'package:installer/log.dart';
+import 'package:installer/steps/step.dart';
+import 'package:installer/steps/types.dart';
+import 'package:installer/utils.dart';
 
 const version = "2.38.1";
 const gitForWindowsURL = "https://github.com"

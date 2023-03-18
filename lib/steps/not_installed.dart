@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:installer2/log.dart';
-import 'package:installer2/steps/step.dart';
+import 'package:installer/log.dart';
+import 'package:installer/steps/step.dart';
 
 class NotInstalled extends Step {
   final String cmd;

@@ -1,4 +1,4 @@
-import 'package:installer2/steps/step.dart';
+import 'package:installer/steps/step.dart';
 
 class NotNull extends SinglePriorStep {
   NotNull(Step step) : super("null != ${step.title}", step);

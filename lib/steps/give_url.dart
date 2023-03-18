@@ -1,5 +1,5 @@
-import 'package:installer2/steps/step.dart';
-import 'package:installer2/steps/types.dart';
+import 'package:installer/steps/step.dart';
+import 'package:installer/steps/types.dart';
 
 class GiveURL extends Step {
   String url;

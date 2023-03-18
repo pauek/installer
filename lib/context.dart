@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:installer2/log.dart';
-import 'package:installer2/utils.dart';
+import 'package:installer/log.dart';
+import 'package:installer/utils.dart';
 import 'package:path/path.dart';
 
 class EnvVar {

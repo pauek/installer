@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:console/console.dart';
-import 'package:installer2/config.dart';
-import 'package:installer2/context.dart';
-import 'package:installer2/log.dart';
-import 'package:installer2/steps/step.dart';
-import 'package:installer2/utils.dart';
+import 'package:installer/config.dart';
+import 'package:installer/context.dart';
+import 'package:installer/log.dart';
+import 'package:installer/steps/step.dart';
+import 'package:installer/utils.dart';
 import 'package:path/path.dart';
 
 late final String os, arch;
@@ -35,12 +35,7 @@ Future<void> logEnv() async {
 Future<void> runInstaller(Step installer) async {
   final startTime = DateTime.now();
   Console.init();
-  final homeDir = getHomeDir();
-  await InstallerContext.init(
-    targetDir: join(homeDir, targetDir),
-    downloadDir: join(homeDir, downloadDir),
-  );
-  Log.init(filename: logFile);
+
   await initPlatformVariables();
 
   log.print("info: Setup ok.");
@@ -84,7 +79,7 @@ Future<void> runInstaller(Step installer) async {
   Console.readLine();
 
   // Note: we need this here because Console.hideCursor installs a
-  // SIGINT catcher and probably Dart doesn't exit if that the handler
+  // SIGINT catcher and probably Dart doesn't exit if the handler
   // can still catch events.
   exit(0);
 }

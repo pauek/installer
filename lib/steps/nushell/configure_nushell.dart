@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:installer2/context.dart';
-import 'package:installer2/log.dart';
-import 'package:installer2/steps/step.dart';
-import 'package:installer2/utils.dart';
+import 'package:installer/context.dart';
+import 'package:installer/log.dart';
+import 'package:installer/steps/step.dart';
+import 'package:installer/utils.dart';
 import 'package:path/path.dart';
 
 const github = "https://raw.githubusercontent.com";

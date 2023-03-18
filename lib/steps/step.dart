@@ -4,8 +4,8 @@ import 'dart:math' as math;
 
 import 'package:async/async.dart';
 import 'package:console/console.dart';
-import 'package:installer2/log.dart';
-import 'package:installer2/utils.dart';
+import 'package:installer/log.dart';
+import 'package:installer/utils.dart';
 
 const brailleFrames = r"⢿⣻⣽⣾⣷⣯⣟⡿";
 const frames = r"|/-\";
