@@ -19,7 +19,7 @@ Step iFinalSetup() {
   return Chain("Final Setup", [
     ConfigureNushell(),
     FlutterConfigAndroidSDK(),
-    CreateShortcut(),
+    CreateShortcut("Flutter Dev"),
   ]);
 }
 
