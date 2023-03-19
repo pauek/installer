@@ -109,18 +109,20 @@ Step iVSCode() {
 }
 
 Step iJavaJDK() {
-  return If(
-    Not(IsJavaInstalled()),
-    then: Chain.noPrefix([
-      JavaGetDownloadURL(),
-      DownloadFile(),
-      Decompress(into: "java"),
-      AddToEnv("java", [
-        Binary("java", all: "bin/java"),
-        EnvVariable("JAVA_HOME"),
-      ])
-    ]),
-  );
+  return Chain("Java", [
+    If(
+      Not(IsJavaInstalled()),
+      then: Chain.noPrefix([
+        JavaGetDownloadURL(),
+        DownloadFile(),
+        Decompress(into: "java"),
+        AddToEnv("java", [
+          Binary("java", all: "bin/java"),
+          EnvVariable("JAVA_HOME"),
+        ])
+      ]),
+    )
+  ]);
 }
 
 Step iAndroidSdk() {
