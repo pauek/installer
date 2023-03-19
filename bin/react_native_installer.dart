@@ -15,7 +15,7 @@ void main(List<String> argv) async {
   // Set Context
   final homeDir = getHomeDir();
   await InstallerContext.init(
-    targetDir: join(homeDir, "FlutterDev"),
+    targetDir: join(homeDir, "ReactNativeDev"),
     downloadDir: join(homeDir, "Downloads"),
   );
 
@@ -24,6 +24,7 @@ void main(List<String> argv) async {
     Sequence([
       i7z(),
       Parallel([
+        iNushell(),
         iGit(),
         iNode(),
         iVSCode(),
