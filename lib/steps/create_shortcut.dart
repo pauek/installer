@@ -6,7 +6,8 @@ import 'package:installer/utils.dart';
 import 'package:path/path.dart';
 
 class CreateShortcut extends SinglePriorStep {
-  CreateShortcut() : super("Create Shortcut");
+  final String shortcutName;
+  CreateShortcut(this.shortcutName) : super("Create Shortcut");
 
   @override
   Future run() async {
@@ -18,7 +19,7 @@ class CreateShortcut extends SinglePriorStep {
       url: "https://files.pauek.info/Shortcut.exe",
       path: shortcutExe,
     );
-    final shortcutFile = join(getHomeDir(), "Desktop", "Flutter.lnk");
+    final shortcutFile = join(getHomeDir(), "Desktop", "$shortcutName.lnk");
     final targetExe = ctx.getBinary("nu");
     final shortcutProcess = await Process.run(shortcutExe, [
       "/f:$shortcutFile",

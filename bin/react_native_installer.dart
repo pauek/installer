@@ -35,7 +35,7 @@ void main(List<String> argv) async {
       ]),
       Chain("Final Setup", [
         ConfigureNushell(),
-        CreateShortcut(),
+        CreateShortcut("React Native Dev"),
       ]),
     ]),
   );
