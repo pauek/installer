@@ -11,11 +11,7 @@ const brailleFrames = r"⢿⣻⣽⣾⣷⣯⣟⡿";
 const frames = r"|/-\";
 
 String getStringAnimation() {
-  if (Platform.isWindows) {
-    return frames;
-  } else {
-    return brailleFrames;
-  }
+  return Platform.isWindows ? frames : brailleFrames;
 }
 
 abstract class Step {

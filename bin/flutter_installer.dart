@@ -6,11 +6,22 @@ import 'package:installer/installers.dart';
 import 'package:installer/log.dart';
 import 'package:installer/option.dart';
 import 'package:installer/run_installer.dart';
+import 'package:installer/steps/create_shortcut.dart';
+import 'package:installer/steps/flutter/flutter_config_android_sdk.dart';
+import 'package:installer/steps/nushell/configure_nushell.dart';
 import 'package:installer/steps/step.dart';
 import 'package:installer/utils.dart';
 import 'package:path/path.dart';
 
 bool removeCurrentInstallation = false;
+
+Step iFinalSetup() {
+  return Chain("Final Setup", [
+    ConfigureNushell(),
+    FlutterConfigAndroidSDK(),
+    CreateShortcut(),
+  ]);
+}
 
 const installers = [
   Option("7z", i7z, "7z"),
@@ -50,7 +61,7 @@ List<Step> decideInstallers(Set<String> opts, Set<String> args) {
   List<Step> chosen = [];
   for (var i = 0; i < installers.length; i++) {
     if (needed[i]) {
-      chosen.add(installers[i].builder(opts));
+      chosen.add(installers[i].builder());
     }
   }
   return chosen;
@@ -78,9 +89,9 @@ void main(List<String> argv) async {
 
   await runInstaller(
     Sequence([
-      i7z(opts),
+      i7z(),
       ...installers,
-      if (isSingle("all")) iFinalSetup(opts),
+      if (isSingle("all")) iFinalSetup(),
     ]),
   );
 }

@@ -1,6 +1,6 @@
 import 'package:installer/steps/step.dart';
 
-typedef StepBuilder = Step Function(Set<String>);
+typedef StepBuilder = Step Function();
 
 class Option {
   final String name;

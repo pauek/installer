@@ -4,12 +4,9 @@ import 'package:installer/steps/android-sdk/accept_android_licenses.dart';
 import 'package:installer/steps/android-sdk/cmdline_tools_url.dart';
 import 'package:installer/steps/android-sdk/is_cmdline_tools_installed.dart';
 import 'package:installer/steps/clone_github_repo.dart';
-import 'package:installer/steps/create_shortcut.dart';
 import 'package:installer/steps/decompress.dart';
 import 'package:installer/steps/delay.dart';
 import 'package:installer/steps/download_file.dart';
-import 'package:installer/steps/fake_step.dart';
-import 'package:installer/steps/flutter/flutter_config_android_sdk.dart';
 import 'package:installer/steps/git/git_get_download_url.dart';
 import 'package:installer/steps/git/git_repository_present.dart';
 import 'package:installer/steps/git/is_git_installed.dart';
@@ -22,7 +19,6 @@ import 'package:installer/steps/node/is_firebase_cli_installed.dart';
 import 'package:installer/steps/node/is_node_installed.dart';
 import 'package:installer/steps/node/node_get_download_url.dart';
 import 'package:installer/steps/not.dart';
-import 'package:installer/steps/nushell/configure_nushell.dart';
 import 'package:installer/steps/nushell/is_nushell_installed.dart';
 import 'package:installer/steps/nushell/nushell_download_url.dart';
 import 'package:installer/steps/rename.dart';
@@ -31,7 +27,7 @@ import 'package:installer/steps/run_sdk_manager.dart';
 import 'package:installer/steps/step.dart';
 import 'package:installer/steps/vscode/is_vscode_installed.dart';
 
-Step i7z(Set<String> opts) {
+Step i7z() {
   return Chain("7z", [
     GiveURL("https://www.7-zip.org/a/7zr.exe"),
     DownloadFile(),
@@ -40,7 +36,7 @@ Step i7z(Set<String> opts) {
   ]);
 }
 
-Step iGit(Set<String> opts) {
+Step iGit() {
   return Chain("Git", [
     If(
       Not(IsGitInstalled()),
@@ -56,7 +52,7 @@ Step iGit(Set<String> opts) {
   ]);
 }
 
-Step iFlutter(Set<String> opts) {
+Step iFlutter() {
   return Chain("Flutter", [
     If(
       Not(GitRepositoryPresent("flutter", flutterRepo)),
@@ -70,7 +66,7 @@ Step iFlutter(Set<String> opts) {
   ]);
 }
 
-Step iNode(Set<String> opts) {
+Step iNode() {
   return If(
     Not(IsNodeInstalled()),
     then: Chain("Node", [
@@ -85,7 +81,7 @@ Step iNode(Set<String> opts) {
   );
 }
 
-Step iFirebaseCLI(Set<String> opts) {
+Step iFirebaseCLI() {
   return Chain("FirebaseCLI", [
     If(
       Not(IsFirebaseCliInstalled()),
@@ -94,10 +90,10 @@ Step iFirebaseCLI(Set<String> opts) {
   ]);
 }
 
-Step iVSCode(Set<String> opts) {
+Step iVSCode() {
   return Chain("VSCode", [
     If(
-      (opts.contains("--force") ? GiveValue(true) : Not(IsVSCodeInstalled())),
+      Not(IsVSCodeInstalled()),
       then: Chain.noPrefix([
         GiveURL(vscodeURL),
         DownloadFile("vscode.zip"),
@@ -110,7 +106,7 @@ Step iVSCode(Set<String> opts) {
   ]);
 }
 
-Step iJavaJDK(Set<String> opts) {
+Step iJavaJDK() {
   return If(
     Not(IsJavaInstalled()),
     then: Chain.noPrefix([
@@ -125,7 +121,7 @@ Step iJavaJDK(Set<String> opts) {
   );
 }
 
-Step iAndroidSdk(Set<String> opts) {
+Step iAndroidSdk() {
   return Chain("Android SDK", [
     If(
       Not(IsCmdlineToolsInstalled()),
@@ -151,7 +147,7 @@ Step iAndroidSdk(Set<String> opts) {
   ]);
 }
 
-Step iNushell(Set<String> opts) {
+Step iNushell() {
   return Chain("Nushell", [
     If(
       Not(IsNushellInstalled()),
@@ -166,18 +162,3 @@ Step iNushell(Set<String> opts) {
     )
   ]);
 }
-
-Step iFinalSetup(Set<String> opts) {
-  return Chain("Final Setup", [
-    ConfigureNushell(),
-    FlutterConfigAndroidSDK(),
-    CreateShortcut(),
-  ]);
-}
-
-// final installFonts = Chain("Fonts", [
-//   GetFontDownloadURL(fontName: "Iosevka"),
-//   DownloadFile(),
-//   Decompress(into: "fonts/Iosevka"),
-//   RegisterFonts(),
-// ]);
