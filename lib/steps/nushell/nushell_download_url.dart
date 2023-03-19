@@ -4,14 +4,16 @@ import 'package:installer/log.dart';
 import 'package:installer/run_installer.dart';
 import 'package:installer/steps/step.dart';
 import 'package:installer/steps/types.dart';
-
-const nuVersion = "0.72.0";
+import 'package:installer/utils.dart';
 
 class GetNushellDownloadURL extends Step {
   GetNushellDownloadURL() : super("Get Nushell download URL");
 
   @override
   Future run() async {
+    final nuVersion = await getLastTag('nushell', 'nushell');
+    log.print("info: Nuversion found on GitHub: $nuVersion");
+
     late String nuZip;
     if (Platform.isWindows) {
       nuZip = "nu-$nuVersion-x86_64-pc-windows-msvc.zip";
