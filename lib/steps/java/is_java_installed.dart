@@ -42,7 +42,7 @@ class IsJavaInstalled extends Step {
     // FIXME: Check minimum version!
     final systemVersion = await _getVersion("java");
     if (systemVersion == null) {
-      log.print("Warning: java not found on system.");
+      log.print("warning: java not found on system.");
     }
     return systemVersion != null;
   }

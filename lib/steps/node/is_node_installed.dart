@@ -16,7 +16,7 @@ class IsNodeInstalled extends Step {
     final match = rNodeVersion.firstMatch(result.stdout.trim());
     String? version = match?.namedGroup("version");
     if (version != null) {
-      log.print("info: Node found, version '$version'.");
+      log.print("info: Node version found: '$version'.");
     }
     return version;
   }
