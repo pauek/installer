@@ -67,18 +67,20 @@ Step iFlutter() {
 }
 
 Step iNode() {
-  return If(
-    Not(IsNodeInstalled()),
-    then: Chain("Node", [
-      NodeGetDownloadURL(),
-      DownloadFile(),
-      Decompress(into: "node"),
-      AddToEnv("node", [
-        Binary("node", win: "node.exe", all: "bin/node"),
-        Binary("npm", win: "npm.cmd", all: "bin/npm"),
+  return Chain("NodeJS", [
+    If(
+      Not(IsNodeInstalled()),
+      then: Chain.noPrefix([
+        NodeGetDownloadURL(),
+        DownloadFile(),
+        Decompress(into: "node"),
+        AddToEnv("node", [
+          Binary("node", win: "node.exe", all: "bin/node"),
+          Binary("npm", win: "npm.cmd", all: "bin/npm"),
+        ]),
       ]),
-    ]),
-  );
+    )
+  ]);
 }
 
 Step iFirebaseCLI() {
