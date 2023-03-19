@@ -117,8 +117,8 @@ Step iJavaJDK() {
         DownloadFile(),
         Decompress(into: "java"),
         AddToEnv("java", [
-          Binary("java", all: "bin/java"),
           EnvVariable("JAVA_HOME"),
+          Binary("java", all: "bin/java"),
         ])
       ]),
     )
@@ -136,6 +136,7 @@ Step iAndroidSdk() {
         Delay(duration: Duration(milliseconds: 500)),
         Rename(from: "cmdline-tools", to: "latest"),
         AddToEnv("android-sdk", [
+          EnvVariable("ANDROID_HOME"),
           Binary(
             "sdkmanager",
             win: r"cmdline-tools\latest\bin\sdkmanager.bat",

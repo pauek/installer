@@ -9,7 +9,7 @@ import 'package:path/path.dart';
 
 const github = "https://raw.githubusercontent.com";
 const route = "/nushell/nushell/main/crates/nu-utils/src/sample_config/";
-const magicLine = "### FlutterDev ###";
+const magicLine = "### ------- pauek/installer ------- ###";
 
 Future<String> getNuPath(name) async {
   final output = await getCommandOutput(
