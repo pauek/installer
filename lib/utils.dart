@@ -209,3 +209,19 @@ Future decompress7z(String file, String targetDir) async {
     return error("Decompression failed");
   }
 }
+
+Future<String> getLastTag(String owner, String repo) async {
+  final url = Uri.parse("https://api.github.com/repos/$owner/$repo/tags");
+  final response = await http.get(url);
+
+  if (response.statusCode != 200) {
+    throw Exception("Failed to fetch tags: ${response.statusCode}");
+  }
+
+  final List tags = jsonDecode(response.body);
+  if (tags.isEmpty) {
+    throw Exception('No tags found for $owner/$repo');
+  }
+
+  return tags.first['name'];
+}
