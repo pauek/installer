@@ -23,24 +23,25 @@ Step iFinalSetup() {
   ]);
 }
 
-const installers = [
-  Option("7z", i7z, "7z"),
-  Option("nu", iNushell, "Nushell"),
-  Option("git", iGit, "Git"),
-  Option("java", iJavaJDK, "Java JDK"),
-  Option("node", iNode, "Node and npm"),
-  Option("vscode", iVSCode, "Visual Studio Code"),
-  Option("flutter", iFlutter, "Flutter", ["git"]),
-  Option("android-sdk", iAndroidSdk, "Android SDK", ["java"]),
-  Option("firebase-cli", iFirebaseCLI, "Firebase CLI", ["node"]),
-];
+final options = {
+  "7z": Option("7z", i7z, "7z", -1),
+  "nu": Option("nu", iNushell, "Nushell", -1, ["7z"]),
+  "git": Option("git", iGit, "Git", 0, ["7z"]),
+  "java": Option("java", iJavaJDK, "Java JDK", 0, ["7z"]),
+  "node": Option("node", iNode, "Node and npm", 0, ["7z"]),
+  "vscode": Option("vscode", iVSCode, "Visual Studio Code", 0, ["7z"]),
+  "flutter": Option("flutter", iFlutter, "Flutter", 0, ["git"]),
+  "android-sdk": Option("android-sdk", iAndroidSdk, "Android SDK", 0, ["java"]),
+  "firebase-cli":
+      Option("firebase-cli", iFirebaseCLI, "Firebase CLI", 0, ["node"]),
+};
 
-final longestName = installers.map((k) => k.name.length).reduce(max);
+final longestName = options.values.map((v) => v.name.length).reduce(max);
 
 void showHelp(args) {
   print("Installers: ");
   print("  ${"all".padRight(longestName)} - All below [default]");
-  for (final c in installers) {
+  for (final c in options.values) {
     print("  ${c.name.padRight(longestName)} - ${c.description}");
   }
   print("\nExample:");
@@ -50,21 +51,47 @@ void showHelp(args) {
 }
 
 List<Step> decideInstallers(Set<String> opts, Set<String> args) {
-  List<bool> needed = installers.map((x) => false).toList();
+  log.print("args: $args");
+  Map<String, Option> needed = Map.fromEntries(options.entries.where((elem) =>
+      args.contains(elem.key) || args.contains("all") || args.isEmpty));
 
-  depends(Option a, Option b) => a.dependencies?.contains(b.name) ?? false;
+  log.print("Selected installers: ${needed.keys.join(", ")}");
 
-  for (var i = 0; i < installers.length; i++) {
-    needed[i] = installers.any((x) => depends(x, installers[i]));
-  }
-
-  List<Step> chosen = [];
-  for (var i = 0; i < installers.length; i++) {
-    if (needed[i]) {
-      chosen.add(installers[i].builder());
+  bool changes = true;
+  while (changes) {
+    Map<String, Option> alsoNeeded = {};
+    for (final entry in needed.entries) {
+      final opt = entry.value;
+      final dependencyNames = opt.dependencies;
+      if (dependencyNames != null) {
+        for (final depName in dependencyNames) {
+          Option? dep = options[depName];
+          if (dep == null) {
+            log.print(
+              "WARNING: Dependency $depName of ${entry.key} is not an option!",
+            );
+          } else if (!needed.containsKey(depName)) {
+            alsoNeeded[depName] = dep;
+            if (opt.order <= dep.order) {
+              dep.order = opt.order - 1;
+            }
+          }
+        }
+      }
     }
+    needed.addAll(alsoNeeded);
+    changes = alsoNeeded.isNotEmpty;
   }
-  return chosen;
+
+  log.print("Needed installers: ${needed.keys.join(", ")}");
+
+  List<Option> neededOptions = needed.values.toList();
+  neededOptions.sort((a, b) => a.order - b.order);
+
+  log.print(
+      "Ordered installers: ${neededOptions.map((opt) => opt.name).join(", ")}");
+  final installers = neededOptions.map((opt) => opt.builder()).toList();
+  return installers;
 }
 
 void main(List<String> argv) async {
@@ -77,9 +104,8 @@ void main(List<String> argv) async {
     showHelp(args);
   }
 
-  List<Step> installers = decideInstallers(opts, args);
-
   Log.init(filename: "flutter-installer.log");
+  List<Step> installers = decideInstallers(opts, args);
 
   final homeDir = getHomeDir();
   await InstallerContext.init(
@@ -89,9 +115,8 @@ void main(List<String> argv) async {
 
   await runInstaller(
     Sequence([
-      i7z(),
       ...installers,
-      if (isSingle("all")) iFinalSetup(),
+      if (isSingle("all") || args.isEmpty) iFinalSetup(),
     ]),
   );
 }

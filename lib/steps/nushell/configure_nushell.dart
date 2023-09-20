@@ -19,12 +19,24 @@ Future<String> getNuPath(name) async {
   return output.trim();
 }
 
+const defaultEnvFileLines = r'''
+$env.PROMPT_INDICATOR = {|| "> " }
+$env.PROMPT_INDICATOR_VI_INSERT = {|| ": " }
+$env.PROMPT_INDICATOR_VI_NORMAL = {|| "> " }
+$env.PROMPT_MULTILINE_INDICATOR = {|| "::: " }
+''';
+
 Future<List<String>> defaultNuFileLines(String which) async {
-  final path = await getNuPath(which);
-  await ensureDir(dirname(path));
-  final url = "$github${route}default_$which.nu";
-  final response = await http.get(Uri.parse(url));
-  return response.body.trim().split("\n");
+  if (which == "env") {
+    // The 
+    return defaultEnvFileLines.split("\n");
+  } else {
+    final path = await getNuPath(which);
+    await ensureDir(dirname(path));
+    final url = "$github${route}default_$which.nu";
+    final response = await http.get(Uri.parse(url));
+    return response.body.trim().split("\n");
+  }
 }
 
 String dartPubDir() {
@@ -134,13 +146,6 @@ class ConfigureNushell extends SinglePriorStep {
       "  show_banner: false",
       "}",
     ]);
-
-    // Change Prompt char
-    for (int i = 0; i < envLines.length; i++) {
-      if (envLines[i].contains("〉")) {
-        envLines[i] = envLines[i].replaceFirst("〉", "> ");
-      }
-    }
 
     await File(configFilePath).writeAsString(configLines.join(endl) + endl);
     await File(envFilePath).writeAsString(envLines.join(endl) + endl);
