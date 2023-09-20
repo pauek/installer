@@ -8,7 +8,7 @@ import 'package:installer/steps/step.dart';
 import 'package:installer/steps/types.dart';
 import 'package:installer/utils.dart';
 
-const targetJdkVersion = 19;
+const targetJdkVersion = 21;
 
 Future<bool> isOurPlatformDownload(String url) async {
   if (Platform.isWindows) {
