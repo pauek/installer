@@ -133,16 +133,16 @@ class ConfigureNushell extends SinglePriorStep {
     }
     // Add or replace path
     addOrReplaceLines("env", envLines, [
-      "let-env $pathVariable = (\$env.$pathVariable | prepend '${dartPubDir()}')",
+      "\$env.$pathVariable = (\$env.$pathVariable | prepend '${dartPubDir()}')",
       for (final path in envpath)
-        "let-env $pathVariable = (\$env.$pathVariable | prepend '$path')",
+        "\$env.$pathVariable = (\$env.$pathVariable | prepend '$path')",
       for (final entry in ctx.variableList)
-        "let-env ${entry.variable} = '${entry.value}'",
+        "\$env.${entry.variable} = '${entry.value}'",
     ]);
 
     // Add or replace banner suppression
     addOrReplaceLines("config", configLines, [
-      "let-env config = {",
+      "\$env.config = {",
       "  show_banner: false",
       "}",
     ]);
