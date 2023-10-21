@@ -30,7 +30,7 @@ class IsJavaInstalled extends Step {
         final javaExe = join(javaSdkDir, "bin", "java.exe");
         final javaVersion = await _getVersion(javaExe);
         if (javaVersion != null) {
-          ctx.addBinary("java", dirname(javaExe), "java.exe");
+          await ctx.addBinary("java", dirname(javaExe), "java.exe");
           ctx.addVariable("JAVA_HOME", javaSdkDir);
           return true; // found!
         }

@@ -26,9 +26,15 @@ class InstallerContext {
 
   Map<String, String> get binaries => _binaries;
 
-  void addBinary(String cmd, String dir, String filename) {
-    _path.add(dirname(dir));
-    _binaries[cmd] = join(dir, filename);
+  Future<void> addBinary(String cmd, String absDir, String filename) async {
+    if (!(await isAbsoluteDirectory(absDir))) {
+      installerError(
+        "Second parameter to addBinary should be an absolute directory",
+      );
+    }
+    _path.add(absDir);
+    _binaries[cmd] = join(absDir, filename);
+    log.print("info: Added binary '$cmd' at '${join(absDir, filename)}'.");
   }
 
   addVariable(String variable, String value) {

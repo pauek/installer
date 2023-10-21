@@ -36,8 +36,8 @@ class IsCmdlineToolsInstalled extends Step {
         
         final adbDir = join(androidTargetDir, "platform-tools");
         ctx.addVariable("ANDROID_HOME", androidTargetDir);
-        ctx.addBinary("sdkmanager", cmdlineToolsBinDir, "sdkmanager.bat");
-        ctx.addBinary("adb", adbDir, "adb.exe");
+        await ctx.addBinary("sdkmanager", cmdlineToolsBinDir, "sdkmanager.bat");
+        await ctx.addBinary("adb", adbDir, "adb.exe");
         return true;
       }
     }

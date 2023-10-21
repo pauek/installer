@@ -1,0 +1,27 @@
+args: {java}
+Selected installers: java
+Needed installers: java, 7z
+Ordered installers: 7z, java
+info: Setup ok.
+info: Added binary '7zr' at 'C:\Users\pauek\FlutterDev\7z\7zr.exe'.
+info: Added binary '7za' at 'C:\Users\pauek\FlutterDev\7z\7za.exe'.
+info: Downloading 'windows-x86.tar.gz' from 'https://android.googlesource.com/platform/prebuilts/jdk/jdk17/+archive/refs/heads/main/windows-x86.tar.gz'.
+info: Downloaded 'C:\Users\pauek\Downloads\windows-x86.tar.gz'.
+info: Decompressing 'C:\Users\pauek\Downloads\windows-x86.tar.gz' into 'C:\Users\pauek\FlutterDev\java'.
+Decompressing .tar.gz 'C:\Users\pauek\Downloads\windows-x86.tar.gz' into 'C:\Users\pauek\FlutterDev\java'
+info: Running 'C:\Users\pauek\FlutterDev\7z\7za.exe x C:\Users\pauek\Downloads\windows-x86.tar.gz C:\Users\pauek\Downloads\windows-x86.tar'
+Ungzip of C:\Users\pauek\Downloads\windows-x86.tar.gz ok.
+info: Running 'C:\Users\pauek\FlutterDev\7z\7za.exe e C:\Users\pauek\Downloads\windows-x86.tar'
+info: Decompression of 'windows-x86.tar.gz' ok.
+info: Added variable 'JAVA_HOME' = 'C:\Users\pauek\FlutterDev\java'.
+info: Added binary 'java' at 'C:\Users\pauek\FlutterDev\java\bin\java'.
+Final result was: true
+info: Path:
+   >> C:\Users\pauek\FlutterDev\7z
+   >> C:\Users\pauek\FlutterDev\java\bin
+info: Environment variables:
+   >> JAVA_HOME = C:\Users\pauek\FlutterDev\java
+info: Registered binaries:
+   >> 7zr = C:\Users\pauek\FlutterDev\7z\7zr.exe
+   >> 7za = C:\Users\pauek\FlutterDev\7z\7za.exe
+   >> java = C:\Users\pauek\FlutterDev\java\bin\java

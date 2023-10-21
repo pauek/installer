@@ -31,7 +31,7 @@ class IsVSCodeInstalled extends Step {
 
     final version = vscodeProcess.stdout.toString().trim().split("\n");
     log.print("info: VSCode found, version '${version[0]}'.");
-    ctx.addBinary("code", dirname(vscodePath), "code.cmd");
+    await ctx.addBinary("code", dirname(vscodePath), "code.cmd");
 
     return true; // not missing
   }

@@ -13,7 +13,9 @@ Step iJavaJDK() {
       Not(IsJavaInstalled()),
       then: Chain.noPrefix([
         GiveURL(
-            "https://android.googlesource.com/platform/prebuilts/jdk/jdk17/+archive/refs/heads/main/windows-x86.tar.gz"),
+          "https://android.googlesource.com"
+          "/platform/prebuilts/jdk/jdk17/+archive/refs/heads/main/windows-x86.tar.gz",
+        ),
         DownloadFile(),
         Decompress(into: "java"),
         AddToEnv(dir: "java", items: [

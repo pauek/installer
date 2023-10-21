@@ -24,7 +24,7 @@ class IsNushellInstalled extends Step {
 
     final version = nuProcess.stdout.toString().trim();
     log.print("info: Nushell found, version '$version'.");
-    ctx.addBinary("nu", join(ctx.targetDir, "nu"), "nu.exe");
+    await ctx.addBinary("nu", join(ctx.targetDir, "nu"), "nu.exe");
     return true;
   }
 }

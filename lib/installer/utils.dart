@@ -66,6 +66,12 @@ Future<bool> isDirectory(String dirPath) async {
   return await Directory(dirPath).exists();
 }
 
+Future<bool> isAbsoluteDirectory(String dirPath) async {
+  final dir = Directory(dirPath);
+  final exists = await dir.exists();
+  return exists && dir.isAbsolute;
+}
+
 Future<void> writeFile(String path, String contents) async {
   await File(path).writeAsString(contents, flush: true);
 }
@@ -217,18 +223,36 @@ Future decompress7z(String file, String targetDir) async {
 }
 
 Future decompressTarGz(String file, String targetDir) async {
-  final cmd7z = ctx.getBinary("7z");
-  final result = await Process.run(
-    cmd7z,
-    ["x", file],
-    workingDirectory: targetDir,
-  );
-  if (result.exitCode != 0) {
-    final stderr = result.stderr.toString().trim();
+  log.print("Decompressing .tar.gz '$file' into '$targetDir'");
+  final gzFile = file;
+  final tarFile = file.substring(0, file.length - ".gz".length);
+
+  // .tar.gz --> .tar
+  final cmd7za = ctx.getBinary("7za");
+  log.print("info: Running '$cmd7za x $gzFile $tarFile'");
+  final result1 = await Process.run(cmd7za, ["x", gzFile, tarFile]);
+  if (result1.exitCode != 0) {
+    final stderr = result1.stderr.toString().trim();
     for (final line in stderr.split("\n")) {
       log.print(" >> $line");
     }
-    return installerError("Decompression failed");
+    return installerError("Ungzip of .tar.gz failed");
+  }
+  log.print("Ungzip of $gzFile ok.");
+
+  // Unpack .tar
+  log.print("info: Running '$cmd7za e $tarFile'");
+  final result2 = await Process.run(
+    cmd7za,
+    ["e", "-y", tarFile], // -y to force all questions to yes (there was a duplicated file)
+    workingDirectory: targetDir,
+  );
+  if (result2.exitCode != 0) {
+    final stderr = result2.stderr.toString().trim();
+    for (final line in stderr.split("\n")) {
+      log.print(" >> $line");
+    }
+    return installerError("Unpacking of .tar failed");
   }
 }
 

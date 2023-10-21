@@ -5,7 +5,7 @@ import 'package:installer/steps/step.dart';
 import 'package:path/path.dart';
 
 abstract class EnvItem {
-  add(String baseDir);
+  Future add(String baseDir);
 }
 
 class Binary extends EnvItem {
@@ -14,7 +14,7 @@ class Binary extends EnvItem {
   Binary(this.cmd, {this.win, this.mac, this.linux, this.all});
 
   @override
-  add(String baseDir) {
+  Future add(String baseDir) async {
     late String? path;
     if (Platform.isWindows) {
       path = win ?? all;
@@ -31,8 +31,7 @@ class Binary extends EnvItem {
     final file = basename(path);
     final subDir = dirname(path);
     final absDir = normalize(join(baseDir, subDir));
-    ctx.addBinary(cmd, absDir, file);
-    log.print("info: Added binary '$cmd' at '$absDir'.");
+    await ctx.addBinary(cmd, absDir, file);
     return true;
   }
 }
@@ -42,7 +41,7 @@ class EnvVariable extends EnvItem {
   EnvVariable(this.variable, [this.value = ""]);
 
   @override
-  add(String baseDir) {
+  Future add(String baseDir) async {
     ctx.addVariable(variable, join(baseDir, value));
   }
 }
@@ -64,7 +63,7 @@ class AddToEnv extends SinglePriorStep {
       baseDir = input.value;
     }
     for (final it in items) {
-      final result = it.add(baseDir);
+      final result = await it.add(baseDir);
       if (result is InstallerError) {
         return result;
       }

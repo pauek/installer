@@ -29,8 +29,8 @@ class IsNodeInstalled extends Step {
         final nodeExe = join(nodeDir, "node.exe");
         final nodeVersion = await _getVersion(nodeExe);
         if (nodeVersion != null) {
-          ctx.addBinary("node", nodeDir, "node.exe");
-          ctx.addBinary("npm", nodeDir, "npm.cmd");
+          await ctx.addBinary("node", nodeDir, "node.exe");
+          await ctx.addBinary("npm", nodeDir, "npm.cmd");
           return true;
         }
       }

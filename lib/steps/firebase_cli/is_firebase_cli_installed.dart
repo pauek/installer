@@ -29,7 +29,7 @@ class IsFirebaseCliInstalled extends Step {
         final firebaseExe = join(nodeDir, "firebase.cmd");
         final version = await _getVersion(firebaseExe);
         if (version != null) {
-          ctx.addBinary("firebase", nodeDir, "firebase.cmd");
+          await ctx.addBinary("firebase", nodeDir, "firebase.cmd");
           return true; // installed!
         }
       }

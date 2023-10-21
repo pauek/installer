@@ -27,7 +27,7 @@ class IsGitInstalled extends Step {
       final gitExe = join(gitDir, "git.exe");
       final gitVersion = await _getVersion(gitExe);
       if (gitVersion != null) {
-        ctx.addBinary("git", gitDir, "git.exe");
+        await ctx.addBinary("git", gitDir, "git.exe");
         return true; // Not missing!
       }
     }
