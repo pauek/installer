@@ -229,8 +229,8 @@ Future decompressTarGz(String file, String targetDir) async {
 
   // .tar.gz --> .tar
   final cmd7za = ctx.getBinary("7za");
-  log.print("info: Running '$cmd7za x $gzFile $tarFile'");
-  final result1 = await Process.run(cmd7za, ["x", gzFile, tarFile]);
+  log.print("info: Running '$cmd7za x $gzFile'");
+  final result1 = await Process.run(cmd7za, ["x", gzFile]);
   if (result1.exitCode != 0) {
     final stderr = result1.stderr.toString().trim();
     for (final line in stderr.split("\n")) {
@@ -241,7 +241,7 @@ Future decompressTarGz(String file, String targetDir) async {
   log.print("info: Ungzip of $gzFile ok.");
 
   // Unpack .tar
-  log.print("info: Running '$cmd7za e $tarFile'");
+  log.print("info: Running '$cmd7za x $tarFile' (into '$targetDir')");
   final result2 = await Process.run(
     cmd7za,
     ["x", tarFile],
