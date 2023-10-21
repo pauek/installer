@@ -244,7 +244,7 @@ Future decompressTarGz(String file, String targetDir) async {
   log.print("info: Running '$cmd7za e $tarFile'");
   final result2 = await Process.run(
     cmd7za,
-    ["e", "-y", tarFile], // -y to force all questions to yes (there was a duplicated file)
+    ["x", tarFile],
     workingDirectory: targetDir,
   );
   if (result2.exitCode != 0) {
