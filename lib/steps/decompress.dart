@@ -4,20 +4,21 @@ import 'package:path/path.dart';
 
 class Decompress extends SinglePriorStep {
   String subDir;
-  Decompress({required String into})
+  bool eraseDirFirst;
+  Decompress({required String into, this.eraseDirFirst = true})
       : subDir = into,
         super("Decompress into $into");
 
   @override
   Future run() async {
     if (input is! Filename) {
-      return error("Decompress: Expected a Filename as input");
+      return installerError("Decompress: Expected a Filename as input");
     }
     final absFile = input.value;
     var absDir = join(ctx.targetDir, subDir);
 
     log.print("info: Decompressing '$absFile' into '$absDir'.");
-    final result = await decompress(absFile, absDir);
+    final result = await decompress(absFile, absDir, eraseDirFirst: eraseDirFirst);
     if (result is InstallerError) {
       return result;
     }

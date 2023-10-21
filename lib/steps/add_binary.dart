@@ -23,16 +23,16 @@ class Binary extends EnvItem {
     } else if (Platform.isLinux) {
       path = linux ?? all;
     } else {
-      return error("Platform is not supported");
+      return installerError("Platform is not supported");
     }
     if (path == null) {
-      return error("Path for $cmd is not specified on platform $os");
+      return installerError("Path for $cmd is not specified on platform $os");
     }
     final file = basename(path);
     final subDir = dirname(path);
-    final absDir = join(baseDir, subDir);
+    final absDir = normalize(join(baseDir, subDir));
     ctx.addBinary(cmd, absDir, file);
-    log.print("info: Added binary '$cmd' in '${join(absDir, file)}'.");
+    log.print("info: Added binary '$cmd' at '$absDir'.");
     return true;
   }
 }

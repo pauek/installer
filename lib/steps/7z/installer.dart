@@ -10,12 +10,14 @@ Step i7z() {
     GiveURL("https://www.7-zip.org/a/7zr.exe"),
     DownloadFile(),
     Move(into: "7z"),
-    AddToEnv(dir: "7z", items: [Binary("7zr", win: "7zr.exe")]),
+    AddToEnv(dir: "7z", items: [
+      Binary("7zr", win: "7zr.exe"),
+    ]),
     GiveURL("https://www.7-zip.org/a/7z2301-extra.7z"),
     DownloadFile(),
-    Decompress(into: "7z"),
+    Decompress(into: "7z", eraseDirFirst: false),
     AddToEnv(dir: "7z", items: [
-      Binary("7z", win: "7za.exe"),
+      Binary("7za", win: "7za.exe"),
     ]),
   ]);
 }

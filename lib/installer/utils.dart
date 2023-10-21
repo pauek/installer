@@ -27,7 +27,7 @@ class InstallerError extends Error {
   String toString() => "InstallerError: $message";
 }
 
-error(String message) {
+installerError(String message) {
   throw InstallerError(message);
 }
 
@@ -35,7 +35,7 @@ String getHomeDir() {
   final homeVar = Platform.isWindows ? 'userprofile' : 'HOME';
   final homeDir = Platform.environment[homeVar];
   if (homeDir == null) {
-    return error("Cannot get user home directory!");
+    return installerError("Cannot get user home directory!");
   }
   return homeDir;
 }
@@ -111,15 +111,21 @@ Future<DirList> dirListSubdirectories(String dirPath) async {
   return dirList;
 }
 
-Future decompress(String file, String targetDir) async {
-  try {
-    await ensureEmptyDir(targetDir);
-  } catch (e) {
-    log.print("Couldn't empty dir $targetDir.");
-    log.print("   >> $e");
-    return error(
-      "Couldn't empty dir $targetDir, see log for details.",
-    );
+Future decompress(
+  String file,
+  String targetDir, {
+  bool eraseDirFirst = false,
+}) async {
+  if (eraseDirFirst) {
+    try {
+      await ensureEmptyDir(targetDir);
+    } catch (e) {
+      log.print("Couldn't empty dir $targetDir.");
+      log.print("   >> $e");
+      return installerError(
+        "Couldn't empty dir $targetDir, see log for details.",
+      );
+    }
   }
   try {
     if (file.endsWith(".zip")) {
@@ -129,12 +135,13 @@ Future decompress(String file, String targetDir) async {
     } else if (file.endsWith(".7z")) {
       return await decompress7z(file, targetDir);
     } else {
-      return Future.value(error("Do not know how to decompress $file"));
+      return Future.value(
+          installerError("Do not know how to decompress $file"));
     }
   } catch (e) {
     log.print("Couldn't decompress $file.");
     log.print("    $e");
-    return error(
+    return installerError(
       "Couldn't decompress $file, see log for details.",
     );
   }
@@ -173,7 +180,7 @@ Future<String> getOS() async {
   } else if (Platform.isLinux) {
     return "linux";
   }
-  return error("Platform not supported");
+  return installerError("Platform not supported");
 }
 
 Future<String> getArch() async {
@@ -182,7 +189,7 @@ Future<String> getArch() async {
     if (result == "AMD64" || result == null) {
       return "x64";
     } else {
-      return error("Unknown architecture");
+      return installerError("Unknown architecture");
     }
   } else {
     var arch = await getCommandOutput("uname", ["-m"]);
@@ -194,7 +201,7 @@ Future<String> getArch() async {
 }
 
 Future decompress7z(String file, String targetDir) async {
-  final cmd7z = ctx.getBinary("7z");
+  final cmd7z = ctx.getBinary("7zr");
   final result = await Process.run(
     cmd7z,
     ["x", file],
@@ -205,7 +212,7 @@ Future decompress7z(String file, String targetDir) async {
     for (final line in stderr.split("\n")) {
       log.print(" >> $line");
     }
-    return error("Decompression failed");
+    return installerError("Decompression failed");
   }
 }
 
@@ -221,7 +228,7 @@ Future decompressTarGz(String file, String targetDir) async {
     for (final line in stderr.split("\n")) {
       log.print(" >> $line");
     }
-    return error("Decompression failed");
+    return installerError("Decompression failed");
   }
 }
 
