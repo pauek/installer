@@ -22,7 +22,7 @@ abstract class Step {
 
   Step get inputStep {
     if (_inputStep == null) {
-      return error("Attempting to use _input when null");
+      return installerError("Attempting to use _input when null");
     }
     return _inputStep!;
   }
@@ -55,7 +55,7 @@ abstract class Step {
 
   homePos() {
     if (pos == null) {
-      return error("Step hasn't been positioned");
+      return installerError("Step hasn't been positioned");
     }
     Console.moveCursor(row: pos!.row, column: pos!.column);
   }
@@ -116,7 +116,7 @@ abstract class Step {
     } catch (e) {
       log.print("ERROR: $title error:");
       log.printOutput(e.toString());
-      return error("$title error, see log for details");
+      return installerError("$title error, see log for details");
     }
   }
 }
@@ -169,10 +169,10 @@ abstract class SequenceBase extends Step {
 
   SequenceBase(super.title, this.seqSteps) {
     if (seqSteps.isEmpty) {
-      error("Chain with no inputs");
+      installerError("Chain with no inputs");
     }
     if (seqSteps[0].hasInputStep) {
-      error("First step in Chain shouldn't have input");
+      installerError("First step in Chain shouldn't have input");
     }
 
     // Set up chain

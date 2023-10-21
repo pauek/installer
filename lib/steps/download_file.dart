@@ -10,7 +10,7 @@ class DownloadFile extends SinglePriorStep {
   @override
   Future run() async {
     if (input is! URL) {
-      return error("DownloadFile needs a URL as input");
+      return installerError("DownloadFile needs a URL as input");
     }
     final url = input;
     final urlPath = Uri.parse(url.value).path;
@@ -21,7 +21,7 @@ class DownloadFile extends SinglePriorStep {
       log.print("info: Downloaded '$absFilename'.");
     } else {
       log.print("ERROR: Error downloading file '${url.value}'.");
-      return error("Error downloading '${url.value}'.");
+      return installerError("Error downloading '${url.value}'.");
     }
     return Filename(absFilename);
   }

@@ -15,7 +15,7 @@ class GitGetDownloadURL extends Step {
   @override
   Future run() async {
     if (Platform.isMacOS || Platform.isLinux) {
-      return error("MacOS and Linux download of Git not implemented yet");
+      return installerError("MacOS and Linux download of Git not implemented yet");
     }
     log.print("info: Git for Windows at '$gitForWindowsURL'.");
     return Future.value(URL(gitForWindowsURL));

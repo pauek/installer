@@ -31,7 +31,7 @@ class Get7zDownloadURL extends Step {
       }
     }
     if (url.isEmpty) {
-      return error("7z download URL not found");
+      return installerError("7z download URL not found");
     }
     log.print("info: 7z is at '$url'.");
     return URL(url);

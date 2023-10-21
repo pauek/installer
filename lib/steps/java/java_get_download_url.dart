@@ -18,7 +18,7 @@ Future<bool> isOurPlatformDownload(String url) async {
     return url.endsWith(".tar.gz") &&
         url.contains(arch == "x86_64" ? "linux-x64" : "linux-aarch64");
   } else {
-    return error("Platform not supported");
+    return installerError("Platform not supported");
   }
 }
 
@@ -29,22 +29,22 @@ Future<String> getLatestJdkUrl() async {
   final document = parse(response.body);
   final buildsTable = document.querySelector("table.builds");
   if (buildsTable == null) {
-    return error("jdk.java.net has changed format");
+    return installerError("jdk.java.net has changed format");
   }
   final anchorElems = buildsTable.getElementsByTagName("a");
   if (anchorElems.isEmpty) {
-    return error("jdk.java.net has changed format");
+    return installerError("jdk.java.net has changed format");
   }
   for (final a in anchorElems) {
     final href = a.attributes['href'];
     if (href == null) {
-      return error("jdk.java.net has changed format");
+      return installerError("jdk.java.net has changed format");
     }
     if (await isOurPlatformDownload(href)) {
       return href;
     }
   }
-  return error("Didn't find JDK download link for $arch");
+  return installerError("Didn't find JDK download link for $arch");
 }
 
 class JavaGetDownloadURL extends Step {

@@ -53,7 +53,7 @@ class InstallerContext {
 
 InstallerContext get ctx {
   if (InstallerContext._instance == null) {
-    return error("Call InstallerContext.init(...) first!");
+    return installerError("Call InstallerContext.init(...) first!");
   }
   return InstallerContext._instance!;
 }

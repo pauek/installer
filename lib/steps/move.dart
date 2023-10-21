@@ -16,7 +16,7 @@ class Move extends SinglePriorStep {
   @override
   Future run() async {
     if (input is! Filename) {
-      return error("Move: Expected Filename as input");
+      return installerError("Move: Expected Filename as input");
     }
     final absPath = input.value;
     final filename = forcedFilename ?? basename(absPath);
@@ -25,9 +25,9 @@ class Move extends SinglePriorStep {
 
     final file = await File(absPath).rename(newAbsPath);
     if (file.absolute.path != newAbsPath) {
-      return error("Something went wrong moving file $filename");
+      return installerError("Something went wrong moving file $filename");
     }
-
+    log.print("info: Moved file to '${file.absolute.path}'");
     return Dirname(dirname(file.absolute.path));
   }
 }

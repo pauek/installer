@@ -19,7 +19,7 @@ class GetAndroidCmdlineToolsURL extends Step {
       'button[data-modal-dialog-id="sdk_${os}_download"]',
     );
     if (button == null) {
-      return error("Android Studio page format has changed!");
+      return installerError("Android Studio page format has changed!");
     }
     final filename = button.text;
     final path = join("/android/repository/", filename);

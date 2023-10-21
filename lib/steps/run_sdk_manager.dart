@@ -29,7 +29,7 @@ class RunSdkManager extends SinglePriorStep {
       log.print("ERROR: sdkmanager returned $exitCode. Output:");
       log.printOutput(stdout);
       log.printOutput(stderr);
-      return error("sdkmanager returned $exitCode");
+      return installerError("sdkmanager returned $exitCode");
     }
     log.print("info: 'sdkmanager' execution was successful.");
     // log.showOutput(stdout);

@@ -24,7 +24,7 @@ class GetFontDownloadURL extends SinglePriorStep {
       }
     }
     if (url.isEmpty) {
-      return error("Font download URL not found");
+      return installerError("Font download URL not found");
     }
     return URL(url);
   }

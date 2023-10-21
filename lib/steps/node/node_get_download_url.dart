@@ -29,7 +29,7 @@ Future<SemVer> getLatestLTSVersion() async {
   }
   if (latest.major == 0) {
     log.print("Node: no node versions found.");
-    return error("Node: no versions found");
+    return installerError("Node: no versions found");
   }
   return latest;
 }

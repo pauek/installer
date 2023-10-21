@@ -9,7 +9,7 @@ class GitInstall extends Step {
   @override
   Future run() async {
     if (input is! Dirname) {
-      return error("GitInstall needs a Dirname as input");
+      return installerError("GitInstall needs a Dirname as input");
     }
     final dirname = input;
     return withMessage("Registering git binary", () async {

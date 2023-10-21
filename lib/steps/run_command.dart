@@ -31,7 +31,7 @@ class RunCommand extends SinglePriorStep {
       log.printOutput(result.stdout.toString().trim());
       log.print("ERROR: stderr:");
       log.printOutput(result.stderr.toString().trim());
-      return error("$cmd returned ${result.exitCode}");
+      return installerError("$cmd returned ${result.exitCode}");
     }
     log.print("info: '$cmd ${args.join(" ")}' execution was successful.");
     return true;

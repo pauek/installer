@@ -11,7 +11,7 @@ class SemVer {
   SemVer.fromName(String name) {
     final match = semVerRegex.firstMatch(name);
     if (match == null) {
-      error("Not a Semantic Version!");
+      installerError("Not a Semantic Version!");
     } else {
       major = int.parse(match.group(1)!);
       minor = int.parse(match.group(2)!);

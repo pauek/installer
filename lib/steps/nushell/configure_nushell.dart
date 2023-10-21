@@ -44,7 +44,7 @@ String dartPubDir() {
   } else if (Platform.isMacOS || Platform.isLinux) {
     return "$home/.pub-cache/bin";
   } else {
-    return error("Platform not supported");
+    return installerError("Platform not supported");
   }
 }
 
@@ -56,7 +56,7 @@ String get endl {
   } else if (Platform.isMacOS) {
     return "\n"; // "\r" ??
   } else {
-    return error("Platform not supported");
+    return installerError("Platform not supported");
   }
 }
 
@@ -66,7 +66,7 @@ String get pathVariable {
   } else if (Platform.isLinux || Platform.isMacOS) {
     return "PATH";
   } else {
-    return error("Platform not supported");
+    return installerError("Platform not supported");
   }
 }
 
@@ -100,7 +100,7 @@ Future addOrReplaceLines(
     final begin = fileLines.indexOf(magicLine);
     final end = fileLines.indexOf(magicLine, begin + 1);
     if (end == -1) {
-      error("Found only one magic line in Nu's $which file");
+      installerError("Found only one magic line in Nu's $which file");
     }
     fileLines.removeRange(begin, end + 1);
   }

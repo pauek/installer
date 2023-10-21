@@ -28,7 +28,7 @@ class If extends Step {
       return condResult;
     }
     if (condResult is! bool) {
-      return error("Condition in If didn't return boolean");
+      return installerError("Condition in If didn't return boolean");
     }
     if (condResult) {
       return then.runChecked();

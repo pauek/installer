@@ -11,7 +11,7 @@ class CreateShortcut extends SinglePriorStep {
   @override
   Future run() async {
     if (!Platform.isWindows) {
-      return error("Platform not supported");
+      return installerError("Platform not supported");
     }
     final shortcutExe = join(ctx.downloadDir, "Shortcut.exe");
     await downloadFile(

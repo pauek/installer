@@ -24,7 +24,7 @@ class AcceptAndroidLicenses extends Step {
       log.print("ERROR: $title failed, stderr:");
       log.printOutput(dec.convert(bStderr));
       log.printOutput(dec.convert(bStdout));
-      return error("$title failed, log for details");
+      return installerError("$title failed, log for details");
     }
     return true;
   }

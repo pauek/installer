@@ -33,7 +33,7 @@ class Log {
 
 Log get log {
   if (Log._instance == null) {
-    return error("Call Log.init(...) first!");
+    return installerError("Call Log.init(...) first!");
   }
   return Log._instance!;
 }
