@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:installer/context.dart';
+import 'package:installer/http_overrides.dart';
 import 'package:installer/installers.dart';
 import 'package:installer/log.dart';
 import 'package:installer/option.dart';
@@ -95,6 +96,8 @@ List<Step> decideInstallers(Set<String> opts, Set<String> args) {
 }
 
 void main(List<String> argv) async {
+   HttpOverrides.global = MyHttpOverrides();
+
   final res = argv.separate((String a) => a.startsWith("-"));
   final opts = Set<String>.from(res[0]), args = Set<String>.from(res[1]);
 
