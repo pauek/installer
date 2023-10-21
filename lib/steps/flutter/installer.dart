@@ -16,6 +16,11 @@ Step iFlutter() {
       Binary("flutter", win: r"bin\flutter.bat", all: "bin/flutter"),
       Binary("dart", win: r"bin\dart.bat", all: "bin/dart"),
     ]),
+  ]);
+}
+
+Step iFlutterFire() {
+  return Chain("FlutterFire", [
     RunCommand("dart", ["pub", "global", "activate", "flutterfire_cli"]),
   ]);
 }

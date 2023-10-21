@@ -28,6 +28,7 @@ class InstallerContext {
 
   Future<void> addBinary(String cmd, String absDir, String filename) async {
     if (!(await isAbsoluteDirectory(absDir))) {
+      log.print("info: Was adding binary '$cmd', dir '$absDir', file '$filename'");
       installerError(
         "Second parameter to addBinary should be an absolute directory",
       );

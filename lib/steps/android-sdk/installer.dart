@@ -28,11 +28,6 @@ Step iAndroidSdk() {
             win: r"cmdline-tools\latest\bin\sdkmanager.bat",
             all: "cmdline-tools/latest/bin/sdkmanager",
           ),
-          Binary(
-            "adb",
-            win: r"platform-tools\adb.exe",
-            all: "platform-tools/adb",
-          ),
         ]),
       ]),
     ),

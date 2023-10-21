@@ -13,18 +13,22 @@ class Is7zInstalled extends Step {
   Future run() async {
     // Check Java in targetDir
     final dir = join(ctx.targetDir, "7z");
-    if (await Directory(dir).exists()) {
-      final files = await dirList(dir);
-      final filesBasenames = files.map((file) => basename(file));
-      for (final file in neededFiles) {
-        if (!filesBasenames.contains(file)) {
-          return false;
-        }
-        final absFile = files.firstWhere((element) => element.endsWith(file));
-        if (file.endsWith(".exe")) {
-          final nameWithoutExtension = file.substring(0, file.length - ".exe".length);
-          await ctx.addBinary(nameWithoutExtension, dirname(absFile), basename(absFile));
-        }
+    final dirExists = await Directory(dir).exists();
+    if (!dirExists) {
+      return false;
+    }
+    final files = await dirList(dir);
+    final filesBasenames = files.map((file) => basename(file));
+    for (final file in neededFiles) {
+      if (!filesBasenames.contains(file)) {
+        return false;
+      }
+      final absFile = files.firstWhere((element) => element.endsWith(file));
+      if (file.endsWith(".exe")) {
+        final nameWithoutExtension =
+            file.substring(0, file.length - ".exe".length);
+        await ctx.addBinary(
+            nameWithoutExtension, dirname(absFile), basename(absFile));
       }
     }
     return true;

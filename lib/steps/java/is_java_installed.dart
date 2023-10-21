@@ -5,9 +5,9 @@ import 'package:installer/steps/step.dart';
 import 'package:path/path.dart';
 
 class IsJavaInstalled extends Step {
-  IsJavaInstalled() : super("See if Java is missing");
+  IsJavaInstalled() : super("Determine if Java is installed");
 
-  static final _rVersion = RegExp(r"^(?:java|openjdk) (?<version>[\d\.]+) ");
+  static final _rVersion = RegExp(r"^openjdk (?<version>[\d\.]+) ");
 
   Future<String?> _getVersion(String exe) async {
     final result = await Process.run(exe, ["--version"], runInShell: true);
@@ -23,23 +23,25 @@ class IsJavaInstalled extends Step {
   Future run() async {
     // Check Java in targetDir
     final javaTarget = join(ctx.targetDir, "java");
-    if (await Directory(javaTarget).exists()) {
-      final dirs = await dirList(javaTarget);
-      if (dirs.length == 1) {
-        final javaSdkDir = dirs[0];
-        final javaExe = join(javaSdkDir, "bin", "java.exe");
-        final javaVersion = await _getVersion(javaExe);
-        if (javaVersion != null) {
-          await ctx.addBinary("java", dirname(javaExe), "java.exe");
-          ctx.addVariable("JAVA_HOME", javaSdkDir);
-          return true; // found!
-        }
-      }
+    final dirExists = await Directory(javaTarget).exists();
+    if (!dirExists) {
+      return false;
     }
+
     // WARNING: There used to be a check here to see if a
     // Java version was installed in the system, but Android
     // needs a specific Java version that they package with the
     // Android SDK (which we download separately).
-    return false;
+    // So we check only if Java is our 'java' folder.
+
+    final javaExe = join(javaTarget, "bin", "java.exe");
+    final javaVersion = await _getVersion(javaExe);
+    if (javaVersion == null) {
+      return false;
+    }
+    
+    await ctx.addBinary("java", dirname(javaExe), "java.exe");
+    ctx.addVariable("JAVA_HOME", javaTarget);
+    return true; // found!
   }
 }

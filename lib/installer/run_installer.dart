@@ -49,7 +49,7 @@ Future<void> runInstaller(Step installer) async {
   } catch (e) {
     result = e;
   }
-  log.print("Final result was: $result");
+  log.print("info: Final result was: $result");
 
   await logEnv();
   await log.close();

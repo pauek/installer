@@ -8,11 +8,7 @@ import 'package:path/path.dart';
 bool removeCurrentInstallation = false;
 
 Step iFinalSetup() {
-  return Chain("Final Setup", [
-    ConfigureNushell(),
-    FlutterConfigAndroidSDK(),
-    CreateShortcut("Flutter Dev"),
-  ]);
+  return Chain("Final Setup", []);
 }
 
 final options = {
@@ -26,6 +22,8 @@ final options = {
   "android-sdk": Option("android-sdk", iAndroidSdk, "Android SDK", 0, ["java"]),
   "firebase-cli":
       Option("firebase-cli", iFirebaseCLI, "Firebase CLI", 0, ["node"]),
+  "flutterfire":
+      Option("firebase-cli", iFlutterFire, "FlutterFire CLI", 0, ["flutter"]),
 };
 
 final longestName = options.values.map((v) => v.name.length).reduce(max);
@@ -43,11 +41,13 @@ void showHelp(args) {
 }
 
 List<Step> decideInstallers(Set<String> opts, Set<String> args) {
-  log.print("args: $args");
+  log.print("info: Command-line arguments = $args");
   Map<String, Option> needed = Map.fromEntries(options.entries.where((elem) =>
       args.contains(elem.key) || args.contains("all") || args.isEmpty));
 
-  log.print("Selected installers: ${needed.keys.join(", ")}");
+  log.print(
+    "info: Selected installers = ${needed.keys.join(", ")}",
+  );
 
   bool changes = true;
   while (changes) {
@@ -75,13 +75,16 @@ List<Step> decideInstallers(Set<String> opts, Set<String> args) {
     changes = alsoNeeded.isNotEmpty;
   }
 
-  log.print("Needed installers: ${needed.keys.join(", ")}");
+  log.print(
+    "info: Needed installers = ${needed.keys.join(", ")}",
+  );
 
   List<Option> neededOptions = needed.values.toList();
   neededOptions.sort((a, b) => a.order - b.order);
 
   log.print(
-      "Ordered installers: ${neededOptions.map((opt) => opt.name).join(", ")}");
+    "info: Ordered installers = ${neededOptions.map((opt) => opt.name).join(", ")}",
+  );
   final installers = neededOptions.map((opt) => opt.builder()).toList();
   return installers;
 }
@@ -110,7 +113,10 @@ void main(List<String> argv) async {
   await runInstaller(
     Sequence([
       ...installers,
-      if (isSingle("all") || args.isEmpty) iFinalSetup(),
+      Chain("env.nu", [ConfigureNushell()]),
+      if (opts.contains("flutter") && opts.contains("android-sdk"))
+        Chain("FlutterConfig", [FlutterConfigAndroidSDK()]),
+      Chain("Shortcut", [CreateShortcut("Flutter Dev")]),
     ]),
   );
 }

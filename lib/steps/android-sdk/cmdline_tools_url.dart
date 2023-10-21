@@ -13,7 +13,7 @@ class GetAndroidCmdlineToolsURL extends Step {
     final response = await http.get(
       Uri.parse("https://developer.android.com/studio"),
     );
-    final os = getOS();
+    final os = await getOS();
     final document = parse(response.body);
     final button = document.querySelector(
       'button[data-modal-dialog-id="sdk_${os}_download"]',

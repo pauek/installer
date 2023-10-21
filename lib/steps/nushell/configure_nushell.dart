@@ -18,15 +18,39 @@ Future<String> getNuPath(name) async {
 }
 
 const defaultEnvFileLines = r'''
+let pathType = ($env.Path | describe)
+if $pathType == string {
+    # Fix de un bug de Nushell? El Path en Windows se hereda con los ";"
+    $env.Path = ($env.Path | split column ';' | transpose | get column1)
+}
+
 $env.PROMPT_INDICATOR = {|| "> " }
 $env.PROMPT_INDICATOR_VI_INSERT = {|| ": " }
 $env.PROMPT_INDICATOR_VI_NORMAL = {|| "> " }
 $env.PROMPT_MULTILINE_INDICATOR = {|| "::: " }
 ''';
 
+const addPathsAndVariables = r'''
+let pathDirs = [
+    'AppData\Local\Pub\Cache\bin',
+    'FlutterDev\7z',
+    'FlutterDev\git\cmd',
+    'FlutterDev\java\bin',
+    'FlutterDev\vscode\bin',
+    'FlutterDev\flutter\bin',
+    'FlutterDev\android-sdk\cmdline-tools\latest\bin',
+    'FlutterDev\android-sdk\platform-tools\bin',
+    'FlutterDev\node\
+    'dart-sdk\bin',
+]
+let absoluteDirs = ($pathDirs | each {|dir| $'($env.USERPROFILE)\($dir)' })
+$env.Path = ($env.Path | prepend $absoluteDirs)
+
+$env.JAVA_HOME = $'($env.USERPROFILE)\FlutterDev\java'
+''';
+
 Future<List<String>> defaultNuFileLines(String which) async {
   if (which == "env") {
-    // The 
     return defaultEnvFileLines.split("\n");
   } else {
     final path = await getNuPath(which);
@@ -130,13 +154,7 @@ class ConfigureNushell extends SinglePriorStep {
       envpath.add(dirname(path));
     }
     // Add or replace path
-    addOrReplaceLines("env", envLines, [
-      "\$env.$pathVariable = (\$env.$pathVariable | prepend '${dartPubDir()}')",
-      for (final path in envpath)
-        "\$env.$pathVariable = (\$env.$pathVariable | prepend '$path')",
-      for (final entry in ctx.variableList)
-        "\$env.${entry.variable} = '${entry.value}'",
-    ]);
+    addOrReplaceLines("env", envLines, addPathsAndVariables.split("\n"));
 
     // Add or replace banner suppression
     addOrReplaceLines("config", configLines, [

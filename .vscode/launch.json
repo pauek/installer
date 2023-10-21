@@ -10,9 +10,7 @@
       "type": "dart",
       "console": "externalTerminal",
       "program": "bin/flutter_installer.dart",
-      "args": [
-        "7z"
-      ],
+      "args": [],
     },
     {
       "name": "Fake Installer",

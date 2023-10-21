@@ -223,7 +223,7 @@ Future decompress7z(String file, String targetDir) async {
 }
 
 Future decompressTarGz(String file, String targetDir) async {
-  log.print("Decompressing .tar.gz '$file' into '$targetDir'");
+  log.print("info: Decompressing .tar.gz '$file' into '$targetDir'");
   final gzFile = file;
   final tarFile = file.substring(0, file.length - ".gz".length);
 
@@ -238,7 +238,7 @@ Future decompressTarGz(String file, String targetDir) async {
     }
     return installerError("Ungzip of .tar.gz failed");
   }
-  log.print("Ungzip of $gzFile ok.");
+  log.print("info: Ungzip of $gzFile ok.");
 
   // Unpack .tar
   log.print("info: Running '$cmd7za e $tarFile'");
