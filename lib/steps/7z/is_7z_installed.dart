@@ -5,7 +5,7 @@ import 'package:installer/steps/step.dart';
 import 'package:path/path.dart';
 
 class Is7zInstalled extends Step {
-  Is7zInstalled() : super("See if 7z is missing");
+  Is7zInstalled() : super("Determine if 7z is installed");
 
   static const neededFiles = ["7zr.exe", "7za.exe", "7za.dll"];
 

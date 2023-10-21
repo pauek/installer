@@ -5,7 +5,7 @@ import 'package:installer/steps/step.dart';
 import 'package:path/path.dart';
 
 class IsFirebaseCliInstalled extends Step {
-  IsFirebaseCliInstalled() : super("See if firebase CLI is missing");
+  IsFirebaseCliInstalled() : super("Determine if firebase CLI is installed");
 
   static final _rVersion = RegExp(r"^(?<version>[\d\.]+)");
 

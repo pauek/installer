@@ -7,7 +7,7 @@ class NotInstalled extends Step {
   final String cmd;
   final RegExp versionRegexp;
   NotInstalled(this.cmd, this.versionRegexp)
-      : super("See if $cmd is not installed");
+      : super("Determine if $cmd is not installed");
 
   @override
   Future run() async {

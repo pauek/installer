@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 
 class GitRepositoryPresent extends Step {
   final String dir, repoUrl;
-  GitRepositoryPresent(this.dir, this.repoUrl) : super("Repo $dir is missing");
+  GitRepositoryPresent(this.dir, this.repoUrl) : super("Determine if $dir is present");
 
   @override
   Future run() async {

@@ -5,7 +5,7 @@ import 'package:installer/steps/step.dart';
 import 'package:path/path.dart';
 
 class IsNushellInstalled extends Step {
-  IsNushellInstalled() : super("Nu shell is missing");
+  IsNushellInstalled() : super("Determine if Nu shell is installed");
 
   @override
   Future run() async {

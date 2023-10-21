@@ -5,7 +5,7 @@ import 'package:installer/steps/step.dart';
 import 'package:path/path.dart';
 
 class IsNodeInstalled extends Step {
-  IsNodeInstalled() : super("See if node is missing");
+  IsNodeInstalled() : super("Determine if node is installed");
 
   static final rNodeVersion = RegExp(r"^v(?<version>[\d\.]+)");
 

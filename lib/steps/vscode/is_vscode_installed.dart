@@ -13,7 +13,7 @@ String get codeCmd {
 }
 
 class IsVSCodeInstalled extends Step {
-  IsVSCodeInstalled() : super("See if VSCode is missing");
+  IsVSCodeInstalled() : super("Determine if VSCode is installed");
 
   @override
   Future run() async {
@@ -32,7 +32,6 @@ class IsVSCodeInstalled extends Step {
     final version = vscodeProcess.stdout.toString().trim().split("\n");
     log.print("info: VSCode found, version '${version[0]}'.");
     await ctx.addBinary("code", dirname(vscodePath), "code.cmd");
-
-    return true; // not missing
+    return true;
   }
 }

@@ -5,7 +5,7 @@ import 'package:installer/steps/step.dart';
 import 'package:path/path.dart';
 
 class IsCmdlineToolsInstalled extends Step {
-  IsCmdlineToolsInstalled() : super("See if cmdline-tools are missing");
+  IsCmdlineToolsInstalled() : super("Determine if cmdline-tools are installed");
 
   static final _rVersion = RegExp(r"^(?<version>[\d\.]+)");
 

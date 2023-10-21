@@ -28,7 +28,7 @@ class IsGitInstalled extends Step {
       final gitVersion = await _getVersion(gitExe);
       if (gitVersion != null) {
         await ctx.addBinary("git", gitDir, "git.exe");
-        return true; // Not missing!
+        return true;
       }
     }
     log.print("info: Git not found in ${ctx.targetDir}.");
