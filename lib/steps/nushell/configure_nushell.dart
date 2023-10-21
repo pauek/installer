@@ -35,6 +35,7 @@ let pathDirs = [
     'AppData\Local\Pub\Cache\bin',
     'FlutterDev\7z',
     'FlutterDev\git\cmd',
+    'FlutterDev\node\node',
     'FlutterDev\java\bin',
     'FlutterDev\vscode\bin',
     'FlutterDev\flutter\bin',
