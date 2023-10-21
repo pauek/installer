@@ -27,7 +27,7 @@ Step iFlutterFire() {
       "dart",
       args: ["pub", "global", "activate", "flutterfire_cli"],
       envPath: [
-        dirname(ctx.getBinary("git")),
+        () => dirname(ctx.getBinary("git")),
       ],
     ),
   ]);

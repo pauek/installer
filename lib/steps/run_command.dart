@@ -12,7 +12,7 @@ class EnvVar {
 class RunCommand extends SinglePriorStep {
   final String cmd;
   final List<String> args;
-  final List<String> envPath;
+  final List<String Function()> envPath;
   RunCommand(
     this.cmd, {
     this.args = const [],
@@ -25,11 +25,12 @@ class RunCommand extends SinglePriorStep {
 
     // Add directories to PATH
     for (final dir in envPath) {
-      pathList.add(dir);
+      pathList.add(dir());
     }
 
     final cmdPath = ctx.getBinary(cmd);
 
+    log.print("info: Path for '$cmdPath': ${pathList.join(";")}");
     final result = await Process.run(cmdPath, args, environment: {
       pathVariable: pathList.join(";"),
     });

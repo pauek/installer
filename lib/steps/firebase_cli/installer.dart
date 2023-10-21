@@ -8,9 +8,9 @@ Step iFirebaseCLI() {
       Not(IsFirebaseCliInstalled()),
       then: RunCommand(
         "npm",
-        args: ["install", "-g", "firebase-tools"],
+        args: ["install", "-g", "firebase-tools", "--force"],
         envPath: [
-          dirname(ctx.getBinary("node")),
+          () => dirname(ctx.getBinary("node")),
         ],
       ),
     ),

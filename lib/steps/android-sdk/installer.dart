@@ -20,7 +20,7 @@ Step iAndroidSdk() {
         DownloadFile(),
         Decompress(into: r"android-sdk\cmdline-tools"),
         Delay(duration: Duration(milliseconds: 500)),
-        Rename(from: "cmdline-tools", to: "latest"),
+        Rename(to: "latest"),
         AddToEnv(dir: "android-sdk", items: [
           EnvVariable("ANDROID_HOME"),
           Binary(
