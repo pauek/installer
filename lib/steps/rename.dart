@@ -6,8 +6,8 @@ import 'package:installer/steps/types.dart';
 import 'package:path/path.dart';
 
 class Rename extends SinglePriorStep {
-  final String from, to;
-  Rename({required this.from, required this.to}) : super("Rename $from to $to");
+  final String to;
+  Rename({required this.to}) : super("Rename to $to");
 
   @override
   Future run() async {
