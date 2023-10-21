@@ -11,6 +11,7 @@
       "console": "externalTerminal",
       "program": "bin/flutter_installer.dart",
       "args": [],
+      "env": {},
     },
     {
       "name": "Fake Installer",
