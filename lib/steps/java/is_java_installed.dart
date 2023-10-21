@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:installer/context.dart';
-import 'package:installer/log.dart';
+import 'package:installer/installer.dart';
 import 'package:installer/steps/step.dart';
-import 'package:installer/utils.dart';
 import 'package:path/path.dart';
 
 class IsJavaInstalled extends Step {
@@ -38,12 +36,10 @@ class IsJavaInstalled extends Step {
         }
       }
     }
-    // Try with system Java
-    // FIXME: Check minimum version!
-    final systemVersion = await _getVersion("java");
-    if (systemVersion == null) {
-      log.print("warning: java not found on system.");
-    }
-    return systemVersion != null;
+    // WARNING: There used to be a check here to see if a
+    // Java version was installed in the system, but Android
+    // needs a specific Java version that they package with the
+    // Android SDK (which we download separately).
+    return false;
   }
 }

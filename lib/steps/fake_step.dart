@@ -1,8 +1,8 @@
 import 'dart:math';
 
+import 'package:installer/installer.dart';
 import 'package:installer/steps/if.dart';
 import 'package:installer/steps/step.dart';
-import 'package:installer/utils.dart';
 
 class FakeStep extends Step {
   final int number;

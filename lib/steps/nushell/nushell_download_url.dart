@@ -1,10 +1,8 @@
 import 'dart:io';
 
-import 'package:installer/log.dart';
-import 'package:installer/run_installer.dart';
+import 'package:installer/installer.dart';
 import 'package:installer/steps/step.dart';
 import 'package:installer/steps/types.dart';
-import 'package:installer/utils.dart';
 
 class GetNushellDownloadURL extends Step {
   GetNushellDownloadURL() : super("Get Nushell download URL");

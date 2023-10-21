@@ -1,9 +1,8 @@
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
-import 'package:installer/log.dart';
+import 'package:installer/installer.dart';
 import 'package:installer/steps/step.dart';
 import 'package:installer/steps/types.dart';
-import 'package:installer/utils.dart';
 
 const url7z = "https://www.7-zip.org/download.html";
 

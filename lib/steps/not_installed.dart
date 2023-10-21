@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:installer/log.dart';
+import 'package:installer/installer.dart';
 import 'package:installer/steps/step.dart';
 
 class NotInstalled extends Step {

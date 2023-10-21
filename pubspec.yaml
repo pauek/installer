@@ -7,7 +7,7 @@ environment:
   sdk: '>=2.18.2 <3.0.0'
 
 dependencies:
-  archive: ^3.3.5
+  archive: ^3.4.6
   async: ^2.10.0
   console: ^4.1.0
   html: ^0.15.1

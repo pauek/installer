@@ -1,8 +1,5 @@
-import 'package:installer/context.dart';
-import 'package:installer/log.dart';
-import 'package:installer/steps/step.dart';
-import 'package:installer/steps/types.dart';
-import 'package:installer/utils.dart';
+import 'package:installer/installer.dart';
+import 'package:installer/steps.dart';
 import 'package:path/path.dart';
 
 class Decompress extends SinglePriorStep {

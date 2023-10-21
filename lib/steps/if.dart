@@ -1,6 +1,6 @@
 import 'package:console/console.dart';
+import 'package:installer/installer.dart';
 import 'package:installer/steps/step.dart';
-import 'package:installer/utils.dart';
 
 class If extends Step {
   final Step cond;

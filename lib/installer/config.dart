@@ -1,0 +1,1 @@
+const logFile = "installer.log";

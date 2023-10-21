@@ -1,10 +1,7 @@
 import 'dart:io';
 
-import 'package:installer/context.dart';
-import 'package:installer/log.dart';
-import 'package:installer/run_installer.dart';
+import 'package:installer/installer.dart';
 import 'package:installer/steps/step.dart';
-import 'package:installer/utils.dart';
 import 'package:path/path.dart';
 
 abstract class EnvItem {
@@ -53,7 +50,10 @@ class EnvVariable extends EnvItem {
 class AddToEnv extends SinglePriorStep {
   final String dir;
   final List<EnvItem> items;
-  AddToEnv(this.dir, this.items) : super("AddToEnv");
+  AddToEnv({
+    required this.dir,
+    required this.items,
+  }) : super("AddToEnv");
 
   @override
   Future run() async {

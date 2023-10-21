@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:installer/context.dart';
-import 'package:installer/log.dart';
+import 'package:installer/installer.dart';
 import 'package:installer/steps/step.dart';
-import 'package:installer/utils.dart';
 
 class AcceptAndroidLicenses extends Step {
   AcceptAndroidLicenses() : super("Accepting Android Licenses");

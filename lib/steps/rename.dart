@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:installer/installer.dart';
 import 'package:installer/steps/step.dart';
 import 'package:installer/steps/types.dart';
-import 'package:installer/utils.dart';
 import 'package:path/path.dart';
 
 class Rename extends SinglePriorStep {

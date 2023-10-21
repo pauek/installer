@@ -2,10 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:installer/context.dart';
-import 'package:installer/log.dart';
-
-import 'decompress_isolate.dart';
+import 'package:installer/installer.dart';
 
 extension ListSeparate on List {
   List<List<T>> separate<T>(Function(T) fn) {
@@ -125,8 +122,10 @@ Future decompress(String file, String targetDir) async {
     );
   }
   try {
-    if (file.endsWith(".zip") || file.endsWith(".tar.gz")) {
+    if (file.endsWith(".zip")) {
       return await isolatedExtractFileToDisk(file, targetDir);
+    } else if (file.endsWith(".tar.gz")) {
+      return await decompressTarGz(file, targetDir);
     } else if (file.endsWith(".7z")) {
       return await decompress7z(file, targetDir);
     } else {
@@ -195,9 +194,25 @@ Future<String> getArch() async {
 }
 
 Future decompress7z(String file, String targetDir) async {
-  final cmd = ctx.getBinary("7z");
+  final cmd7z = ctx.getBinary("7z");
   final result = await Process.run(
-    cmd,
+    cmd7z,
+    ["x", file],
+    workingDirectory: targetDir,
+  );
+  if (result.exitCode != 0) {
+    final stderr = result.stderr.toString().trim();
+    for (final line in stderr.split("\n")) {
+      log.print(" >> $line");
+    }
+    return error("Decompression failed");
+  }
+}
+
+Future decompressTarGz(String file, String targetDir) async {
+  final cmd7z = ctx.getBinary("7z");
+  final result = await Process.run(
+    cmd7z,
     ["x", file],
     workingDirectory: targetDir,
   );

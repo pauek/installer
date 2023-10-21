@@ -1,4 +1,5 @@
-import 'package:installer/utils.dart';
+
+import 'package:installer/installer.dart';
 
 final semVerRegex = RegExp(r"^(\d+)\.(\d+)\.(\d+)");
 

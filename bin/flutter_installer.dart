@@ -1,17 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:installer/context.dart';
-import 'package:installer/http_overrides.dart';
-import 'package:installer/installers.dart';
-import 'package:installer/log.dart';
-import 'package:installer/option.dart';
-import 'package:installer/run_installer.dart';
-import 'package:installer/steps/create_shortcut.dart';
-import 'package:installer/steps/flutter/flutter_config_android_sdk.dart';
-import 'package:installer/steps/nushell/configure_nushell.dart';
-import 'package:installer/steps/step.dart';
-import 'package:installer/utils.dart';
+import 'package:installer/installer.dart';
+import 'package:installer/steps.dart';
 import 'package:path/path.dart';
 
 bool removeCurrentInstallation = false;
@@ -96,7 +87,7 @@ List<Step> decideInstallers(Set<String> opts, Set<String> args) {
 }
 
 void main(List<String> argv) async {
-   HttpOverrides.global = MyHttpOverrides();
+  HttpOverrides.global = MyHttpOverrides();
 
   final res = argv.separate((String a) => a.startsWith("-"));
   final opts = Set<String>.from(res[0]), args = Set<String>.from(res[1]);
