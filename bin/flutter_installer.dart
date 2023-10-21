@@ -101,14 +101,16 @@ void main(List<String> argv) async {
     showHelp(args);
   }
 
-  Log.init(filename: "flutter-installer.log");
-  List<Step> installers = decideInstallers(opts, args);
-
   final homeDir = getHomeDir();
   await InstallerContext.init(
     targetDir: join(homeDir, "FlutterDev"),
     downloadDir: join(homeDir, "Downloads"),
   );
+
+  Log.init(filename: "flutter-installer.log");
+  List<Step> installers = decideInstallers(opts, args);
+
+  
 
   await runInstaller(
     Sequence([
