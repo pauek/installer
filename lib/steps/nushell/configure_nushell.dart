@@ -40,12 +40,10 @@ let pathDirs = [
     'FlutterDev\flutter\bin',
     'FlutterDev\android-sdk\cmdline-tools\latest\bin',
     'FlutterDev\android-sdk\platform-tools\bin',
-    'FlutterDev\node\
     'dart-sdk\bin',
 ]
 let absoluteDirs = ($pathDirs | each {|dir| $'($env.USERPROFILE)\($dir)' })
 $env.Path = ($env.Path | prepend $absoluteDirs)
-
 $env.JAVA_HOME = $'($env.USERPROFILE)\FlutterDev\java'
 ''';
 
