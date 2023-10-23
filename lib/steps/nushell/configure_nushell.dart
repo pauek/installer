@@ -46,6 +46,8 @@ let pathDirs = [
 let absoluteDirs = ($pathDirs | each {|dir| $'($env.USERPROFILE)\($dir)' })
 $env.Path = ($env.Path | prepend $absoluteDirs)
 $env.JAVA_HOME = $'($env.USERPROFILE)\FlutterDev\java'
+$env.ANDROID_HOME = $'($env.USERPROFILE)\FlutterDev\android-sdk'
+$env.ANDROID_SDK_ROOT = $'($env.USERPROFILE)\FlutterDev\android-sdk'
 ''';
 
 Future<List<String>> defaultNuFileLines(String which) async {
