@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:installer/installer.dart';
+import 'package:path/path.dart';
 
 extension ListSeparate on List {
   List<List<T>> separate<T>(Function(T) fn) {
@@ -229,8 +230,16 @@ Future decompressTarGz(String file, String targetDir) async {
 
   // .tar.gz --> .tar
   final cmd7za = ctx.getBinary("7za");
-  log.print("info: Running '$cmd7za x $gzFile'");
-  final result1 = await Process.run(cmd7za, ["x", gzFile]);
+  log.print("info: Running '$cmd7za x -y $gzFile'");
+  final result1 = await Process.run(
+    cmd7za,
+    [
+      "x",
+      "-y", // Overwrite!
+      gzFile,
+      "-o${dirname(file)}",
+    ],
+  );
   if (result1.exitCode != 0) {
     final stderr = result1.stderr.toString().trim();
     for (final line in stderr.split("\n")) {
@@ -244,11 +253,7 @@ Future decompressTarGz(String file, String targetDir) async {
   log.print("info: Running '$cmd7za x $tarFile' (into '$targetDir')");
   final result2 = await Process.run(
     cmd7za,
-    [
-      "x",
-      "-y", // Overwrite!
-      tarFile,
-    ],
+    ["x", tarFile],
     workingDirectory: targetDir,
   );
   if (result2.exitCode != 0) {
