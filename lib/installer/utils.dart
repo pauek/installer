@@ -244,7 +244,11 @@ Future decompressTarGz(String file, String targetDir) async {
   log.print("info: Running '$cmd7za x $tarFile' (into '$targetDir')");
   final result2 = await Process.run(
     cmd7za,
-    ["x", tarFile],
+    [
+      "x",
+      "-y", // Overwrite!
+      tarFile,
+    ],
     workingDirectory: targetDir,
   );
   if (result2.exitCode != 0) {
