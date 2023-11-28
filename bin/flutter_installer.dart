@@ -16,14 +16,9 @@ final options = {
   "nu": Option("nu", iNushell, "Nushell", -1, ["7z"]),
   "git": Option("git", iGit, "Git", 0, ["7z"]),
   "java": Option("java", iJavaJDK, "Java JDK", 0, ["7z"]),
-  "node": Option("node", iNode, "Node and npm", 0, ["7z"]),
   "vscode": Option("vscode", iVSCode, "Visual Studio Code", 0, ["7z"]),
   "flutter": Option("flutter", iFlutter, "Flutter", 0, ["git"]),
   "android-sdk": Option("android-sdk", iAndroidSdk, "Android SDK", 0, ["java"]),
-  "firebase-cli":
-      Option("firebase-cli", iFirebaseCLI, "Firebase CLI", 0, ["node"]),
-  "flutterfire":
-      Option("firebase-cli", iFlutterFire, "FlutterFire CLI", 0, ["flutter"]),
 };
 
 final longestName = options.values.map((v) => v.name.length).reduce(max);
@@ -109,8 +104,6 @@ void main(List<String> argv) async {
 
   Log.init(filename: "flutter-installer.log");
   List<Step> installers = decideInstallers(opts, args);
-
-  
 
   await runInstaller(
     Sequence([
