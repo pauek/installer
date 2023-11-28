@@ -88,18 +88,20 @@ void main(List<String> argv) async {
   HttpOverrides.global = MyHttpOverrides();
 
   final res = argv.separate((String a) => a.startsWith("-"));
-  final opts = Set<String>.from(res[0]), args = Set<String>.from(res[1]);
+  final opts = Set<String>.from(res[0]);
+  final args = Set<String>.from(res[1]);
 
-  bool isSingle(x) => (args.length == 1 && args.single == x);
-
-  if (isSingle("help")) {
+  if (args.contains("help") || opts.contains("-h") || opts.contains("--help")) {
     showHelp(args);
   }
 
   final homeDir = getHomeDir();
+  final sharedDownloadDir =
+      await createSharedDownloadDir("Z:/DispositiusMobils_NO_ESBORRAR");
+
   await InstallerContext.init(
     targetDir: join(homeDir, "FlutterDev"),
-    downloadDir: join(homeDir, "Downloads"),
+    downloadDir: sharedDownloadDir ?? join(homeDir, "Downloads"),
   );
 
   Log.init(filename: "flutter-installer.log");

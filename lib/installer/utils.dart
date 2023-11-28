@@ -280,3 +280,16 @@ Future<String> getLastTag(String owner, String repo) async {
 
   return tags.first['name'];
 }
+
+Future<String?> createSharedDownloadDir(String absPath) async {
+  try {
+    final dir = Directory(absPath);
+    if (dir.existsSync()) {
+      return absPath;
+    }
+    await dir.create();
+    return absPath;
+  } catch (e) {
+    return null;
+  }
+}
