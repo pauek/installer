@@ -23,10 +23,28 @@ class Move extends SinglePriorStep {
     final newAbsPath = join(ctx.targetDir, into, filename);
     await ensureDir(dirname(newAbsPath));
 
-    final file = await File(absPath).rename(newAbsPath);
-    if (file.absolute.path != newAbsPath) {
-      return installerError("Something went wrong moving file $filename");
+    // To move the file, we first copy it and then erase the origial
+    // in case the paths are in different disks (or units in Windows)
+    // TODO: Check if the unit/filesystem is the same?
+
+    // 1) Copy the file
+    final File file;
+    try {
+      file = await File(absPath).copy(newAbsPath);
+      if (file.absolute.path != newAbsPath) {
+        return installerError("Something went wrong copying file $filename");
+      }
+    } catch (e) {
+      return installerError("Something went wrong copying file $filename");
     }
+
+    // 2) Delete the file
+    try {
+      await File(absPath).delete();
+    } catch (e) {
+      return installerError("Something went wrong deleting file $absPath");
+    }
+
     log.print("info: Moved file to '${file.absolute.path}'");
     return Dirname(dirname(file.absolute.path));
   }

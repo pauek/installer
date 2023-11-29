@@ -33,21 +33,21 @@ $env.PROMPT_MULTILINE_INDICATOR = {|| "::: " }
 const addPathsAndVariables = r'''
 let pathDirs = [
     'AppData\Local\Pub\Cache\bin',
-    'FlutterDev\7z',
-    'FlutterDev\git\cmd',
-    'FlutterDev\node\node',
-    'FlutterDev\java\bin',
-    'FlutterDev\vscode\bin',
-    'FlutterDev\flutter\bin',
-    'FlutterDev\android-sdk\cmdline-tools\latest\bin',
-    'FlutterDev\android-sdk\platform-tools\bin',
+    '##installerTargetDir##\7z',
+    '##installerTargetDir##\git\cmd',
+    '##installerTargetDir##\node\node',
+    '##installerTargetDir##\java\bin',
+    '##installerTargetDir##\vscode\bin',
+    '##installerTargetDir##\flutter\bin',
+    '##installerTargetDir##\android-sdk\cmdline-tools\latest\bin',
+    '##installerTargetDir##\android-sdk\platform-tools\bin',
     'dart-sdk\bin',
 ]
 let absoluteDirs = ($pathDirs | each {|dir| $'($env.USERPROFILE)\($dir)' })
 $env.Path = ($env.Path | prepend $absoluteDirs)
-$env.JAVA_HOME = $'($env.USERPROFILE)\FlutterDev\java'
-$env.ANDROID_HOME = $'($env.USERPROFILE)\FlutterDev\android-sdk'
-$env.ANDROID_SDK_ROOT = $'($env.USERPROFILE)\FlutterDev\android-sdk'
+$env.JAVA_HOME = $'($env.USERPROFILE)\##installerTargetDir##\java'
+$env.ANDROID_HOME = $'($env.USERPROFILE)\##installerTargetDir##\android-sdk'
+$env.ANDROID_SDK_ROOT = $'($env.USERPROFILE)\##installerTargetDir##\android-sdk'
 ''';
 
 Future<List<String>> defaultNuFileLines(String which) async {
@@ -147,7 +147,7 @@ class ConfigureNushell extends SinglePriorStep {
 
     // Read config files' lines
     final configLines = await getFileLines("config", configFilePath);
-    final envLines = await getFileLines("env", envFilePath);
+    final List<String> envLines = []; // Generate env.nu from scratch
 
     // Change Path
     Set<String> envpath = {}; // deduplicate
@@ -155,7 +155,13 @@ class ConfigureNushell extends SinglePriorStep {
       envpath.add(dirname(path));
     }
     // Add or replace path
-    addOrReplaceLines("env", envLines, addPathsAndVariables.split("\n"));
+    addOrReplaceLines(
+      "env",
+      envLines,
+      addPathsAndVariables
+          .replaceAll("##installerTargetDir##", installerTargetDir)
+          .split("\n"),
+    );
 
     // Add or replace banner suppression
     addOrReplaceLines("config", configLines, [

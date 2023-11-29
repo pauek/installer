@@ -7,7 +7,7 @@ void main(List<String> arguments) async {
 
   final homeDir = getHomeDir();
   await InstallerContext.init(
-    targetDir: join(homeDir, "FlutterDev"),
+    targetDir: join(homeDir, installerTargetDir),
     downloadDir: join(homeDir, "Downloads"),
   );
   runInstaller(

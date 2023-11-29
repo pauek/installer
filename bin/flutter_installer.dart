@@ -97,14 +97,14 @@ void main(List<String> argv) async {
 
   final homeDir = getHomeDir();
   final sharedDownloadDir =
-      await createSharedDownloadDir("Z:/DispositiusMobils_NO_ESBORRAR");
+      await createSharedDownloadDir(installerCITMDownloadsDir);
 
   await InstallerContext.init(
-    targetDir: join(homeDir, "FlutterDev"),
-    downloadDir: sharedDownloadDir ?? join(homeDir, "Downloads"),
+    targetDir: join(homeDir, installerTargetDir),
+    downloadDir: sharedDownloadDir ?? join(homeDir, windowsDownloadsDir),
   );
 
-  Log.init(filename: "flutter-installer.log");
+  Log.init(filename: installerLogFile);
   List<Step> installers = decideInstallers(opts, args);
 
   await runInstaller(

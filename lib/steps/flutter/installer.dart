@@ -1,6 +1,9 @@
 import 'package:installer/installer/context.dart';
 import 'package:installer/steps/add_binary.dart';
 import 'package:installer/steps/clone_github_repo.dart';
+import 'package:installer/steps/decompress.dart';
+import 'package:installer/steps/download_file.dart';
+import 'package:installer/steps/flutter/flutter_get_download_url.dart';
 import 'package:installer/steps/git/git_repository_present.dart';
 import 'package:installer/steps/if.dart';
 import 'package:installer/steps/not.dart';
@@ -12,7 +15,11 @@ Step iFlutter() {
   return Chain("Flutter", [
     If(
       Not(GitRepositoryPresent("flutter", flutterRepo)),
-      then: CloneGithubRepo("flutter", flutterRepo, branch: "stable"),
+      then: Chain.noPrefix([
+        FlutterGetDownloadURL(),
+        DownloadFile(),
+        Decompress(into: "flutter"),
+      ]),
     ),
     AddToEnv(dir: "flutter", items: [
       Binary("flutter", win: r"bin\flutter.bat", all: "bin/flutter"),
