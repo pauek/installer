@@ -12,17 +12,22 @@ Future<String> getLatestFlutterUrl() async {
       "This downloader does not work on platforms other than Windows",
     );
   }
+
+  // Get the latest release from GitHub's tag page
+  // If I use GitHub's API I have to put an API_KEY
   final response = await http.get(
-    Uri.parse("https://docs.flutter.dev/get-started/install/windows"),
+    Uri.parse("https://github.com/flutter/flutter/tags"),
   );
   final document = parse(response.body);
-  final anchor = document.querySelector(
-    '#downloads-windows-stable',
+  final anchors = document.querySelectorAll(
+    'a[href="/flutter/flutter/releases/tag"]',
   );
-  if (anchor == null) {
-    return installerError("Flutter get started page has changed format");
+  if (anchors.isEmpty) {
+    return installerError("Github flutter tags page has changed format");
   }
-  final textContent = anchor.text.trim();
+
+  // Get the first tag which doesn't have "pre" in the name
+
   return "https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/${textContent}";
 }
 
