@@ -10,5 +10,5 @@ build/
 
 # Pessao
 **/.DS_Store
-**/*.exe
+flutter_installer*.exe
 *.log
