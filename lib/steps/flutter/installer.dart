@@ -18,7 +18,10 @@ Step iFlutter() {
       then: Chain.noPrefix([
         FlutterGetDownloadURL(),
         DownloadFile(),
-        Decompress(into: "flutter"),
+        // UGLY: The Flutter Zip file has a "flutter" directory inside, so
+        // we don't want to have "flutter/flutter" duplicated, that is why
+        // the into here is ""
+        Decompress(into: ""),
       ]),
     ),
     AddToEnv(dir: "flutter", items: [

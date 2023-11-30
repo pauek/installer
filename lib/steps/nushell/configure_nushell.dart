@@ -147,7 +147,8 @@ class ConfigureNushell extends SinglePriorStep {
 
     // Read config files' lines
     final configLines = await getFileLines("config", configFilePath);
-    final List<String> envLines = []; // Generate env.nu from scratch
+    final List<String> envLines =
+        defaultEnvFileLines.split('\n'); // Generate env.nu from scratch
 
     // Change Path
     Set<String> envpath = {}; // deduplicate

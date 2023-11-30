@@ -11,7 +11,7 @@ dependencies:
   async: ^2.10.0
   console: ^4.1.0
   html: ^0.15.1
-  http: ^1.1.0
+  http: ^1.1.2
   path: ^1.8.2
 
 dev_dependencies:

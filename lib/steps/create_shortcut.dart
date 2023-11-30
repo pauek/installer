@@ -13,18 +13,32 @@ class CreateShortcut extends SinglePriorStep {
     if (!Platform.isWindows) {
       return installerError("Platform not supported");
     }
-    final shortcutExe = join(ctx.downloadDir, "Shortcut.exe");
-    await downloadFile(
-      url: "https://files.pauek.info/Shortcut.exe",
-      path: shortcutExe,
-    );
-    final shortcutFile = join(getHomeDir(), "Desktop", "$shortcutName.lnk");
+    final homeDir = getHomeDir();
+    final shortcutExe = absolute(ctx.downloadDir, "Shortcut.exe");
+    log.print("info: Shortcut.exe should be at $shortcutExe");
+
+    // Download Shortcut.exe
+    try {
+      await downloadFile(url: shortcutExeDownloadUrl, path: shortcutExe);
+    } catch (e) {
+      log.print("Error: couldn't download file");
+      log.print(e.toString());
+      return installerError("Didn't create shortcut");
+    }
+
+    // We find out first if the Desktop folder exists, since
+    // it doesn't with Windows users who opted in to OneDrive.
+    String shortcutFile = join(homeDir, "$shortcutName.lnk");
+    if (Directory(join(homeDir, "Desktop")).existsSync()) {
+      shortcutFile = join(homeDir, "Desktop", "$shortcutName.lnk");
+    }
+
     final targetExe = ctx.getBinary("nu");
     final shortcutProcess = await Process.run(shortcutExe, [
       "/f:$shortcutFile",
       "/a:c",
       "/t:$targetExe",
-      "/w:${getHomeDir()}",
+      "/w:$homeDir",
       "/r:1",
     ]);
     return shortcutProcess.exitCode == 0;
