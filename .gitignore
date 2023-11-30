@@ -11,3 +11,4 @@ build/
 # Pessao
 **/.DS_Store
 **/*.exe
+*.log
