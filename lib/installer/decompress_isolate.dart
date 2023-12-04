@@ -13,7 +13,7 @@ void _isolateExtractFileToDisk(List args) async {
   String file = args[1], targetDir = args[2];
   Object result;
   try {
-    extractFileToDisk(file, targetDir);
+    await extractFileToDisk(file, targetDir);
     result = true;
   } catch (e) {
     result = e;

@@ -21,13 +21,14 @@ Step iFlutter() {
         // UGLY: The Flutter Zip file has a "flutter" directory inside, so
         // we don't want to have "flutter/flutter" duplicated, that is why
         // the into here is ""
-        Decompress(into: ""),
+        Decompress(into: "", eraseDirFirst: false),
       ]),
     ),
-    AddToEnv(dir: "flutter", items: [
-      Binary("flutter", win: r"bin\flutter.bat", all: "bin/flutter"),
-      Binary("dart", win: r"bin\dart.bat", all: "bin/dart"),
-    ]),
+    // FIXME: In windows this complains that the directory is no absolute??
+    // AddToEnv(dir: "flutter", items: [
+    //   Binary("flutter", win: r"bin\flutter.bat", all: "bin/flutter"),
+    //   Binary("dart", win: r"bin\dart.bat", all: "bin/dart"),
+    // ]),
   ]);
 }
 
