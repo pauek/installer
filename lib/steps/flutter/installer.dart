@@ -1,5 +1,4 @@
 import 'package:installer/installer/context.dart';
-import 'package:installer/steps/add_binary.dart';
 import 'package:installer/steps/clone_github_repo.dart';
 import 'package:installer/steps/decompress.dart';
 import 'package:installer/steps/download_file.dart';

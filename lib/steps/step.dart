@@ -122,7 +122,7 @@ abstract class Step {
 }
 
 abstract class SinglePriorStep extends Step {
-  SinglePriorStep(String title, [Step? priorStep]) : super(title, priorStep);
+  SinglePriorStep(super.title, [super.priorStep]);
 
   @override
   CursorPosition setPos(CursorPosition p) {
