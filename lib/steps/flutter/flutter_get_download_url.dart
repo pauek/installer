@@ -6,6 +6,8 @@ import 'package:installer/installer.dart';
 import 'package:installer/steps/step.dart';
 import 'package:installer/steps/types.dart';
 
+final RegExp rFlutterVersion = RegExp(r"^\d+\.\d+\.\d+$");
+
 Future<String?> getLatestFlutterUrl() async {
   if (!Platform.isWindows) {
     return installerError(
@@ -29,7 +31,9 @@ Future<String?> getLatestFlutterUrl() async {
   // Get the first tag which doesn't have "pre" in the name
   String? getLatestVersion() {
     for (final a in anchors) {
-      if (!a.text.endsWith(".pre")) return a.text;
+      if (rFlutterVersion.hasMatch(a.text)) {
+        return a.text;
+      }
     }
     return null;
   }
