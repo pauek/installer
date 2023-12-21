@@ -17,8 +17,8 @@ final options = {
   "git": Option("git", iGit, "Git", 0, ["7z"]),
   "java": Option("java", iJavaJDK, "Java JDK", 0, ["7z"]),
   "vscode": Option("vscode", iVSCode, "Visual Studio Code", 0, ["7z"]),
-  "flutter": Option("flutter", iFlutter, "Flutter", 0, ["git", "nu"]),
-  "android-sdk": Option("android-sdk", iAndroidSdk, "Android SDK", 0, ["java", "nu"]),
+  "flutter": Option("flutter", iFlutter, "Flutter", 0, ["git"]),
+  "android-sdk": Option("android-sdk", iAndroidSdk, "Android SDK", 0, ["java"]),
 };
 
 final longestName = options.values.map((v) => v.name.length).reduce(max);
@@ -105,6 +105,10 @@ void main(List<String> argv) async {
   );
 
   Log.init(filename: installerLogFile);
+
+  // Add i7z and nushell unconditionally here (because of ConfigureNushell)
+  args.addAll(["7z", "nu"]);
+
   List<Step> installers = decideInstallers(opts, args);
 
   await runInstaller(
