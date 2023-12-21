@@ -18,7 +18,7 @@ final options = {
   "java": Option("java", iJavaJDK, "Java JDK", 0, ["7z"]),
   "vscode": Option("vscode", iVSCode, "Visual Studio Code", 0, ["7z"]),
   "flutter": Option("flutter", iFlutter, "Flutter", 0, ["git", "nu"]),
-  "android-sdk": Option("android-sdk", iAndroidSdk, "Android SDK", 0, ["java"]),
+  "android-sdk": Option("android-sdk", iAndroidSdk, "Android SDK", 0, ["java", "nu"]),
 };
 
 final longestName = options.values.map((v) => v.name.length).reduce(max);
