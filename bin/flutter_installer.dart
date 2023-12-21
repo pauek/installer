@@ -17,7 +17,7 @@ final options = {
   "git": Option("git", iGit, "Git", 0, ["7z"]),
   "java": Option("java", iJavaJDK, "Java JDK", 0, ["7z"]),
   "vscode": Option("vscode", iVSCode, "Visual Studio Code", 0, ["7z"]),
-  "flutter": Option("flutter", iFlutter, "Flutter", 0, ["git"]),
+  "flutter": Option("flutter", iFlutter, "Flutter", 0, ["git", "nu"]),
   "android-sdk": Option("android-sdk", iAndroidSdk, "Android SDK", 0, ["java"]),
 };
 
